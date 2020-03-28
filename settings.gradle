@@ -1,0 +1,2 @@
+rootProject.name='Daycation'
+include ':app'
