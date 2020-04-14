@@ -12,4 +12,6 @@
     <string name="menu_slideshow">Slideshow</string>
 
     <string name="home_second">Home Second</string>
+    <string name="daycation_logo_alt_text">Daycation Logo</string>
+    <string name="home_text_title">Daycation</string>
 </resources>
