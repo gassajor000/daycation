@@ -30,7 +30,7 @@
         android:scaleType="centerInside"
         android:scaleX=".5"
         android:scaleY=".5"
-        android:src="@drawable/ic_beachball_logo"
+        android:src="@drawable/ic_logo_beachball"
         app:layout_constraintBottom_toTopOf="@+id/text_home"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.497"
