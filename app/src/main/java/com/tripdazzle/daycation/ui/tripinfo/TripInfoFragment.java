@@ -1,5 +1,6 @@
 package com.tripdazzle.daycation.ui.tripinfo;
 
+import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.os.Bundle;
@@ -13,8 +14,18 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.tripdazzle.daycation.R;
+import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
+
+import java.lang.reflect.Array;
 
 public class TripInfoFragment extends Fragment {
+    private Activity[] activities = {
+            new Activity(ActivityType.HIKING, "Rose Canyon", "Hike Rose Canyon"),
+            new Activity(ActivityType.ICE_CREAM, "Shake Shack", "Get Ice cream at Shake Shack"),
+            new Activity(ActivityType.BEACH, "Mission Beach", "Go Swimming at Mission Beach")
+    };
+    Trip defaultTrip = new Trip("SD Vacay", 123, "gassajor",
+            "Fun Trip around the San Diego Bay.", "img1233", activities);
 
     private TripInfoViewModel mViewModel;
 
@@ -25,14 +36,16 @@ public class TripInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_trip_info, container, false);
+        FragmentTripInfoBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_trip_info, container, false);
+        binding.setTrip(defaultTrip);
+        return binding.getRoot();
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         mViewModel = ViewModelProviders.of(this).get(TripInfoViewModel.class);
-        // TODO: Use the ViewModel
+        // TODO mViewModel.loadTrip(defaultTrip);
     }
 
 }
