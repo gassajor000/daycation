@@ -15,8 +15,9 @@ import android.view.ViewGroup;
 
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
-
-import java.lang.reflect.Array;
+import com.tripdazzle.daycation.models.Activity;
+import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.server.datamodels.ActivityType;
 
 public class TripInfoFragment extends Fragment {
     private Activity[] activities = {

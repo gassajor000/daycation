@@ -1,14 +1,14 @@
-package com.tripdazzle.daycation.ui.tripinfo;
+package com.tripdazzle.server.datamodels;
 
-public class Trip {
+public class TripData {
     public final String title;
     public final int id;
     public final String creatorId;
     public final String description;
     public final String mainImageId;
-    public final Activity[] activities;
+    public final ActivityData[] activities;
 
-    public Trip(String title, int id, String creatorId, String description, String mainImageId, Activity[] activities) {
+    public TripData(String title, int id, String creatorId, String description, String mainImageId, ActivityData[] activities) {
         this.title = title;
         this.id = id;
         this.creatorId = creatorId;
@@ -17,4 +17,3 @@ public class Trip {
         this.activities = activities;
     }
 }
-

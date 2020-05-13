@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.tripdazzle.daycation.models.Trip;
+
 public class TripInfoViewModel extends ViewModel {
     private MutableLiveData<Trip> trip;
     public LiveData<Trip> getTrip() {

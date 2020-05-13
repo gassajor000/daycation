@@ -6,7 +6,7 @@
     <data>
         <variable
             name="activity"
-            type="com.tripdazzle.daycation.ui.tripinfo.Activity" />
+            type="com.tripdazzle.daycation.models.Activity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -29,7 +29,7 @@
             android:layout_height="80dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:src='@{activity.type.getIcon(context), default="@drawable/ic_activity_hiking"}'
+            android:src='@{activity.getIcon(context), default="@drawable/ic_activity_hiking"}'
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

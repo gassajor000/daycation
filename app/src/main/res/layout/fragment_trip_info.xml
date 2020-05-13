@@ -7,7 +7,7 @@
     <data>
         <variable
             name="trip"
-            type="com.tripdazzle.daycation.ui.tripinfo.Trip" />
+            type="com.tripdazzle.daycation.models.Trip" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -142,7 +142,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView6"
-            bind:activity="@{trip.activities[0]}" />
+            bind:activity="@{trip.getActivity(0)}" />
 
         <include
             android:id="@+id/activity1"
@@ -153,7 +153,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/activity0"
-            bind:activity="@{trip.activities[1]}" />
+            bind:activity="@{trip.getActivity(1)}" />
 
         <include
             android:id="@+id/activity2"
@@ -164,7 +164,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/activity1"
-            bind:activity="@{trip.activities[2]}" />
+            bind:activity="@{trip.getActivity(2)}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
