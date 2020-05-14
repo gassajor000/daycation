@@ -4,7 +4,7 @@ import com.tripdazzle.server.datamodels.ActivityData;
 import com.tripdazzle.server.datamodels.TripData;
 
 public class Trip extends com.tripdazzle.server.datamodels.TripData {
-    public Trip(String title, int id, String creatorId, String description, String mainImageId, Activity[] activities) {
+    public Trip(String title, int id, String creatorId, String description, int mainImageId, Activity[] activities) {
         super(title, id, creatorId, description, mainImageId, activities);
     }
 

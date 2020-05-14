@@ -5,10 +5,10 @@ public class TripData {
     public final int id;
     public final String creatorId;
     public final String description;
-    public final String mainImageId;
+    public final int mainImageId;
     public final ActivityData[] activities;
 
-    public TripData(String title, int id, String creatorId, String description, String mainImageId, ActivityData[] activities) {
+    public TripData(String title, int id, String creatorId, String description, int mainImageId, ActivityData[] activities) {
         this.title = title;
         this.id = id;
         this.creatorId = creatorId;

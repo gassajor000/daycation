@@ -26,7 +26,7 @@ public class TripInfoFragment extends Fragment {
             new Activity(ActivityType.BEACH, "Mission Beach", "Go Swimming at Mission Beach")
     };
     Trip defaultTrip = new Trip("SD Vacay", 123, "gassajor",
-            "Fun Trip around the San Diego Bay.", "img1233", activities);
+            "Fun Trip around the San Diego Bay.",   1233, activities);
 
     private TripInfoViewModel mViewModel;
 
