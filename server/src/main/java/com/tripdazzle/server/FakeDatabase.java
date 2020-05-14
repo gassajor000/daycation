@@ -6,10 +6,18 @@ import java.util.HashMap;
 class FakeDatabase {
     private HashMap<Integer, String> fileNames;
 
-    FakeDatabase() {
+    private String dbFilePath;
+
+    FakeDatabase(String dbFilePath) {
+        this.dbFilePath = dbFilePath;
         this.fileNames = new HashMap<>();
-        fileNames.put(123, "missionBay.png");
+        fileNames.put(444, "mission_bay.png");
     }
+
+    public void setDbFilePath(String dbFilePath) {
+        this.dbFilePath = dbFilePath;
+    }
+
 
     /** Retrieve a bitmap image by ID
      * @param imgId id of the image to fetch
@@ -17,7 +25,7 @@ class FakeDatabase {
      */
     File getImage(int imgId){
         String fileName = fileNames.get(imgId);
-        return new File(fileName);
+        return new File(dbFilePath + "/" + fileName);
     }
 
 }

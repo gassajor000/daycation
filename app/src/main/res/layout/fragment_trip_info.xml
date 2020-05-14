@@ -17,7 +17,7 @@
         tools:context=".ui.tripinfo.TripInfoFragment">
 
         <ImageView
-            android:id="@+id/imageView3"
+            android:id="@+id/tripInfoMainImageView"
             android:layout_width="0dp"
             android:layout_height="150dp"
             android:contentDescription="@string/desc_trip_main_image"
@@ -38,7 +38,7 @@
             android:orientation="horizontal"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView3">
+            app:layout_constraintTop_toBottomOf="@+id/tripInfoMainImageView">
 
             <ImageView
                 android:id="@+id/imageView5"
