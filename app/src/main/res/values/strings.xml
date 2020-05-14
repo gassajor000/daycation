@@ -14,4 +14,10 @@
     <string name="home_second">Home Second</string>
     <string name="daycation_logo_alt_text">Daycation Logo</string>
     <string name="home_text_title">Daycation</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="menu_trip_info">Trip Info</string>
+    <string name="desc_trip_main_image">main image</string>
+    <string name="text_lorem_ipsum">description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aenean vel elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi. Nunc sed blandit libero volutpat sed. Vitae tortor condimentum lacinia quis vel. Sit amet consectetur adipiscing elit pellentesque habitant morbi tristique senectus.</string>
 </resources>

@@ -4,6 +4,10 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
 
+    dataBinding {
+        enabled = true
+    }
+
     defaultConfig {
         applicationId "com.tripdazzle.daycation"
         minSdkVersion 22
@@ -36,4 +40,5 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    api project(path: ':server')
 }

@@ -1,2 +1,3 @@
 rootProject.name='Daycation'
 include ':app'
+include ':server'
