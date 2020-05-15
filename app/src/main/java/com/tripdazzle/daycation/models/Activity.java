@@ -16,6 +16,7 @@ public class Activity extends com.tripdazzle.server.datamodels.ActivityData {
 
     public Activity(ActivityData activityData){
         super(activityData.type, activityData.description, activityData.location);
+        resourcedType = ResourcedActivityType.fromActivityType(activityData.type);
     }
 
     public Drawable getIcon(Context context){

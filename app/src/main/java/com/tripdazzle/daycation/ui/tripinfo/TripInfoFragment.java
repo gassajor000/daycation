@@ -16,20 +16,10 @@ import androidx.lifecycle.ViewModelProviders;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
-import com.tripdazzle.daycation.models.Activity;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.server.ServerError;
-import com.tripdazzle.server.datamodels.ActivityType;
 
-public class TripInfoFragment extends Fragment {
-    private Activity[] activities = {
-            new Activity(ActivityType.HIKING, "Rose Canyon", "Hike Rose Canyon"),
-            new Activity(ActivityType.ICE_CREAM, "Shake Shack", "Get Ice cream at Shake Shack"),
-            new Activity(ActivityType.BEACH, "Mission Beach", "Go Swimming at Mission Beach")
-    };
-    Trip defaultTrip = new Trip("SD Vacay", 123, "gassajor",
-            "Fun Trip around the San Diego Bay.",   444, activities);
-
+public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber {
     private TripInfoViewModel mViewModel;
     private DataModel model = new DataModel();
 
@@ -40,27 +30,44 @@ public class TripInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        mViewModel = ViewModelProviders.of(this).get(TripInfoViewModel.class);
+
         FragmentTripInfoBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_trip_info, container, false);
-        binding.setTrip(defaultTrip);
+        binding.setViewModel(mViewModel);
+        binding.setLifecycleOwner(this);
         View view = binding.getRoot();
 
-        // get main image
         model.initialize(getContext());
-        try {
-            Bitmap mainImage = model.getImage(defaultTrip.mainImageId);
-            ImageView mainImageView = (ImageView) view.findViewById(R.id.tripInfoMainImageView);
-            mainImageView.setImageBitmap(mainImage);
-        } catch (ServerError serverError) {
-            serverError.printStackTrace();
-        }
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(TripInfoViewModel.class);
         // TODO mViewModel.loadTrip(defaultTrip);
+        model.getTripById(333, this);
     }
 
+    @Override
+    public void onSuccess(String message) {}
+
+    @Override
+    public void onError(String message) {}
+
+    @Override
+    public void onSync(String message, DataModel model) {}
+
+    @Override
+    public void onGetTripById(Trip trip) {
+        mViewModel.setTrip(trip);
+
+        // get main image
+        try {
+            Bitmap mainImage = model.getImageById(trip.mainImageId);
+            ImageView mainImageView = (ImageView) this.getView().findViewById(R.id.tripInfoMainImageView);
+            mainImageView.setImageBitmap(mainImage);
+        } catch (ServerError serverError) {
+            serverError.printStackTrace();
+        }
+    }
 }

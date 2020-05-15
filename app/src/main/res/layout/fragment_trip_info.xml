@@ -6,8 +6,8 @@
 
     <data>
         <variable
-            name="trip"
-            type="com.tripdazzle.daycation.models.Trip" />
+            name="viewModel"
+            type="com.tripdazzle.daycation.ui.tripinfo.TripInfoViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -62,7 +62,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:text='@{trip.title, default="Trip Name"}'                    android:textSize="24sp"
+                    android:text='@{viewModel.trip.title, default="Trip Name"}'                    android:textSize="24sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -128,7 +128,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:text="@{trip.description, default=@string/text_lorem_ipsum}"
+            android:text="@{viewModel.trip.description, default=@string/text_lorem_ipsum}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/divider" />
@@ -142,7 +142,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/textView6"
-            bind:activity="@{trip.getActivity(0)}" />
+            bind:activity="@{viewModel.trip.getActivity(0)}" />
 
         <include
             android:id="@+id/activity1"
@@ -153,7 +153,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/activity0"
-            bind:activity="@{trip.getActivity(1)}" />
+            bind:activity="@{viewModel.trip.getActivity(1)}" />
 
         <include
             android:id="@+id/activity2"
@@ -164,7 +164,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/activity1"
-            bind:activity="@{trip.getActivity(2)}" />
+            bind:activity="@{viewModel.trip.getActivity(2)}" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -3,7 +3,9 @@ package com.tripdazzle.daycation;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 
+import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.server.ProxyServer;
 import com.tripdazzle.server.ServerError;
 
@@ -48,8 +50,61 @@ public class DataModel {
         }
     }
 
-    public Bitmap getImage(int imageId) throws ServerError {
-        return BitmapFactory.decodeStream(server.getImage(imageId));
+    /* Data getters/setters*/
+    public Bitmap getImageById(int imageId) throws ServerError {
+        return BitmapFactory.decodeStream(server.getImageById(imageId));
     }
 
+    public void getTripById(int tripId, TripsSubscriber callback){
+        new GetTripByIdTask(callback).execute(tripId);
+    }
+
+    /* Asynchronous Tasks*/
+    public interface TaskContext{
+        /** onSuccess: called on success of an async task
+         * @param message Message to return*/
+        void onSuccess(String message);
+        /** onSuccess: called on error of an async task
+         * @param message Message to return*/
+        void onError(String message);
+        /** onSuccess: called on successful completion of syncData
+         * @param message Message to return*/
+        void onSync(String message, DataModel model);
+    }
+
+    public interface TripsSubscriber extends TaskContext {
+        /** onSuccess: called on fetch of a trip by id
+         * @param trip Trip returned by query*/
+        void onGetTripById(Trip trip);
+    }
+
+    private class GetTripByIdTask extends AsyncTask<Integer, Void, Trip> {
+        /** Application Context*/
+        private TripsSubscriber context;
+
+        private GetTripByIdTask(TripsSubscriber context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Trip doInBackground(Integer ... tripIds) {
+            if (tripIds.length > 1){
+                return null;
+            } else {
+                return new Trip(server.getTripById(tripIds[0]));
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Trip result) {
+            super.onPostExecute(result);
+            if(result == null){
+                context.onError("No trip found with corresponding id");
+            }
+            else {
+                // onSuccess()?
+                context.onGetTripById(result);
+            }
+        }
+    }
 }

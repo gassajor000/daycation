@@ -15,7 +15,7 @@ public class TripInfoViewModel extends ViewModel {
         return trip;
     }
 
-    public void loadTrip(Trip trip) {
+    public void setTrip(Trip trip) {
         if (this.trip == null) {
             this.trip = new MutableLiveData<Trip>();
         }
