@@ -17,9 +17,8 @@ import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
 import com.tripdazzle.daycation.models.Trip;
-import com.tripdazzle.server.ServerError;
 
-public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber {
+public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ImagesSubscriber {
     private TripInfoViewModel mViewModel;
     private DataModel model = new DataModel();
 
@@ -55,19 +54,19 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     public void onError(String message) {}
 
     @Override
-    public void onSync(String message, DataModel model) {}
-
-    @Override
     public void onGetTripById(Trip trip) {
         mViewModel.setTrip(trip);
 
         // get main image
-        try {
-            Bitmap mainImage = model.getImageById(trip.mainImageId);
+        model.getImageById(trip.mainImageId, this);
+    }
+
+    @Override
+    public void onGetImageById(Bitmap image, Integer imageId) {
+        Trip trip = mViewModel.getTrip().getValue();
+        if(trip != null && imageId == trip.mainImageId){
             ImageView mainImageView = (ImageView) this.getView().findViewById(R.id.tripInfoMainImageView);
-            mainImageView.setImageBitmap(mainImage);
-        } catch (ServerError serverError) {
-            serverError.printStackTrace();
+            mainImageView.setImageBitmap(image);
         }
     }
 }

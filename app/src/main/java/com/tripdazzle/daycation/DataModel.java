@@ -51,8 +51,8 @@ public class DataModel {
     }
 
     /* Data getters/setters*/
-    public Bitmap getImageById(int imageId) throws ServerError {
-        return BitmapFactory.decodeStream(server.getImageById(imageId));
+    public void getImageById(int imageId, ImagesSubscriber callback) {
+        new GetImageByIdTask(callback).execute(imageId);
     }
 
     public void getTripById(int tripId, TripsSubscriber callback){
@@ -67,15 +67,20 @@ public class DataModel {
         /** onSuccess: called on error of an async task
          * @param message Message to return*/
         void onError(String message);
-        /** onSuccess: called on successful completion of syncData
-         * @param message Message to return*/
-        void onSync(String message, DataModel model);
     }
 
     public interface TripsSubscriber extends TaskContext {
-        /** onSuccess: called on fetch of a trip by id
+        /** called on fetch of a trip by id
          * @param trip Trip returned by query*/
         void onGetTripById(Trip trip);
+    }
+
+    public interface ImagesSubscriber extends TaskContext {
+        /** called on fetch of an image by id
+         * @param image Bitmap returned by query
+         * @param imageId Id of the image fetched
+         * */
+        void onGetImageById(Bitmap image, Integer imageId);
     }
 
     private class GetTripByIdTask extends AsyncTask<Integer, Void, Trip> {
@@ -104,6 +109,45 @@ public class DataModel {
             else {
                 // onSuccess()?
                 context.onGetTripById(result);
+            }
+        }
+    }
+
+    private class GetImageByIdTask extends AsyncTask<Integer, Void, Bitmap> {
+        /** Application Context*/
+        private ImagesSubscriber context;
+        private Integer id;
+
+        private GetImageByIdTask(ImagesSubscriber context) {
+            this.context = context;
+            this.id = -1;
+        }
+
+        @Override
+        protected Bitmap doInBackground(Integer ... imageIds) {
+            if (imageIds.length > 1){
+                return null;
+            } else {
+                this.id = imageIds[0];
+                try {
+                    return BitmapFactory.decodeStream(server.getImageById(imageIds[0]));
+                } catch (ServerError serverError) {
+                    serverError.printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap result) {
+            super.onPostExecute(result);
+            if(id == -1){
+                context.onError("Invalid image id");
+            } else if(result == null){
+                context.onError("No image found with id " + id);
+            } else {
+                // onSuccess()?
+                context.onGetImageById(result, id);
             }
         }
     }
