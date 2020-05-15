@@ -2,6 +2,7 @@ package com.tripdazzle.daycation.ui.tripinfo;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +37,8 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         binding.setLifecycleOwner(this);
         View view = binding.getRoot();
 
+        view.findViewById(R.id.tripInfoToggleFavorite).setOnClickListener(new ToggleFavoriteListener());
+
         model.initialize(getContext());
         return view;
     }
@@ -43,9 +46,14 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        // TODO mViewModel.loadTrip(defaultTrip);
         model.getTripById(333, this);
     }
+
+    private class ToggleFavoriteListener implements View.OnClickListener{
+        public void onClick(View view){
+            Log.i("TripInfoFragment", "Favorite " + mViewModel.getInFavorites().getValue());
+        }
+    };
 
     @Override
     public void onSuccess(String message) {}
