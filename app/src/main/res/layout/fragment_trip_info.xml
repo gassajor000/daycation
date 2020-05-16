@@ -51,6 +51,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/headerLayout"
+                style="@android:style/Widget.Holo.Button.Borderless"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="0">
@@ -62,19 +63,22 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:text='@{viewModel.trip.title, default="Trip Name"}'                    android:textSize="24sp"
+                    android:text='@{viewModel.trip.title, default="Trip Name"}'
+                    android:textSize="24sp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
 
                 <ToggleButton
                     android:id="@+id/tripInfoToggleFavorite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:background="@drawable/favorite_button"
                     android:checked="@={viewModel.inFavorites}"
-                    android:text="ToggleButton"
-                    android:textOff="Add Fav"
-                    android:textOn="Rem Fav"
+                    android:shadowColor="#FFFFFF"
+                    android:text="Favorite"
+                    android:textOff=""
+                    android:textOn=""
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
