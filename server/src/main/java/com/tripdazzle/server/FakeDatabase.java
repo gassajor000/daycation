@@ -27,7 +27,7 @@ class FakeDatabase {
                 new ActivityData(ActivityType.BEACH, "Mission Beach", "Go Swimming at Mission Beach")
         };
         trips.put(333, new TripData("SD Vacay", 333, "gassajor",
-                "Fun Trip around the San Diego Bay.",   444, activities));
+                "Fun Trip around the San Diego Bay.",   444, activities, (float) 3.7, 697));
     }
 
     public void setDbFilePath(String dbFilePath) {

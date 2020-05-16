@@ -4,13 +4,14 @@ import com.tripdazzle.server.datamodels.ActivityData;
 import com.tripdazzle.server.datamodels.TripData;
 
 public class Trip extends com.tripdazzle.server.datamodels.TripData {
-    public Trip(String title, int id, String creatorId, String description, int mainImageId, Activity[] activities) {
-        super(title, id, creatorId, description, mainImageId, activities);
+    public Trip(String title, int id, String creatorId, String description, int mainImageId, Activity[] activities, Float reviewsAverage, Integer numReviews) {
+        super(title, id, creatorId, description, mainImageId, activities, reviewsAverage, numReviews);
     }
 
     public Trip(TripData tripData) {
         super(tripData.title, tripData.id, tripData.creatorId, tripData.description,
-                tripData.mainImageId, Trip.convertActivities(tripData.activities));
+                tripData.mainImageId, Trip.convertActivities(tripData.activities),
+                tripData.reviewsAverage, tripData.numReviews);
     }
 
     private static Activity[] convertActivities(ActivityData[] activityData){
