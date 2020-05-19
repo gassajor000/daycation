@@ -1,11 +1,13 @@
 package com.tripdazzle.server;
 
+import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.TripData;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.List;
 
 public class ProxyServer {
     private FakeDatabase db = new FakeDatabase("path/To/File");
@@ -32,5 +34,12 @@ public class ProxyServer {
      */
     public TripData getTripById(int tripId){
         return db.getTripById(tripId);
+    }
+
+    /** retrieve a trip from the server
+     * @param reviewIds ids of the reviews to fetch
+     */
+    public List<ReviewData> getReviewById(List<Integer> reviewIds) throws ServerError{
+        return db.getReviewsById(reviewIds);
     }
 }

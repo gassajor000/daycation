@@ -2,14 +2,19 @@ package com.tripdazzle.server;
 
 import com.tripdazzle.server.datamodels.ActivityData;
 import com.tripdazzle.server.datamodels.ActivityType;
+import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.TripData;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 class FakeDatabase {
     private HashMap<Integer, String> fileNames;
     private HashMap<Integer, TripData> trips = new HashMap<>();
+    private HashMap<Integer, ReviewData> reviews = new HashMap<>();
 
     private String dbFilePath;
 
@@ -28,6 +33,10 @@ class FakeDatabase {
         };
         trips.put(333, new TripData("SD Vacay", 333, "gassajor",
                 "Fun Trip around the San Diego Bay.",   444, activities, (float) 3.7, 697));
+
+        // Reviews
+        reviews.put(555, new ReviewData(555, "Michael Scott", (float) 4.0,
+                new Date(), "Totally awesome experience but I lost my iPhone"));
     }
 
     public void setDbFilePath(String dbFilePath) {
@@ -46,5 +55,13 @@ class FakeDatabase {
 
     TripData getTripById(int tripId){
         return trips.get(tripId);
+    }
+
+    List<ReviewData> getReviewsById(List<Integer> reviewIds){
+        List<ReviewData> ret =  new ArrayList<>();
+        for(Integer r: reviewIds){
+            ret.add(reviews.get(r));
+        }
+        return ret;
     }
 }

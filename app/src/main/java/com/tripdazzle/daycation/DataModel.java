@@ -5,14 +5,18 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
+import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.server.ProxyServer;
 import com.tripdazzle.server.ServerError;
+import com.tripdazzle.server.datamodels.ReviewData;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 public class DataModel {
     private ProxyServer server = new ProxyServer();
@@ -59,7 +63,14 @@ public class DataModel {
         new GetTripByIdTask(callback).execute(tripId);
     }
 
-    /* Asynchronous Tasks*/
+    public void getReviewsByIds(List<Integer> reviewIds, ReviewsSubscriber callback){
+        new GetReviewsByIdsTask(callback).execute(reviewIds);
+    }
+
+    /*
+    * Asynchronous Tasks
+    */
+    // Interfaces
     public interface TaskContext{
         /** onSuccess: called on success of an async task
          * @param message Message to return*/
@@ -83,6 +94,14 @@ public class DataModel {
         void onGetImageById(Bitmap image, Integer imageId);
     }
 
+    public interface ReviewsSubscriber extends TaskContext {
+        /** called on fetch of a list of reviews by id
+         * @param reviews Reviews returned by query
+         * */
+        void onGetReviewsByIds(List<Review> reviews);
+    }
+
+    // Tasks
     private class GetTripByIdTask extends AsyncTask<Integer, Void, Trip> {
         /** Application Context*/
         private TripsSubscriber context;
@@ -148,6 +167,47 @@ public class DataModel {
             } else {
                 // onSuccess()?
                 context.onGetImageById(result, id);
+            }
+        }
+    }
+
+    private class GetReviewsByIdsTask extends AsyncTask<List<Integer>, Void, List<Review>> {
+        /** Application Context*/
+        private ReviewsSubscriber context;
+
+        private GetReviewsByIdsTask(ReviewsSubscriber context) {
+            this.context = context;
+        }
+
+        @Override
+        protected List<Review> doInBackground(List<Integer> ... reviewIds) {
+            if (reviewIds.length > 1){
+                return null;
+            } else {
+                List<ReviewData> reviewsData;
+                try {
+                    reviewsData = server.getReviewById(reviewIds[0]);
+                } catch (ServerError serverError) {
+                    serverError.printStackTrace();
+                    return null;
+                }
+
+                List<Review> reviews = new ArrayList<>();
+                for (ReviewData r : reviewsData) {
+                    reviews.add(new Review(r));
+                }
+                return reviews;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Review> result) {
+            super.onPostExecute(result);
+            if(result == null){
+                context.onError("Server Error");
+            } else {
+                // onSuccess()?
+                context.onGetReviewsByIds(result);
             }
         }
     }
