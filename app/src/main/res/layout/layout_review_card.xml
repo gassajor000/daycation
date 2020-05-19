@@ -5,7 +5,7 @@
     <data>
         <variable
             name="review"
-            type="com.tripdazzle.daycation.models.Activity" />
+            type="com.tripdazzle.daycation.models.Review" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
                 android:layout_weight="1"
-                android:text="TextView" />
+                android:text='@{review.reviewerName, default="Reviewer Name"}' />
 
         </LinearLayout>
 
@@ -49,6 +49,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:isIndicator="true"
+            android:rating="@{review.reviewRating, default=3.5}"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
@@ -57,7 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="TextView"
+            android:text='@{review.reviewDate.toLocaleString(), default="11/3/2013"}'
             app:layout_constraintBottom_toBottomOf="@+id/reviewRating"
             app:layout_constraintStart_toEndOf="@+id/reviewRating"
             app:layout_constraintTop_toTopOf="@+id/reviewRating" />
@@ -70,7 +71,7 @@
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:text="@string/text_lorem_ipsum"
+            android:text='@{review.reviewComment, default=@string/text_lorem_ipsum}'
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
