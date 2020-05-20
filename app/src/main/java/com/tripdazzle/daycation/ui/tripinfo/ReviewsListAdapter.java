@@ -14,6 +14,7 @@ import com.tripdazzle.daycation.BR;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Review;
 
+import java.text.DateFormat;
 import java.util.List;
 
 public class ReviewsListAdapter extends RecyclerView.Adapter {
@@ -122,6 +123,8 @@ public class ReviewsListAdapter extends RecyclerView.Adapter {
     //
     public static class ReviewViewHolder extends RecyclerView.ViewHolder {
         public final ViewDataBinding binding;
+        private DateFormat dateFormat =  DateFormat.getDateInstance();
+
 
         public ReviewViewHolder(ViewDataBinding binding) {
             super(binding.getRoot());
@@ -130,6 +133,7 @@ public class ReviewsListAdapter extends RecyclerView.Adapter {
 
         public void bind(Review review){
             binding.setVariable(BR.review, review);
+            binding.setVariable(BR.dateFormat, dateFormat);
             binding.executePendingBindings();
         }
     }
