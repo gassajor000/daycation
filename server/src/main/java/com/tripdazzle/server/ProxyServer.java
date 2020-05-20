@@ -39,7 +39,7 @@ public class ProxyServer {
     /** retrieve a trip from the server
      * @param reviewIds ids of the reviews to fetch
      */
-    public List<ReviewData> getReviewById(List<Integer> reviewIds) throws ServerError{
+    public List<ReviewData> getReviewsById(List<Integer> reviewIds) throws ServerError{
         return db.getReviewsById(reviewIds);
     }
 }

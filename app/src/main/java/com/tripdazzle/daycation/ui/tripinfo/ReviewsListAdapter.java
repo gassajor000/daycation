@@ -28,6 +28,7 @@ public class ReviewsListAdapter extends RecyclerView.Adapter {
     private int visibleThreshold = 5;
     private int lastVisibleItem, totalItemCount;
     private boolean loading;
+    private boolean allReviewsLoaded = false;
     private OnLoadMoreListener onLoadMoreListener;
 
     // Call back after asynchronous load completes
@@ -56,7 +57,7 @@ public class ReviewsListAdapter extends RecyclerView.Adapter {
                             totalItemCount = linearLayoutManager.getItemCount();
                             lastVisibleItem = linearLayoutManager
                                     .findLastVisibleItemPosition();
-                            if (!loading
+                            if (!loading && !allReviewsLoaded
                                     && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
                                 // End has been reached
                                 // Do something
@@ -68,6 +69,14 @@ public class ReviewsListAdapter extends RecyclerView.Adapter {
                         }
                     });
         }
+    }
+
+    public void setAllReviewsLoaded(){
+        allReviewsLoaded = true;
+    }
+
+    public void setLoading(Boolean loading){
+        this.loading = loading;
     }
 
     @Override
@@ -104,10 +113,6 @@ public class ReviewsListAdapter extends RecyclerView.Adapter {
         } else {
             ((ProgressViewHolder) holder).progressBar.setIndeterminate(true);
         }
-    }
-
-    public void setLoaded() {
-        loading = false;
     }
 
     @Override

@@ -56,4 +56,8 @@ public class TripInfoViewModel extends ViewModel{
     public void addReviews(List<Review> newReviews) {
         reviews.addAll(newReviews);
     }
+
+    public Integer numReviewsLoaded(){
+        return reviews.size();
+    }
 }

@@ -2,7 +2,6 @@ package com.tripdazzle.daycation.ui.tripinfo;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +22,6 @@ import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ImagesSubscriber, DataModel.ReviewsSubscriber, ReviewsListAdapter.OnLoadMoreListener {
@@ -33,7 +29,8 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     private DataModel model = new DataModel();
     private RecyclerView mRecyclerView;
     private ReviewsListAdapter mReviewsAdapter;
-    protected Handler handler;
+
+    private final int reviewsBatchSize = 5;     // Number of reviews to fetch at a time
 
     public static TripInfoFragment newInstance() {
         return new TripInfoFragment();
@@ -54,15 +51,6 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mRecyclerView = (RecyclerView) view.findViewById(R.id.tripIonfoReviewsList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        // TODO Remove
-        Date date = new Date();
-        mViewModel.addReviews(new ArrayList<Review>(Arrays.asList(
-                new Review(301, "person1", (float) 1.0, date, "This is my comment"),
-                new Review(302, "person2", (float) 2.0, date, "This is my comment"),
-                new Review(303, "person3", (float) 3.0, date, "This is my comment"),
-                new Review(304, "person4", (float) 4.0, date, "This is my comment")
-        )));
-
         mReviewsAdapter = new ReviewsListAdapter(mViewModel.getReviews(), mRecyclerView, this);
         mRecyclerView.setAdapter(mReviewsAdapter);
 
@@ -79,22 +67,34 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     /*load more reviews from the server*/
     @Override
     public void onLoadMore() {
-        mViewModel.setLoadingReviews(true);
-        mReviewsAdapter.notifyItemInserted(mViewModel.getReviews().size() - 1);
+        int numLoaded =  mViewModel.numReviewsLoaded();
 
-        model.getReviewsByIds(new ArrayList<Integer>(), this);
+        mViewModel.setLoadingReviews(true);
+        mReviewsAdapter.notifyItemInserted(mViewModel.numReviewsLoaded() - 1);
+        mReviewsAdapter.setLoading(true);
+
+        Trip trip = mViewModel.getTrip().getValue();
+        if(trip.reviews.size() > numLoaded + reviewsBatchSize){   // Load 10 more
+            model.getReviewsByIds(trip.reviews.subList(numLoaded, numLoaded + reviewsBatchSize), this);
+        } else { // load all remaining
+            model.getReviewsByIds(trip.reviews.subList(numLoaded, trip.reviews.size()), this);
+        }
     }
 
     @Override
     public void onGetReviewsByIds(List<Review> reviews) {
         mViewModel.setLoadingReviews(false);
-        Integer origSize = mViewModel.getReviews().size();
+        Integer origSize = mViewModel.numReviewsLoaded();
         mReviewsAdapter.notifyItemRemoved(origSize);
 
         mViewModel.addReviews(reviews);
         mReviewsAdapter.notifyItemRangeInserted(origSize + 1, reviews.size());
 
-        mReviewsAdapter.setLoaded();
+        mReviewsAdapter.setLoading(false);
+
+        if(reviews.size() < reviewsBatchSize){      // Set all loaded so no new loads are triggered
+            mReviewsAdapter.setAllReviewsLoaded();
+        }
     }
 
     private class ToggleFavoriteListener implements View.OnClickListener{
@@ -115,6 +115,9 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
 
         // get main image
         model.getImageById(trip.mainImageId, this);
+
+        // get reviews
+        onLoadMore();
     }
 
     @Override

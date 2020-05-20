@@ -16,8 +16,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 public class DataModel {
@@ -188,16 +186,10 @@ public class DataModel {
             } else {
                 List<ReviewData> reviewsData;
                 try {
-//                    reviewsData = server.getReviewById(reviewIds[0]); TODO reeneable
                     Thread.sleep(2000);
-                    Date date = new Date();
-                    reviewsData = new ArrayList<>(Arrays.asList(
-                            new ReviewData(305, "person6", (float) 4.0, date, "This is my comment"),
-                            new ReviewData(306, "person7", (float) 5.0, date, "This is my comment"),
-                            new ReviewData(307, "person8", (float) 1.0, date, "This is my comment")
-                    ));
+                    reviewsData = server.getReviewsById(reviewIds[0]);
 
-                } catch (InterruptedException serverError) {
+                } catch (InterruptedException | ServerError serverError) {
                     serverError.printStackTrace();
                     return null;
                 }

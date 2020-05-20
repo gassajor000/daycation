@@ -1,5 +1,7 @@
 package com.tripdazzle.server.datamodels;
 
+import java.util.List;
+
 public class TripData {
     public final String title;
     public final int id;
@@ -8,9 +10,9 @@ public class TripData {
     public final int mainImageId;
     public final ActivityData[] activities;
     public final Float reviewsAverage;
-    public final Integer numReviews;
+    public final List<Integer> reviews;
 
-    public TripData(String title, int id, String creatorId, String description, int mainImageId, ActivityData[] activities, Float reviewsAverage, Integer numReviews) {
+    public TripData(String title, int id, String creatorId, String description, int mainImageId, ActivityData[] activities, Float reviewsAverage, List<Integer> reviews) {
         this.title = title;
         this.id = id;
         this.creatorId = creatorId;
@@ -18,6 +20,6 @@ public class TripData {
         this.mainImageId = mainImageId;
         this.activities = activities;
         this.reviewsAverage = reviewsAverage;
-        this.numReviews = numReviews;
+        this.reviews = reviews;
     }
 }
