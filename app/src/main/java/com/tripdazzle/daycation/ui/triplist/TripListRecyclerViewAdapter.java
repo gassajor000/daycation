@@ -11,20 +11,20 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tripdazzle.daycation.BR;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
-import com.tripdazzle.daycation.ui.triplist.TripListFragment.OnListFragmentInteractionListener;
+import com.tripdazzle.daycation.ui.triplist.TripListFragment.OnTripListFragmentInteractionListener;
 
 import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Trip} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
+ * specified {@link OnTripListFragmentInteractionListener}.
  */
 public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRecyclerViewAdapter.ViewHolder> {
 
     private final List<Trip> mValues;
-    private final OnListFragmentInteractionListener mListener;
+    private final OnTripListFragmentInteractionListener mListener;
 
-    public TripListRecyclerViewAdapter(List<Trip> items, OnListFragmentInteractionListener listener) {
+    public TripListRecyclerViewAdapter(List<Trip> items, OnTripListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -47,7 +47,7 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onTripInteraction(holder.mItem);
                 }
             }
         });
