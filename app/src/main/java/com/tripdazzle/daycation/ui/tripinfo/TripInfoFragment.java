@@ -1,34 +1,36 @@
 package com.tripdazzle.daycation.ui.tripinfo;
 
-import androidx.databinding.DataBindingUtil;
-import androidx.lifecycle.ViewModelProviders;
-
+import android.graphics.Bitmap;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
-import com.tripdazzle.daycation.models.Activity;
+import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
-import com.tripdazzle.server.datamodels.ActivityType;
 
-public class TripInfoFragment extends Fragment {
-    private Activity[] activities = {
-            new Activity(ActivityType.HIKING, "Rose Canyon", "Hike Rose Canyon"),
-            new Activity(ActivityType.ICE_CREAM, "Shake Shack", "Get Ice cream at Shake Shack"),
-            new Activity(ActivityType.BEACH, "Mission Beach", "Go Swimming at Mission Beach")
-    };
-    Trip defaultTrip = new Trip("SD Vacay", 123, "gassajor",
-            "Fun Trip around the San Diego Bay.", "img1233", activities);
+import java.util.List;
 
+public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ImagesSubscriber, DataModel.ReviewsSubscriber, ReviewsListAdapter.OnLoadMoreListener {
     private TripInfoViewModel mViewModel;
+    private DataModel model = new DataModel();
+    private RecyclerView mRecyclerView;
+    private ReviewsListAdapter mReviewsAdapter;
+
+    private final int reviewsBatchSize = 5;     // Number of reviews to fetch at a time
 
     public static TripInfoFragment newInstance() {
         return new TripInfoFragment();
@@ -37,16 +39,93 @@ public class TripInfoFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        mViewModel = ViewModelProviders.of(this).get(TripInfoViewModel.class);
+
         FragmentTripInfoBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_trip_info, container, false);
-        binding.setTrip(defaultTrip);
-        return binding.getRoot();
+        binding.setViewModel(mViewModel);
+        binding.setLifecycleOwner(this);
+        View view = binding.getRoot();
+
+        view.findViewById(R.id.tripInfoToggleFavorite).setOnClickListener(new ToggleFavoriteListener());
+
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.tripIonfoReviewsList);
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        mReviewsAdapter = new ReviewsListAdapter(mViewModel.getReviews(), mRecyclerView, this);
+        mRecyclerView.setAdapter(mReviewsAdapter);
+
+        model.initialize(getContext());
+        return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(TripInfoViewModel.class);
-        // TODO mViewModel.loadTrip(defaultTrip);
+        model.getTripById(333, this);
     }
 
+    /*load more reviews from the server*/
+    @Override
+    public void onLoadMore() {
+        int numLoaded =  mViewModel.numReviewsLoaded();
+
+        mViewModel.setLoadingReviews(true);
+        mReviewsAdapter.notifyItemInserted(mViewModel.numReviewsLoaded() - 1);
+        mReviewsAdapter.setLoading(true);
+
+        Trip trip = mViewModel.getTrip().getValue();
+        if(trip.reviews.size() > numLoaded + reviewsBatchSize){   // Load 10 more
+            model.getReviewsByIds(trip.reviews.subList(numLoaded, numLoaded + reviewsBatchSize), this);
+        } else { // load all remaining
+            model.getReviewsByIds(trip.reviews.subList(numLoaded, trip.reviews.size()), this);
+        }
+    }
+
+    @Override
+    public void onGetReviewsByIds(List<Review> reviews) {
+        mViewModel.setLoadingReviews(false);
+        Integer origSize = mViewModel.numReviewsLoaded();
+        mReviewsAdapter.notifyItemRemoved(origSize);
+
+        mViewModel.addReviews(reviews);
+        mReviewsAdapter.notifyItemRangeInserted(origSize + 1, reviews.size());
+
+        mReviewsAdapter.setLoading(false);
+
+        if(reviews.size() < reviewsBatchSize){      // Set all loaded so no new loads are triggered
+            mReviewsAdapter.setAllReviewsLoaded();
+        }
+    }
+
+    private class ToggleFavoriteListener implements View.OnClickListener{
+        public void onClick(View view){
+            Log.i("TripInfoFragment", "Favorite " + mViewModel.getInFavorites().getValue());
+        }
+    };
+
+    @Override
+    public void onSuccess(String message) {}
+
+    @Override
+    public void onError(String message) {}
+
+    @Override
+    public void onGetTripById(Trip trip) {
+        mViewModel.setTrip(trip);
+
+        // get main image
+        model.getImageById(trip.mainImageId, this);
+
+        // get reviews
+        onLoadMore();
+    }
+
+    @Override
+    public void onGetImageById(Bitmap image, Integer imageId) {
+        Trip trip = mViewModel.getTrip().getValue();
+        if(trip != null && imageId == trip.mainImageId){
+            ImageView mainImageView = (ImageView) this.getView().findViewById(R.id.tripInfoMainImageView);
+            mainImageView.setImageBitmap(image);
+        }
+    }
 }
