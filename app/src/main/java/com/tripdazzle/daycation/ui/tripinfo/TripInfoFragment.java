@@ -1,5 +1,6 @@
 package com.tripdazzle.daycation.ui.tripinfo;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
@@ -26,11 +27,11 @@ import java.util.List;
 
 public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ImagesSubscriber, DataModel.ReviewsSubscriber, ReviewsListAdapter.OnLoadMoreListener {
     private TripInfoViewModel mViewModel;
-    private DataModel model = new DataModel();
     private RecyclerView mRecyclerView;
     private ReviewsListAdapter mReviewsAdapter;
 
     private final int reviewsBatchSize = 5;     // Number of reviews to fetch at a time
+    private DataModel mModel;
 
     public static TripInfoFragment newInstance() {
         return new TripInfoFragment();
@@ -54,7 +55,6 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mReviewsAdapter = new ReviewsListAdapter(mViewModel.getReviews(), mRecyclerView, this);
         mRecyclerView.setAdapter(mReviewsAdapter);
 
-        model.initialize(getContext());
         return view;
     }
 
@@ -62,7 +62,18 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         int tripId = TripInfoFragmentArgs.fromBundle(getArguments()).getTripId();
-        model.getTripById(tripId, this);
+        mModel.getTripById(tripId, this);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof DataModel.DataManager) {
+            mModel = ((DataModel.DataManager) context).getModel();
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement DataModel.DataManager");
+        }
     }
 
     /*load more reviews from the server*/
@@ -81,9 +92,9 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
 
         Trip trip = mViewModel.getTrip().getValue();
         if(trip.reviews.size() > numLoaded + reviewsBatchSize){   // Load 10 more
-            model.getReviewsByIds(trip.reviews.subList(numLoaded, numLoaded + reviewsBatchSize), this);
+            mModel.getReviewsByIds(trip.reviews.subList(numLoaded, numLoaded + reviewsBatchSize), this);
         } else { // load all remaining
-            model.getReviewsByIds(trip.reviews.subList(numLoaded, trip.reviews.size()), this);
+            mModel.getReviewsByIds(trip.reviews.subList(numLoaded, trip.reviews.size()), this);
         }
     }
 
@@ -120,7 +131,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mViewModel.setTrip(trip);
 
         // get main image
-        model.getImageById(trip.mainImageId, this);
+        mModel.getImageById(trip.mainImageId, this);
 
         // get reviews
         onLoadMore();

@@ -20,9 +20,10 @@ import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.profile.ProfileFragmentDirections;
 import com.tripdazzle.daycation.ui.triplist.TripListFragment;
 
-public class MainActivity extends AppCompatActivity  implements TripListFragment.OnTripListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity  implements TripListFragment.OnTripListFragmentInteractionListener, DataModel.DataManager {
 
     private AppBarConfiguration mAppBarConfiguration;
+    private DataModel mModel = new DataModel();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +50,8 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
+
+        mModel.initialize(this);
     }
 
     @Override
@@ -80,5 +83,10 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
         }
 
         navController.navigate(action);
+    }
+
+    @Override
+    public DataModel getModel() {
+        return mModel;
     }
 }

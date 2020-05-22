@@ -5,11 +5,11 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
+import com.tripdazzle.daycation.models.Profile;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.server.ProxyServer;
 import com.tripdazzle.server.ServerError;
-import com.tripdazzle.server.datamodels.ProfileData;
 import com.tripdazzle.server.datamodels.ReviewData;
 
 import java.io.File;
@@ -68,14 +68,25 @@ public class DataModel {
         new GetReviewsByIdsTask(callback).execute(reviewIds);
     }
 
-    public ProfileData getProfileById(String userId) throws ServerError {
-        return server.getProfileById(userId);
+    public Profile getProfileById(String userId) {
+        try{
+            return new Profile(server.getProfileById(userId));
+        }
+        catch (ServerError err){
+            err.printStackTrace();
+            return null;
+        }
     }
 
     /*
     * Asynchronous Tasks
     */
     // Interfaces
+    public interface DataManager {
+        /* Implemented by the main activity that serves as the keeper of the data model */
+        public DataModel getModel();
+    }
+
     public interface TaskContext{
         /** onSuccess: called on success of an async task
          * @param message Message to return*/

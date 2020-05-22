@@ -38,8 +38,8 @@
         tools:layout="@layout/fragment_profile" >
         <argument
             android:name="profileId"
-            app:argType="integer"
-            android:defaultValue="0" />
+            app:argType="string"
+            android:defaultValue="mscott" />
         <action
             android:id="@+id/actionNavProfileToTripInfo"
             app:destination="@id/nav_tripInfo" />
