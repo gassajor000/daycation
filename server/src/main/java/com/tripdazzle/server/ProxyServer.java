@@ -1,7 +1,9 @@
 package com.tripdazzle.server;
 
+import com.tripdazzle.server.datamodels.ProfileData;
 import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.TripData;
+import com.tripdazzle.server.fakedb.FakeDatabase;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -41,5 +43,12 @@ public class ProxyServer {
      */
     public List<ReviewData> getReviewsById(List<Integer> reviewIds) throws ServerError{
         return db.getReviewsById(reviewIds);
+    }
+
+    /** retrieve a trip from the server
+     * @param userId username of the profile to fetch
+     */
+    public ProfileData getProfileById(String userId) throws ServerError{
+        return db.getProfileById(userId);
     }
 }

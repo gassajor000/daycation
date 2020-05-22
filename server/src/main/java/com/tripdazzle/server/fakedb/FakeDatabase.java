@@ -1,7 +1,8 @@
-package com.tripdazzle.server;
+package com.tripdazzle.server.fakedb;
 
 import com.tripdazzle.server.datamodels.ActivityData;
 import com.tripdazzle.server.datamodels.ActivityType;
+import com.tripdazzle.server.datamodels.ProfileData;
 import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.TripData;
 
@@ -12,19 +13,22 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
-class FakeDatabase {
+public class FakeDatabase {
     private HashMap<Integer, String> fileNames;
     private HashMap<Integer, TripData> trips = new HashMap<>();
     private HashMap<Integer, ReviewData> reviews = new HashMap<>();
+    private HashMap<String, FakeUser> users = new HashMap<>();
 
     private String dbFilePath;
 
-    FakeDatabase(String dbFilePath) {
+    public FakeDatabase(String dbFilePath) {
         this.dbFilePath = dbFilePath;
         this.fileNames = new HashMap<>();
 
         // Images
         fileNames.put(444, "mission_bay.png");
+        fileNames.put(445, "mscott.png");
+        fileNames.put(446, "jhalpert.png");
 
         // Trips
         ActivityData[] activities = {
@@ -32,7 +36,7 @@ class FakeDatabase {
                 new ActivityData(ActivityType.ICE_CREAM, "Shake Shack", "Get Ice cream at Shake Shack"),
                 new ActivityData(ActivityType.BEACH, "Mission Beach", "Go Swimming at Mission Beach")
         };
-        trips.put(333, new TripData("SD Vacay", 333, "gassajor",
+        trips.put(333, new TripData("SD Vacay", 333, "mscott",
                 "Fun Trip around the San Diego Bay.",   444, activities,
                 (float) 3.7, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507,
                 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520))));
@@ -63,6 +67,10 @@ class FakeDatabase {
             put(519,  new ReviewData(519, "Michael Scott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 519"));
             put(520,  new ReviewData(520, "Michael Scott", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 520"));
         }});
+
+        // Users
+        users.put("mscott", new FakeUser("mscott", 445, "Michael", "Scott", "Scranton, PN", "password123", Arrays.asList(333), Arrays.asList(501, 506, 507, 508, 509, 510), new ArrayList<Integer>()));
+        users.put("jhalpert", new FakeUser("jhalpert", 446, "Jim", "Halpert", "Scranton, PN", "password123"));
     }
 
     public void setDbFilePath(String dbFilePath) {
@@ -74,16 +82,18 @@ class FakeDatabase {
      * @param imgId id of the image to fetch
      * @return Image file of the image with the matching id
      */
-    File getImageById(int imgId){
+    public File getImageById(int imgId){
         String fileName = fileNames.get(imgId);
         return new File(dbFilePath + "/" + fileName);
     }
 
-    TripData getTripById(int tripId){
+    public TripData getTripById(int tripId){
         return trips.get(tripId);
     }
 
-    List<ReviewData> getReviewsById(List<Integer> reviewIds){
+    public ProfileData getProfileById(String userId) { return users.get(userId).toProfile(); }
+
+    public List<ReviewData> getReviewsById(List<Integer> reviewIds){
         List<ReviewData> ret =  new ArrayList<>();
         for(Integer r: reviewIds){
             ret.add(reviews.get(r));

@@ -9,6 +9,7 @@ import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.server.ProxyServer;
 import com.tripdazzle.server.ServerError;
+import com.tripdazzle.server.datamodels.ProfileData;
 import com.tripdazzle.server.datamodels.ReviewData;
 
 import java.io.File;
@@ -26,7 +27,7 @@ public class DataModel {
         server.setDbLocation(localFilesDir);
 
         // copy demo images over
-        Integer[] images = {R.drawable.mission_bay};
+        Integer[] images = {R.drawable.mission_bay, R.drawable.mscott, R.drawable.jhalpert};
         for(Integer i: images){
             copyResources(context, localFilesDir, i);
         }
@@ -65,6 +66,10 @@ public class DataModel {
 
     public void getReviewsByIds(List<Integer> reviewIds, ReviewsSubscriber callback){
         new GetReviewsByIdsTask(callback).execute(reviewIds);
+    }
+
+    public ProfileData getProfileById(String userId) throws ServerError {
+        return server.getProfileById(userId);
     }
 
     /*
