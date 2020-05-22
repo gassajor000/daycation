@@ -61,7 +61,8 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        model.getTripById(333, this);
+        int tripId = TripInfoFragmentArgs.fromBundle(getArguments()).getTripId();
+        model.getTripById(tripId, this);
     }
 
     /*load more reviews from the server*/
@@ -70,7 +71,12 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         int numLoaded =  mViewModel.numReviewsLoaded();
 
         mViewModel.setLoadingReviews(true);
-        mReviewsAdapter.notifyItemInserted(mViewModel.numReviewsLoaded() - 1);
+        mRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                mReviewsAdapter.notifyItemInserted(mViewModel.numReviewsLoaded() - 1);
+            }
+        });
         mReviewsAdapter.setLoading(true);
 
         Trip trip = mViewModel.getTrip().getValue();

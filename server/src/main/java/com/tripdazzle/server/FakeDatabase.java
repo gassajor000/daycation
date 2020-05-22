@@ -36,6 +36,9 @@ class FakeDatabase {
                 "Fun Trip around the San Diego Bay.",   444, activities,
                 (float) 3.7, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507,
                 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520))));
+        trips.put(332, new TripData("La Jolla Trip", 332, "gassajor",
+                "Fun Trip in La Jolla.",   444, activities,
+                (float) 3.7, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
 
         // Reviews
         reviews.putAll(new HashMap<Integer, ReviewData>(){{

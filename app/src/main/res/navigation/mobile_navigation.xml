@@ -12,10 +12,7 @@
         tools:layout="@layout/fragment_home">
 
         <action
-            android:id="@+id/action_nav_home_to_nav_tripInfo"
-            app:destination="@id/nav_tripInfo" />
-        <action
-            android:id="@+id/action_nav_home_to_profileFragment"
+            android:id="@+id/actionOpenProfile"
             app:destination="@id/nav_profile" />
     </fragment>
 
@@ -29,10 +26,22 @@
         android:id="@+id/nav_tripInfo"
         android:name="com.tripdazzle.daycation.ui.tripinfo.TripInfoFragment"
         android:label="fragment_trip_info"
-        tools:layout="@layout/fragment_trip_info" />
+        tools:layout="@layout/fragment_trip_info" >
+        <argument
+            android:name="tripId"
+            app:argType="integer" />
+    </fragment>
     <fragment
         android:id="@+id/nav_profile"
         android:name="com.tripdazzle.daycation.ui.profile.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <argument
+            android:name="profileId"
+            app:argType="integer"
+            android:defaultValue="0" />
+        <action
+            android:id="@+id/actionNavProfileToTripInfo"
+            app:destination="@id/nav_tripInfo" />
+    </fragment>
 </navigation>

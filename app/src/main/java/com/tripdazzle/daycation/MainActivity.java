@@ -8,6 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -16,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.ui.profile.ProfileFragmentDirections;
 import com.tripdazzle.daycation.ui.triplist.TripListFragment;
 
 public class MainActivity extends AppCompatActivity  implements TripListFragment.OnTripListFragmentInteractionListener {
@@ -66,6 +68,17 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
     @Override
     public void onTripInteraction(Trip item) {
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        navController.navigate(R.id.nav_tripInfo);
+        NavDirections action;
+        switch (navController.getCurrentDestination().getId()){
+            case R.id.nav_profile: {
+                action = ProfileFragmentDirections.actionNavProfileToTripInfo(item.id);
+                break;
+            }
+            default: {
+                throw new RuntimeException("Unknown destination: " + navController.getCurrentDestination().toString());
+            }
+        }
+
+        navController.navigate(action);
     }
 }
