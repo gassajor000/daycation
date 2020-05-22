@@ -1,10 +1,12 @@
 package com.tripdazzle.daycation.ui.profile;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,7 +19,7 @@ import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentProfileBinding;
 import com.tripdazzle.daycation.models.Profile;
 
-public class ProfileFragment extends Fragment implements DataModel.ProfilesSubscriber {
+public class ProfileFragment extends Fragment implements DataModel.ProfilesSubscriber, DataModel.ImagesSubscriber {
 
     private ProfileViewModel mViewModel;
     private DataModel mModel;
@@ -65,5 +67,15 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
     @Override
     public void onGetProfileById(Profile profile) {
         mViewModel.setProfile(profile);
+        mModel.getImageById(profile.profileImageId, this);
+    }
+
+    @Override
+    public void onGetImageById(Bitmap image, Integer imageId) {
+        Profile profile = mViewModel.getProfile().getValue();
+        if(profile != null && imageId.equals(profile.profileImageId)){
+            ImageView profileImage = (ImageView) this.getView().findViewById(R.id.profileImage);
+            profileImage.setImageBitmap(image);
+        }
     }
 }
