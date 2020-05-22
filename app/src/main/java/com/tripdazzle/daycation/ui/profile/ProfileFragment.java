@@ -15,8 +15,9 @@ import androidx.lifecycle.ViewModelProviders;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentProfileBinding;
+import com.tripdazzle.daycation.models.Profile;
 
-public class ProfileFragment extends Fragment {
+public class ProfileFragment extends Fragment implements DataModel.ProfilesSubscriber {
 
     private ProfileViewModel mViewModel;
     private DataModel mModel;
@@ -41,7 +42,7 @@ public class ProfileFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         String userId = ProfileFragmentArgs.fromBundle(getArguments()).getProfileId();
-        mViewModel.setProfile(mModel.getProfileById(userId));
+        mModel.getProfileById(userId, this);
     }
 
     @Override
@@ -55,4 +56,14 @@ public class ProfileFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onSuccess(String message) {}
+
+    @Override
+    public void onError(String message) {}
+
+    @Override
+    public void onGetProfileById(Profile profile) {
+        mViewModel.setProfile(profile);
+    }
 }

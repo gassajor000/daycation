@@ -68,14 +68,8 @@ public class DataModel {
         new GetReviewsByIdsTask(callback).execute(reviewIds);
     }
 
-    public Profile getProfileById(String userId) {
-        try{
-            return new Profile(server.getProfileById(userId));
-        }
-        catch (ServerError err){
-            err.printStackTrace();
-            return null;
-        }
+    public void getProfileById(String userId, ProfilesSubscriber callback) {
+        new GetProfileByIdTask(callback).execute(userId);
     }
 
     /*
@@ -108,6 +102,13 @@ public class DataModel {
          * @param imageId Id of the image fetched
          * */
         void onGetImageById(Bitmap image, Integer imageId);
+    }
+
+    public interface ProfilesSubscriber extends TaskContext {
+        /** called on fetch of a profile by id
+         * @param profile Profile fetched from server
+         * */
+        void onGetProfileById(Profile profile);
     }
 
     public interface ReviewsSubscriber extends TaskContext {
@@ -226,6 +227,41 @@ public class DataModel {
             } else {
                 // onSuccess()?
                 context.onGetReviewsByIds(result);
+            }
+        }
+    }
+
+    private class GetProfileByIdTask extends AsyncTask<String, Void, Profile> {
+        /** Application Context*/
+        private ProfilesSubscriber context;
+
+        private GetProfileByIdTask(ProfilesSubscriber context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Profile doInBackground(String ... userIds) {
+            if (userIds.length > 1){
+                return null;
+            } else {
+                try {
+                    return new Profile(server.getProfileById(userIds[0]));
+
+                } catch (ServerError serverError) {
+                    serverError.printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Profile result) {
+            super.onPostExecute(result);
+            if(result == null){
+                context.onError("Server Error");
+            } else {
+                // onSuccess()?
+                context.onGetProfileById(result);
             }
         }
     }
