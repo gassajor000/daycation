@@ -80,7 +80,11 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
         public void bind(Trip trip, Bitmap image){
             mItem = trip;
             binding.setVariable(BR.trip, trip);
-            ((ImageView) itemView.findViewById(R.id.tripCardMainImage)).setImageBitmap(image);
+            if(image != null){
+                ((ImageView) itemView.findViewById(R.id.tripCardMainImage)).setImageBitmap(image);
+            } else {
+                ((ImageView) itemView.findViewById(R.id.tripCardMainImage)).setImageResource(R.drawable.side_nav_bar);
+            }
             binding.executePendingBindings();
         }
 

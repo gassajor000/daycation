@@ -30,7 +30,7 @@ public class DataModel {
         server.setDbLocation(localFilesDir);
 
         // copy demo images over
-        Integer[] images = {R.drawable.mission_bay, R.drawable.mscott, R.drawable.jhalpert};
+        Integer[] images = {R.drawable.mission_bay, R.drawable.balboa, R.drawable.lajolla, R.drawable.zoo, R.drawable.mscott, R.drawable.jhalpert};
         for(Integer i: images){
             copyResources(context, localFilesDir, i);
         }

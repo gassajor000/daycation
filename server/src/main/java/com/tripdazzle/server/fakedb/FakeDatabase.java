@@ -26,9 +26,12 @@ public class FakeDatabase {
         this.fileNames = new HashMap<>();
 
         // Images
-        fileNames.put(444, "mission_bay.png");
-        fileNames.put(445, "mscott.png");
-        fileNames.put(446, "jhalpert.png");
+        fileNames.put(401, "mission_bay.png");
+        fileNames.put(402, "balboa.png");
+        fileNames.put(403, "lajolla.png");
+        fileNames.put(404, "zoo.png");
+        fileNames.put(405, "mscott.png");
+        fileNames.put(406, "jhalpert.png");
 
         // Trips
         ActivityData[] activities = {
@@ -40,17 +43,17 @@ public class FakeDatabase {
                 new ActivityData(ActivityType.BEACH, "Black's Beach", "Go surfing at Black's Beach")
         };
         trips.put(301, new TripData("SD Vacay", 301, "mscott","Fun Trip around the San Diego Bay.",
-                444, new ActivityData[]{activities[0], activities[1], activities[2]},
+                401, new ActivityData[]{activities[0], activities[1], activities[2]},
                 (float) 3.7, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507,
                 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520))));
         trips.put(302, new TripData("La Jolla Trip", 302, "mscott","Fun Trip in La Jolla.",
-                444, new ActivityData[]{activities[2], activities[3], activities[4]},
+                403, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 4.2, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
         trips.put(303, new TripData("Balboa Park", 303, "mscott","A day at Balboa Park.",
-                444, new ActivityData[]{activities[2], activities[3], activities[4]},
+                402, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 4.5, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
         trips.put(304, new TripData("Zoo Trip", 304, "mscott","Things to do around the Zoo",
-                444, new ActivityData[]{activities[2], activities[3], activities[4]},
+                404, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 2.3, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
 
 
@@ -79,8 +82,8 @@ public class FakeDatabase {
         }});
 
         // Users
-        users.put("mscott", new FakeUser("mscott", 445, "Michael", "Scott", "Scranton, PA", "password123", Arrays.asList(301, 302, 303, 304), Arrays.asList(501, 506, 507, 508, 509, 510), new ArrayList<Integer>()));
-        users.put("jhalpert", new FakeUser("jhalpert", 446, "Jim", "Halpert", "Scranton, PA", "password123"));
+        users.put("mscott", new FakeUser("mscott", 405, "Michael", "Scott", "Scranton, PA", "password123", Arrays.asList(301, 302, 303, 304), Arrays.asList(501, 506, 507, 508, 509, 510), new ArrayList<Integer>()));
+        users.put("jhalpert", new FakeUser("jhalpert", 406, "Jim", "Halpert", "Scranton, PA", "password123"));
     }
 
     public void setDbFilePath(String dbFilePath) {
@@ -88,7 +91,7 @@ public class FakeDatabase {
     }
 
 
-    /** Retrieve a bitmap image by ID
+    /** Retrieve a bitmap image by ID. Not found images come back null.
      * @param imgIds id of the image to fetch
      * @return Image file of the image with the matching id
      */
@@ -96,8 +99,11 @@ public class FakeDatabase {
         List<File> imageFiles = new ArrayList<>();
         for(Integer id: imgIds){
             String fileName = fileNames.get(id);
-            imageFiles.add(new File(dbFilePath + "/" + fileName));
-
+            if (fileName == null){
+                imageFiles.add(null);
+            } else {
+                imageFiles.add(new File(dbFilePath + "/" + fileName));
+            }
         }
         return imageFiles;
     }

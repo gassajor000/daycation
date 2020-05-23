@@ -27,7 +27,11 @@ public class ProxyServer {
         List<InputStream> imageData = new ArrayList<>();
         try {
             for(File f: imgFiles){
-                imageData.add(new FileInputStream(f));
+                if (f == null){
+                    imageData.add(null);
+                } else {
+                    imageData.add(new FileInputStream(f));
+                }
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();

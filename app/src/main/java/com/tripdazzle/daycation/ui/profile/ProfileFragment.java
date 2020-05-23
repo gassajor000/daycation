@@ -74,8 +74,8 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
     @Override
     public void onGetProfileById(Profile profile) {
         mViewModel.setProfile(profile);
-        mModel.getImageById(profile.profileImageId, this);
         mModel.getTripsByIds(profile.createdTrips, this);
+        mModel.getImageById(profile.profileImageId, this);
     }
 
     @Override
