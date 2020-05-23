@@ -1,8 +1,11 @@
 package com.tripdazzle.daycation.ui.triplist;
 
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -13,20 +16,18 @@ import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.triplist.TripListFragment.OnTripListFragmentInteractionListener;
 
-import java.util.List;
-
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Trip} and makes a call to the
  * specified {@link OnTripListFragmentInteractionListener}.
  */
 public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Trip> mValues;
     private final OnTripListFragmentInteractionListener mListener;
+    private TripListViewModel mViewModel;
 
-    public TripListRecyclerViewAdapter(List<Trip> items, OnTripListFragmentInteractionListener listener) {
-        mValues = items;
+    public TripListRecyclerViewAdapter(TripListViewModel viewModel, OnTripListFragmentInteractionListener listener) {
         mListener = listener;
+        mViewModel = viewModel;
     }
 
     @Override
@@ -39,7 +40,15 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.bind(mValues.get(position));
+        Trip trip = mViewModel.getTrips().getValue().get(position);
+
+        Bitmap bitmap = mViewModel.getImages().getValue().get(trip.mainImageId);
+        if (bitmap != null){
+            holder.bind(trip, bitmap);
+        } else{
+            holder.bind(trip, null);
+        }
+
 
         holder.binding.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -55,21 +64,23 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mViewModel.getTrips().getValue().size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final ViewDataBinding binding;
         public Trip mItem;
+        public BitmapDrawable mImage;
 
         public ViewHolder(ViewDataBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bind(Trip trip){
+        public void bind(Trip trip, Bitmap image){
             mItem = trip;
             binding.setVariable(BR.trip, trip);
+            ((ImageView) itemView.findViewById(R.id.tripCardMainImage)).setImageBitmap(image);
             binding.executePendingBindings();
         }
 

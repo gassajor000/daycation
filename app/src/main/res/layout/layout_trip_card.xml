@@ -18,7 +18,7 @@
             android:layout_height="wrap_content">
 
             <ImageView
-                android:id="@+id/tripMainImage"
+                android:id="@+id/tripCardMainImage"
                 android:layout_width="110dp"
                 android:layout_height="70dp"
                 android:layout_marginStart="8dp"
@@ -37,7 +37,7 @@
                 android:gravity="start"
                 android:orientation="vertical"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/tripMainImage"
+                app:layout_constraintStart_toEndOf="@+id/tripCardMainImage"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
