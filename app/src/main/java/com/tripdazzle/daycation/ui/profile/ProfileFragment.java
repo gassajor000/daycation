@@ -1,7 +1,6 @@
 package com.tripdazzle.daycation.ui.profile;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentProfileBinding;
+import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Profile;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
@@ -79,14 +79,15 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
     }
 
     @Override
-    public void onGetImagesById(List<Bitmap> images, List<Integer> imageIds) {
+    public void onGetImagesById(List<BitmapImage> images) {
         Profile profile = mViewModel.getProfile().getValue();
-        if (profile == null || images.size() != 1 || imageIds.size() != 1){ return; }
+        if (profile == null){ return; }
 
-        // Set main profile image
-        if(imageIds.get(0).equals(profile.profileImageId)){
-            ImageView profileImage = (ImageView) this.getView().findViewById(R.id.profileImage);
-            profileImage.setImageBitmap(images.get(0));
+        for(BitmapImage img: images){
+            if(img.id.equals(profile.profileImageId)){
+                ImageView profileImage = (ImageView) this.getView().findViewById(R.id.profileImage);
+                profileImage.setImageBitmap(img.image);
+            }
         }
     }
 

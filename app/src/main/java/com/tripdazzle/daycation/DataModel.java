@@ -1,10 +1,10 @@
 package com.tripdazzle.daycation;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
+import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Profile;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class DataModel {
@@ -107,9 +108,9 @@ public class DataModel {
 
     public interface ImagesSubscriber extends TaskContext {
         /** called on fetch of an image by id
-         * @param images Bitmap returned by query
-         * @param imageIds Id of the image fetched */
-        void onGetImagesById(List<Bitmap> images, List<Integer> imageIds);
+         * @param images BitmapImage returned by query
+         * */
+        void onGetImagesById(List<BitmapImage> images);
     }
 
     public interface ProfilesSubscriber extends TaskContext {
@@ -162,7 +163,7 @@ public class DataModel {
         }
     }
 
-    private class GetImagesByIdsTask extends AsyncTask<List<Integer>, Void, List<Bitmap>> {
+    private class GetImagesByIdsTask extends AsyncTask<List<Integer>, Void, List<BitmapImage>> {
         /** Application Context*/
         private ImagesSubscriber context;
         private List<Integer> ids;
@@ -173,16 +174,19 @@ public class DataModel {
         }
 
         @Override
-        protected List<Bitmap> doInBackground(List<Integer> ... imageIds) {
+        protected List<BitmapImage> doInBackground(List<Integer> ... imageIds) {
             if (imageIds.length > 1){
                 return null;
             } else {
                 this.ids = imageIds[0];
                 try {
                     List<InputStream> imageData = server.getImagesById(imageIds[0]);
-                    List<Bitmap> images = new ArrayList<>();
-                    for (InputStream s : imageData) {
-                        images.add(BitmapFactory.decodeStream(s));
+                    List<BitmapImage> images = new ArrayList<>();
+
+                    Iterator<Integer> id = imageIds[0].iterator();
+                    Iterator<InputStream> stream = imageData.iterator();
+                    while(id.hasNext() && stream.hasNext()) {
+                        images.add(new BitmapImage(BitmapFactory.decodeStream(stream.next()), id.next()));
                     }
                     return images;
                 } catch (ServerError serverError) {
@@ -193,7 +197,7 @@ public class DataModel {
         }
 
         @Override
-        protected void onPostExecute(List<Bitmap> result) {
+        protected void onPostExecute(List<BitmapImage> result) {
             super.onPostExecute(result);
             if(ids.size() == 0){
                 context.onError("No ids provided");
@@ -203,7 +207,7 @@ public class DataModel {
                 context.onError(String.format("Incorrect number of images returned! Expecting %d, got %d", ids.size(), result.size()));
             } else {
                 // onSuccess()?
-                context.onGetImagesById(result, ids);
+                context.onGetImagesById(result);
             }
         }
     }

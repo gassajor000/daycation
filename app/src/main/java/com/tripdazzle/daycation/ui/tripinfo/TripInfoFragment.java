@@ -1,7 +1,6 @@
 package com.tripdazzle.daycation.ui.tripinfo;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,10 +19,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
+import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 
-import java.util.Iterator;
 import java.util.List;
 
 public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ImagesSubscriber, DataModel.ReviewsSubscriber, ReviewsListAdapter.OnLoadMoreListener {
@@ -144,18 +143,14 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     }
 
     @Override
-    public void onGetImagesById(List<Bitmap> images, List<Integer> imageIds) {
+    public void onGetImagesById(List<BitmapImage> images) {
         Trip trip = mViewModel.getTrip().getValue();
         if (trip == null){ return; }
-        Iterator<Bitmap> itImg = images.iterator();
-        Iterator<Integer> itId = imageIds.iterator();
 
-        while (itImg.hasNext() && itId.hasNext()){
-            Integer id = itId.next();
-            Bitmap img = itImg.next();
-            if(id == trip.mainImageId){
+        for(BitmapImage img: images){
+            if(img.id == trip.mainImageId){
                 ImageView mainImageView = (ImageView) this.getView().findViewById(R.id.tripInfoMainImageView);
-                mainImageView.setImageBitmap(img);
+                mainImageView.setImageBitmap(img.image);
             }
         }
     }
