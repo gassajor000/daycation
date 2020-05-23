@@ -1,12 +1,15 @@
 package com.tripdazzle.server;
 
+import com.tripdazzle.server.datamodels.ProfileData;
 import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.TripData;
+import com.tripdazzle.server.fakedb.FakeDatabase;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProxyServer {
@@ -17,23 +20,31 @@ public class ProxyServer {
     }
 
     /** retrieve an image from the server
-     * @param imageId id of the image to fetch
+     * @param imageIds id of the image to fetch
      */
-    public InputStream getImageById(int imageId) throws ServerError {
-        File imgFile = db.getImageById(imageId);
+    public List<InputStream> getImagesById(List<Integer> imageIds) throws ServerError {
+        List<File> imgFiles = db.getImagesById(imageIds);
+        List<InputStream> imageData = new ArrayList<>();
         try {
-            return new FileInputStream(imgFile);
+            for(File f: imgFiles){
+                if (f == null){
+                    imageData.add(null);
+                } else {
+                    imageData.add(new FileInputStream(f));
+                }
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new ServerError(e);
         }
+        return imageData;
     }
 
     /** retrieve a trip from the server
-     * @param tripId id of the trip to fetch
+     * @param tripIds ids of the trip to fetch
      */
-    public TripData getTripById(int tripId){
-        return db.getTripById(tripId);
+    public List<TripData> getTripsById(List<Integer> tripIds){
+        return db.getTripsById(tripIds);
     }
 
     /** retrieve a trip from the server
@@ -41,5 +52,12 @@ public class ProxyServer {
      */
     public List<ReviewData> getReviewsById(List<Integer> reviewIds) throws ServerError{
         return db.getReviewsById(reviewIds);
+    }
+
+    /** retrieve a trip from the server
+     * @param userId username of the profile to fetch
+     */
+    public ProfileData getProfileById(String userId) throws ServerError{
+        return db.getProfileById(userId);
     }
 }

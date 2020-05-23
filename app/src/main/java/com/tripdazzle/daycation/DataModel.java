@@ -1,21 +1,25 @@
 package com.tripdazzle.daycation;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
+import com.tripdazzle.daycation.models.BitmapImage;
+import com.tripdazzle.daycation.models.Profile;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.server.ProxyServer;
 import com.tripdazzle.server.ServerError;
 import com.tripdazzle.server.datamodels.ReviewData;
+import com.tripdazzle.server.datamodels.TripData;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class DataModel {
@@ -26,7 +30,7 @@ public class DataModel {
         server.setDbLocation(localFilesDir);
 
         // copy demo images over
-        Integer[] images = {R.drawable.mission_bay};
+        Integer[] images = {R.drawable.mission_bay, R.drawable.balboa, R.drawable.lajolla, R.drawable.zoo, R.drawable.mscott, R.drawable.jhalpert};
         for(Integer i: images){
             copyResources(context, localFilesDir, i);
         }
@@ -56,21 +60,37 @@ public class DataModel {
 
     /* Data getters/setters*/
     public void getImageById(int imageId, ImagesSubscriber callback) {
-        new GetImageByIdTask(callback).execute(imageId);
+        new GetImagesByIdsTask(callback).execute(Collections.singletonList(imageId));
+    }
+    public void getImagesByIds(List<Integer> imageIds, ImagesSubscriber callback) {
+        new GetImagesByIdsTask(callback).execute(imageIds);
     }
 
     public void getTripById(int tripId, TripsSubscriber callback){
-        new GetTripByIdTask(callback).execute(tripId);
+        new GetTripsByIdsTask(callback).execute(Collections.singletonList(tripId));
+    }
+
+    public void getTripsByIds(List<Integer> tripIds, TripsSubscriber callback){
+        new GetTripsByIdsTask(callback).execute(tripIds);
     }
 
     public void getReviewsByIds(List<Integer> reviewIds, ReviewsSubscriber callback){
         new GetReviewsByIdsTask(callback).execute(reviewIds);
     }
 
+    public void getProfileById(String userId, ProfilesSubscriber callback) {
+        new GetProfileByIdTask(callback).execute(userId);
+    }
+
     /*
     * Asynchronous Tasks
     */
     // Interfaces
+    public interface DataManager {
+        /* Implemented by the main activity that serves as the keeper of the data model */
+        public DataModel getModel();
+    }
+
     public interface TaskContext{
         /** onSuccess: called on success of an async task
          * @param message Message to return*/
@@ -82,16 +102,22 @@ public class DataModel {
 
     public interface TripsSubscriber extends TaskContext {
         /** called on fetch of a trip by id
-         * @param trip Trip returned by query*/
-        void onGetTripById(Trip trip);
+         * @param trips Trip returned by query*/
+        void onGetTripsById(List<Trip> trips);
     }
 
     public interface ImagesSubscriber extends TaskContext {
         /** called on fetch of an image by id
-         * @param image Bitmap returned by query
-         * @param imageId Id of the image fetched
+         * @param images BitmapImage returned by query
          * */
-        void onGetImageById(Bitmap image, Integer imageId);
+        void onGetImagesById(List<BitmapImage> images);
+    }
+
+    public interface ProfilesSubscriber extends TaskContext {
+        /** called on fetch of a profile by id
+         * @param profile Profile fetched from server
+         * */
+        void onGetProfileById(Profile profile);
     }
 
     public interface ReviewsSubscriber extends TaskContext {
@@ -102,54 +128,67 @@ public class DataModel {
     }
 
     // Tasks
-    private class GetTripByIdTask extends AsyncTask<Integer, Void, Trip> {
+    private class GetTripsByIdsTask extends AsyncTask<List<Integer>, Void, List<Trip>> {
         /** Application Context*/
         private TripsSubscriber context;
 
-        private GetTripByIdTask(TripsSubscriber context) {
+        private GetTripsByIdsTask(TripsSubscriber context) {
             this.context = context;
         }
 
         @Override
-        protected Trip doInBackground(Integer ... tripIds) {
+        protected List<Trip> doInBackground(List<Integer> ... tripIds) {
             if (tripIds.length > 1){
                 return null;
             } else {
-                return new Trip(server.getTripById(tripIds[0]));
+                List<TripData> tripsData = server.getTripsById(tripIds[0]);
+                List<Trip> trips = new ArrayList<>();
+                for (TripData t : tripsData) {
+                    trips.add(new Trip(t));
+                }
+                return trips;
             }
         }
 
         @Override
-        protected void onPostExecute(Trip result) {
+        protected void onPostExecute(List<Trip> result) {
             super.onPostExecute(result);
             if(result == null){
                 context.onError("No trip found with corresponding id");
             }
             else {
                 // onSuccess()?
-                context.onGetTripById(result);
+                context.onGetTripsById(result);
             }
         }
     }
 
-    private class GetImageByIdTask extends AsyncTask<Integer, Void, Bitmap> {
+    private class GetImagesByIdsTask extends AsyncTask<List<Integer>, Void, List<BitmapImage>> {
         /** Application Context*/
         private ImagesSubscriber context;
-        private Integer id;
+        private List<Integer> ids;
 
-        private GetImageByIdTask(ImagesSubscriber context) {
+        private GetImagesByIdsTask(ImagesSubscriber context) {
             this.context = context;
-            this.id = -1;
+            this.ids = new ArrayList<>();
         }
 
         @Override
-        protected Bitmap doInBackground(Integer ... imageIds) {
+        protected List<BitmapImage> doInBackground(List<Integer> ... imageIds) {
             if (imageIds.length > 1){
                 return null;
             } else {
-                this.id = imageIds[0];
+                this.ids = imageIds[0];
                 try {
-                    return BitmapFactory.decodeStream(server.getImageById(imageIds[0]));
+                    List<InputStream> imageData = server.getImagesById(imageIds[0]);
+                    List<BitmapImage> images = new ArrayList<>();
+
+                    Iterator<Integer> id = imageIds[0].iterator();
+                    Iterator<InputStream> stream = imageData.iterator();
+                    while(id.hasNext() && stream.hasNext()) {
+                        images.add(new BitmapImage(BitmapFactory.decodeStream(stream.next()), id.next()));
+                    }
+                    return images;
                 } catch (ServerError serverError) {
                     serverError.printStackTrace();
                     return null;
@@ -158,15 +197,17 @@ public class DataModel {
         }
 
         @Override
-        protected void onPostExecute(Bitmap result) {
+        protected void onPostExecute(List<BitmapImage> result) {
             super.onPostExecute(result);
-            if(id == -1){
-                context.onError("Invalid image id");
+            if(ids.size() == 0){
+                context.onError("No ids provided");
             } else if(result == null){
-                context.onError("No image found with id " + id);
+                context.onError("No image found with id " + ids);
+            } else if (result.size() != ids.size()){
+                context.onError(String.format("Incorrect number of images returned! Expecting %d, got %d", ids.size(), result.size()));
             } else {
                 // onSuccess()?
-                context.onGetImageById(result, id);
+                context.onGetImagesById(result);
             }
         }
     }
@@ -210,6 +251,41 @@ public class DataModel {
             } else {
                 // onSuccess()?
                 context.onGetReviewsByIds(result);
+            }
+        }
+    }
+
+    private class GetProfileByIdTask extends AsyncTask<String, Void, Profile> {
+        /** Application Context*/
+        private ProfilesSubscriber context;
+
+        private GetProfileByIdTask(ProfilesSubscriber context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Profile doInBackground(String ... userIds) {
+            if (userIds.length > 1){
+                return null;
+            } else {
+                try {
+                    return new Profile(server.getProfileById(userIds[0]));
+
+                } catch (ServerError serverError) {
+                    serverError.printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Profile result) {
+            super.onPostExecute(result);
+            if(result == null){
+                context.onError("Server Error");
+            } else {
+                // onSuccess()?
+                context.onGetProfileById(result);
             }
         }
     }

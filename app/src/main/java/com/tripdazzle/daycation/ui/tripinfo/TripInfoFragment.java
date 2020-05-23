@@ -1,6 +1,6 @@
 package com.tripdazzle.daycation.ui.tripinfo;
 
-import android.graphics.Bitmap;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
+import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 
@@ -26,11 +27,11 @@ import java.util.List;
 
 public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ImagesSubscriber, DataModel.ReviewsSubscriber, ReviewsListAdapter.OnLoadMoreListener {
     private TripInfoViewModel mViewModel;
-    private DataModel model = new DataModel();
     private RecyclerView mRecyclerView;
     private ReviewsListAdapter mReviewsAdapter;
 
     private final int reviewsBatchSize = 5;     // Number of reviews to fetch at a time
+    private DataModel mModel;
 
     public static TripInfoFragment newInstance() {
         return new TripInfoFragment();
@@ -54,14 +55,25 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mReviewsAdapter = new ReviewsListAdapter(mViewModel.getReviews(), mRecyclerView, this);
         mRecyclerView.setAdapter(mReviewsAdapter);
 
-        model.initialize(getContext());
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        model.getTripById(333, this);
+        int tripId = TripInfoFragmentArgs.fromBundle(getArguments()).getTripId();
+        mModel.getTripById(tripId, this);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        if (context instanceof DataModel.DataManager) {
+            mModel = ((DataModel.DataManager) context).getModel();
+        } else {
+            throw new RuntimeException(context.toString()
+                    + " must implement DataModel.DataManager");
+        }
     }
 
     /*load more reviews from the server*/
@@ -70,14 +82,19 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         int numLoaded =  mViewModel.numReviewsLoaded();
 
         mViewModel.setLoadingReviews(true);
-        mReviewsAdapter.notifyItemInserted(mViewModel.numReviewsLoaded() - 1);
+        mRecyclerView.post(new Runnable() {
+            @Override
+            public void run() {
+                mReviewsAdapter.notifyItemInserted(mViewModel.numReviewsLoaded() - 1);
+            }
+        });
         mReviewsAdapter.setLoading(true);
 
         Trip trip = mViewModel.getTrip().getValue();
         if(trip.reviews.size() > numLoaded + reviewsBatchSize){   // Load 10 more
-            model.getReviewsByIds(trip.reviews.subList(numLoaded, numLoaded + reviewsBatchSize), this);
+            mModel.getReviewsByIds(trip.reviews.subList(numLoaded, numLoaded + reviewsBatchSize), this);
         } else { // load all remaining
-            model.getReviewsByIds(trip.reviews.subList(numLoaded, trip.reviews.size()), this);
+            mModel.getReviewsByIds(trip.reviews.subList(numLoaded, trip.reviews.size()), this);
         }
     }
 
@@ -110,22 +127,31 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     public void onError(String message) {}
 
     @Override
-    public void onGetTripById(Trip trip) {
+    public void onGetTripsById(List<Trip> trips) {
+        if (trips.size() != 1){
+            throw new RuntimeException("Unexpected number of trips returned" + trips.toString());
+        }
+
+        Trip trip = trips.get(0);
         mViewModel.setTrip(trip);
 
         // get main image
-        model.getImageById(trip.mainImageId, this);
+        mModel.getImageById(trip.mainImageId, this);
 
         // get reviews
         onLoadMore();
     }
 
     @Override
-    public void onGetImageById(Bitmap image, Integer imageId) {
+    public void onGetImagesById(List<BitmapImage> images) {
         Trip trip = mViewModel.getTrip().getValue();
-        if(trip != null && imageId == trip.mainImageId){
-            ImageView mainImageView = (ImageView) this.getView().findViewById(R.id.tripInfoMainImageView);
-            mainImageView.setImageBitmap(image);
+        if (trip == null){ return; }
+
+        for(BitmapImage img: images){
+            if(img.id == trip.mainImageId){
+                ImageView mainImageView = (ImageView) this.getView().findViewById(R.id.tripInfoMainImageView);
+                mainImageView.setImageBitmap(img.image);
+            }
         }
     }
 }
