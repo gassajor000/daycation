@@ -7,17 +7,15 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tripdazzle.daycation.R;
-import com.tripdazzle.daycation.models.Activity;
 import com.tripdazzle.daycation.models.Trip;
-import com.tripdazzle.server.datamodels.ActivityType;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -32,19 +30,11 @@ public class TripListFragment extends Fragment {
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
+    private TripListViewModel mViewModel;
+    private RecyclerView recyclerView;
+    private RecyclerView.LayoutManager mLayoutManager;
 
     private OnTripListFragmentInteractionListener mListener = null;
-    Activity[] activities = {
-            new Activity(ActivityType.HIKING, "Rose Canyon", "Hike Rose Canyon"),
-            new Activity(ActivityType.ICE_CREAM, "Shake Shack", "Get Ice cream at Shake Shack"),
-            new Activity(ActivityType.BEACH, "Mission Beach", "Go Swimming at Mission Beach")
-    };
-    private List<Trip> trips = new ArrayList<>(Arrays.asList(
-            new Trip("SD Vacay", 333, "gassajor",
-                    "Fun Trip around the San Diego Bay.",   444, activities,
-                    (float) 3.7, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507,
-                    508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520)))
-    ));
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -76,17 +66,21 @@ public class TripListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_trip_list, container, false);
+        mViewModel = ViewModelProviders.of(this).get(TripListViewModel.class);
+        mViewModel.getTrips().observe(this, tripListUpdateObserver);
+
 
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                mLayoutManager = new LinearLayoutManager(context);
             } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                mLayoutManager = new GridLayoutManager(context, mColumnCount);
             }
-            recyclerView.setAdapter(new TripListRecyclerViewAdapter(trips, mListener));
+            recyclerView.setLayoutManager(mLayoutManager);
+            recyclerView.setAdapter(new TripListRecyclerViewAdapter(mViewModel.getTrips().getValue(), mListener));
         }
         return view;
     }
@@ -122,4 +116,14 @@ public class TripListFragment extends Fragment {
     public interface OnTripListFragmentInteractionListener {
         void onTripInteraction(Trip item);
     }
+
+    Observer<List<Trip>> tripListUpdateObserver = new Observer<List<Trip>>() {
+        @Override
+        public void onChanged(List<Trip> trips) {
+            if(recyclerView != null){
+                recyclerView.setAdapter(new TripListRecyclerViewAdapter(trips, mListener));
+            }
+            // TODO fetch all the images
+        }
+    };
 }

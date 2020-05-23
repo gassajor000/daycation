@@ -18,10 +18,15 @@ import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentProfileBinding;
 import com.tripdazzle.daycation.models.Profile;
+import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
-public class ProfileFragment extends Fragment implements DataModel.ProfilesSubscriber, DataModel.ImagesSubscriber {
+import java.util.Collections;
+
+public class ProfileFragment extends Fragment implements DataModel.ProfilesSubscriber, DataModel.ImagesSubscriber, DataModel.TripsSubscriber {
 
     private ProfileViewModel mViewModel;
+    private TripListViewModel mCreatedTripsModel;
     private DataModel mModel;
 
     public static ProfileFragment newInstance() {
@@ -36,6 +41,8 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
         binding.setViewModel(mViewModel);
         binding.setLifecycleOwner(this);
         View view = binding.getRoot();
+
+        mCreatedTripsModel = ViewModelProviders.of(getChildFragmentManager().findFragmentById(R.id.profileCreatedTripsList)).get(TripListViewModel.class);
 
         return view;
     }
@@ -68,6 +75,7 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
     public void onGetProfileById(Profile profile) {
         mViewModel.setProfile(profile);
         mModel.getImageById(profile.profileImageId, this);
+        mModel.getTripById(profile.createdTrips.get(0), this);      // TODO get all the trips
     }
 
     @Override
@@ -77,5 +85,10 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
             ImageView profileImage = (ImageView) this.getView().findViewById(R.id.profileImage);
             profileImage.setImageBitmap(image);
         }
+    }
+
+    @Override
+    public void onGetTripById(Trip trip) {
+        mCreatedTripsModel.setTrips(Collections.singletonList(trip));
     }
 }
