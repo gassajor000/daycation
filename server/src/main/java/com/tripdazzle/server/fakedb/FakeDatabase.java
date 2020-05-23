@@ -34,15 +34,25 @@ public class FakeDatabase {
         ActivityData[] activities = {
                 new ActivityData(ActivityType.HIKING, "Rose Canyon", "Hike Rose Canyon"),
                 new ActivityData(ActivityType.ICE_CREAM, "Shake Shack", "Get Ice cream at Shake Shack"),
-                new ActivityData(ActivityType.BEACH, "Mission Beach", "Go Swimming at Mission Beach")
+                new ActivityData(ActivityType.BEACH, "Mission Beach", "Go Swimming at Mission Beach"),
+                new ActivityData(ActivityType.SWIMMING, "Mission Bay", "Swim Across Mission Bay"),
+                new ActivityData(ActivityType.ICE_CREAM, "In n Out", "Get an In n Out Shake"),
+                new ActivityData(ActivityType.BEACH, "Black's Beach", "Go surfing at Black's Beach")
         };
-        trips.put(333, new TripData("SD Vacay", 333, "mscott",
-                "Fun Trip around the San Diego Bay.",   444, activities,
+        trips.put(301, new TripData("SD Vacay", 301, "mscott","Fun Trip around the San Diego Bay.",
+                444, new ActivityData[]{activities[0], activities[1], activities[2]},
                 (float) 3.7, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507,
                 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520))));
-        trips.put(332, new TripData("La Jolla Trip", 332, "gassajor",
-                "Fun Trip in La Jolla.",   444, activities,
-                (float) 3.7, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
+        trips.put(302, new TripData("La Jolla Trip", 302, "mscott","Fun Trip in La Jolla.",
+                444, new ActivityData[]{activities[2], activities[3], activities[4]},
+                (float) 4.2, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
+        trips.put(303, new TripData("Balboa Park", 303, "mscott","A day at Balboa Park.",
+                444, new ActivityData[]{activities[2], activities[3], activities[4]},
+                (float) 4.5, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
+        trips.put(304, new TripData("Zoo Trip", 304, "mscott","Things to do around the Zoo",
+                444, new ActivityData[]{activities[2], activities[3], activities[4]},
+                (float) 2.3, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
+
 
         // Reviews
         reviews.putAll(new HashMap<Integer, ReviewData>(){{
@@ -69,8 +79,8 @@ public class FakeDatabase {
         }});
 
         // Users
-        users.put("mscott", new FakeUser("mscott", 445, "Michael", "Scott", "Scranton, PN", "password123", Arrays.asList(333), Arrays.asList(501, 506, 507, 508, 509, 510), new ArrayList<Integer>()));
-        users.put("jhalpert", new FakeUser("jhalpert", 446, "Jim", "Halpert", "Scranton, PN", "password123"));
+        users.put("mscott", new FakeUser("mscott", 445, "Michael", "Scott", "Scranton, PA", "password123", Arrays.asList(301, 302, 303, 304), Arrays.asList(501, 506, 507, 508, 509, 510), new ArrayList<Integer>()));
+        users.put("jhalpert", new FakeUser("jhalpert", 446, "Jim", "Halpert", "Scranton, PA", "password123"));
     }
 
     public void setDbFilePath(String dbFilePath) {
@@ -87,8 +97,12 @@ public class FakeDatabase {
         return new File(dbFilePath + "/" + fileName);
     }
 
-    public TripData getTripById(int tripId){
-        return trips.get(tripId);
+    public List<TripData> getTripsById(List<Integer> tripIds) {
+        List<TripData> ret = new ArrayList<>();
+        for(Integer id: tripIds){
+            ret.add(trips.get(id));
+        }
+        return ret;
     }
 
     public ProfileData getProfileById(String userId) { return users.get(userId).toProfile(); }

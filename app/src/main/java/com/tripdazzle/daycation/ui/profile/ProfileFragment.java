@@ -21,7 +21,7 @@ import com.tripdazzle.daycation.models.Profile;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
-import java.util.Collections;
+import java.util.List;
 
 public class ProfileFragment extends Fragment implements DataModel.ProfilesSubscriber, DataModel.ImagesSubscriber, DataModel.TripsSubscriber {
 
@@ -75,7 +75,7 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
     public void onGetProfileById(Profile profile) {
         mViewModel.setProfile(profile);
         mModel.getImageById(profile.profileImageId, this);
-        mModel.getTripById(profile.createdTrips.get(0), this);      // TODO get all the trips
+        mModel.getTripsByIds(profile.createdTrips, this);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
     }
 
     @Override
-    public void onGetTripById(Trip trip) {
-        mCreatedTripsModel.setTrips(Collections.singletonList(trip));
+    public void onGetTripsById(List<Trip> trips) {
+        mCreatedTripsModel.setTrips(trips);
     }
 }

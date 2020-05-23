@@ -127,7 +127,12 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     public void onError(String message) {}
 
     @Override
-    public void onGetTripById(Trip trip) {
+    public void onGetTripsById(List<Trip> trips) {
+        if (trips.size() != 1){
+            throw new RuntimeException("Unexpected number of trips returned" + trips.toString());
+        }
+
+        Trip trip = trips.get(0);
         mViewModel.setTrip(trip);
 
         // get main image

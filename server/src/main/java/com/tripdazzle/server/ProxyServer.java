@@ -32,10 +32,10 @@ public class ProxyServer {
     }
 
     /** retrieve a trip from the server
-     * @param tripId id of the trip to fetch
+     * @param tripIds ids of the trip to fetch
      */
-    public TripData getTripById(int tripId){
-        return db.getTripById(tripId);
+    public List<TripData> getTripsById(List<Integer> tripIds){
+        return db.getTripsById(tripIds);
     }
 
     /** retrieve a trip from the server

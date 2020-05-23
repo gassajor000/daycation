@@ -11,12 +11,14 @@ import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.server.ProxyServer;
 import com.tripdazzle.server.ServerError;
 import com.tripdazzle.server.datamodels.ReviewData;
+import com.tripdazzle.server.datamodels.TripData;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class DataModel {
@@ -61,7 +63,11 @@ public class DataModel {
     }
 
     public void getTripById(int tripId, TripsSubscriber callback){
-        new GetTripByIdTask(callback).execute(tripId);
+        new GetTripsByIdsTask(callback).execute(Collections.singletonList(tripId));
+    }
+
+    public void getTripsByIds(List<Integer> tripIds, TripsSubscriber callback){
+        new GetTripsByIdsTask(callback).execute(tripIds);
     }
 
     public void getReviewsByIds(List<Integer> reviewIds, ReviewsSubscriber callback){
@@ -92,8 +98,8 @@ public class DataModel {
 
     public interface TripsSubscriber extends TaskContext {
         /** called on fetch of a trip by id
-         * @param trip Trip returned by query*/
-        void onGetTripById(Trip trip);
+         * @param trips Trip returned by query*/
+        void onGetTripsById(List<Trip> trips);
     }
 
     public interface ImagesSubscriber extends TaskContext {
@@ -119,32 +125,37 @@ public class DataModel {
     }
 
     // Tasks
-    private class GetTripByIdTask extends AsyncTask<Integer, Void, Trip> {
+    private class GetTripsByIdsTask extends AsyncTask<List<Integer>, Void, List<Trip>> {
         /** Application Context*/
         private TripsSubscriber context;
 
-        private GetTripByIdTask(TripsSubscriber context) {
+        private GetTripsByIdsTask(TripsSubscriber context) {
             this.context = context;
         }
 
         @Override
-        protected Trip doInBackground(Integer ... tripIds) {
+        protected List<Trip> doInBackground(List<Integer> ... tripIds) {
             if (tripIds.length > 1){
                 return null;
             } else {
-                return new Trip(server.getTripById(tripIds[0]));
+                List<TripData> tripsData = server.getTripsById(tripIds[0]);
+                List<Trip> trips = new ArrayList<>();
+                for (TripData t : tripsData) {
+                    trips.add(new Trip(t));
+                }
+                return trips;
             }
         }
 
         @Override
-        protected void onPostExecute(Trip result) {
+        protected void onPostExecute(List<Trip> result) {
             super.onPostExecute(result);
             if(result == null){
                 context.onError("No trip found with corresponding id");
             }
             else {
                 // onSuccess()?
-                context.onGetTripById(result);
+                context.onGetTripsById(result);
             }
         }
     }
