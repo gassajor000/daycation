@@ -14,6 +14,9 @@
         <action
             android:id="@+id/actionOpenProfile"
             app:destination="@id/nav_profile" />
+        <action
+            android:id="@+id/action_nav_home_to_placeholder2"
+            app:destination="@id/nav_favorites" />
     </fragment>
 
     <fragment
@@ -42,6 +45,14 @@
             android:defaultValue="mscott" />
         <action
             android:id="@+id/actionNavProfileToTripInfo"
+            app:destination="@id/nav_tripInfo" />
+    </fragment>
+    <fragment android:id="@+id/nav_favorites"
+        android:name="com.tripdazzle.daycation.ui.favorites.FavoritesFragment"
+        android:label="fragment_favorites"
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_nav_favorites_to_tripInfo"
             app:destination="@id/nav_tripInfo" />
     </fragment>
 </navigation>

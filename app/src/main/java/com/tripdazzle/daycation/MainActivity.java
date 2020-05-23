@@ -17,6 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.ui.favorites.FavoritesFragmentDirections;
 import com.tripdazzle.daycation.ui.profile.ProfileFragmentDirections;
 import com.tripdazzle.daycation.ui.triplist.TripListFragment;
 
@@ -75,6 +76,10 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
         switch (navController.getCurrentDestination().getId()){
             case R.id.nav_profile: {
                 action = ProfileFragmentDirections.actionNavProfileToTripInfo(item.id);
+                break;
+            }
+            case R.id.nav_favorites: {
+                action = FavoritesFragmentDirections.actionNavFavoritesToTripInfo(item.id);
                 break;
             }
             default: {
