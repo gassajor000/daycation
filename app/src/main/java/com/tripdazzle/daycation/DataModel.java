@@ -59,7 +59,10 @@ public class DataModel {
 
     /* Data getters/setters*/
     public void getImageById(int imageId, ImagesSubscriber callback) {
-        new GetImageByIdTask(callback).execute(imageId);
+        new GetImagesByIdsTask(callback).execute(Collections.singletonList(imageId));
+    }
+    public void getImagesByIds(List<Integer> imageIds, ImagesSubscriber callback) {
+        new GetImagesByIdsTask(callback).execute(imageIds);
     }
 
     public void getTripById(int tripId, TripsSubscriber callback){
@@ -104,10 +107,9 @@ public class DataModel {
 
     public interface ImagesSubscriber extends TaskContext {
         /** called on fetch of an image by id
-         * @param image Bitmap returned by query
-         * @param imageId Id of the image fetched
-         * */
-        void onGetImageById(Bitmap image, Integer imageId);
+         * @param images Bitmap returned by query
+         * @param imageIds Id of the image fetched */
+        void onGetImagesById(List<Bitmap> images, List<Integer> imageIds);
     }
 
     public interface ProfilesSubscriber extends TaskContext {
@@ -160,24 +162,29 @@ public class DataModel {
         }
     }
 
-    private class GetImageByIdTask extends AsyncTask<Integer, Void, Bitmap> {
+    private class GetImagesByIdsTask extends AsyncTask<List<Integer>, Void, List<Bitmap>> {
         /** Application Context*/
         private ImagesSubscriber context;
-        private Integer id;
+        private List<Integer> ids;
 
-        private GetImageByIdTask(ImagesSubscriber context) {
+        private GetImagesByIdsTask(ImagesSubscriber context) {
             this.context = context;
-            this.id = -1;
+            this.ids = new ArrayList<>();
         }
 
         @Override
-        protected Bitmap doInBackground(Integer ... imageIds) {
+        protected List<Bitmap> doInBackground(List<Integer> ... imageIds) {
             if (imageIds.length > 1){
                 return null;
             } else {
-                this.id = imageIds[0];
+                this.ids = imageIds[0];
                 try {
-                    return BitmapFactory.decodeStream(server.getImageById(imageIds[0]));
+                    List<InputStream> imageData = server.getImagesById(imageIds[0]);
+                    List<Bitmap> images = new ArrayList<>();
+                    for (InputStream s : imageData) {
+                        images.add(BitmapFactory.decodeStream(s));
+                    }
+                    return images;
                 } catch (ServerError serverError) {
                     serverError.printStackTrace();
                     return null;
@@ -186,15 +193,17 @@ public class DataModel {
         }
 
         @Override
-        protected void onPostExecute(Bitmap result) {
+        protected void onPostExecute(List<Bitmap> result) {
             super.onPostExecute(result);
-            if(id == -1){
-                context.onError("Invalid image id");
+            if(ids.size() == 0){
+                context.onError("No ids provided");
             } else if(result == null){
-                context.onError("No image found with id " + id);
+                context.onError("No image found with id " + ids);
+            } else if (result.size() != ids.size()){
+                context.onError(String.format("Incorrect number of images returned! Expecting %d, got %d", ids.size(), result.size()));
             } else {
                 // onSuccess()?
-                context.onGetImageById(result, id);
+                context.onGetImagesById(result, ids);
             }
         }
     }

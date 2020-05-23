@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProxyServer {
@@ -19,16 +20,20 @@ public class ProxyServer {
     }
 
     /** retrieve an image from the server
-     * @param imageId id of the image to fetch
+     * @param imageIds id of the image to fetch
      */
-    public InputStream getImageById(int imageId) throws ServerError {
-        File imgFile = db.getImageById(imageId);
+    public List<InputStream> getImagesById(List<Integer> imageIds) throws ServerError {
+        List<File> imgFiles = db.getImagesById(imageIds);
+        List<InputStream> imageData = new ArrayList<>();
         try {
-            return new FileInputStream(imgFile);
+            for(File f: imgFiles){
+                imageData.add(new FileInputStream(f));
+            }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             throw new ServerError(e);
         }
+        return imageData;
     }
 
     /** retrieve a trip from the server

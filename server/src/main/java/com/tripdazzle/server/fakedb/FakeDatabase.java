@@ -89,12 +89,17 @@ public class FakeDatabase {
 
 
     /** Retrieve a bitmap image by ID
-     * @param imgId id of the image to fetch
+     * @param imgIds id of the image to fetch
      * @return Image file of the image with the matching id
      */
-    public File getImageById(int imgId){
-        String fileName = fileNames.get(imgId);
-        return new File(dbFilePath + "/" + fileName);
+    public List<File> getImagesById(List<Integer> imgIds){
+        List<File> imageFiles = new ArrayList<>();
+        for(Integer id: imgIds){
+            String fileName = fileNames.get(id);
+            imageFiles.add(new File(dbFilePath + "/" + fileName));
+
+        }
+        return imageFiles;
     }
 
     public List<TripData> getTripsById(List<Integer> tripIds) {

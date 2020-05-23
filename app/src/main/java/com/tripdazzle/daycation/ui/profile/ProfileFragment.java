@@ -79,11 +79,14 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
     }
 
     @Override
-    public void onGetImageById(Bitmap image, Integer imageId) {
+    public void onGetImagesById(List<Bitmap> images, List<Integer> imageIds) {
         Profile profile = mViewModel.getProfile().getValue();
-        if(profile != null && imageId.equals(profile.profileImageId)){
+        if (profile == null || images.size() != 1 || imageIds.size() != 1){ return; }
+
+        // Set main profile image
+        if(imageIds.get(0).equals(profile.profileImageId)){
             ImageView profileImage = (ImageView) this.getView().findViewById(R.id.profileImage);
-            profileImage.setImageBitmap(image);
+            profileImage.setImageBitmap(images.get(0));
         }
     }
 
