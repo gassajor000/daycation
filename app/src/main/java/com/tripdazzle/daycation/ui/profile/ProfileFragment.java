@@ -97,7 +97,5 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
     }
 
     @Override
-    public void onGetFavoritesByUserId(List<Trip> favorites) {
-
-    }
+    public void onGetFavoritesByUserId(List<Trip> favorites) { }
 }

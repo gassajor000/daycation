@@ -59,9 +59,7 @@ public class FavoritesFragment extends Fragment  implements DataModel.TripsSubsc
     public void onError(String message) {}
 
     @Override
-    public void onGetTripsById(List<Trip> trips) {
-
-    }
+    public void onGetTripsById(List<Trip> trips) { }
 
     @Override
     public void onGetFavoritesByUserId(List<Trip> favorites) {

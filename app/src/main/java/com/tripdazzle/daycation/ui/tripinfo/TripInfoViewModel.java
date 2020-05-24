@@ -23,12 +23,12 @@ public class TripInfoViewModel extends ViewModel{
         return trip;
     }
 
-    public void setTrip(Trip trip) {
+    public void setTrip(Trip trip, boolean isFavorite) {
         if (this.trip == null) {
             this.trip = new MutableLiveData<Trip>();
         }
         this.trip.setValue(trip);
-        this.inFavorites.setValue(false);
+        this.inFavorites.setValue(isFavorite);
     }
 
     public MutableLiveData<Boolean> getInFavorites() {

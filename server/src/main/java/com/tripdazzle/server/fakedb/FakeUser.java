@@ -1,6 +1,7 @@
 package com.tripdazzle.server.fakedb;
 
 import com.tripdazzle.server.datamodels.ProfileData;
+import com.tripdazzle.server.datamodels.UserData;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,10 @@ public class FakeUser {
     }
 
     public ProfileData toProfile(){
-        return new ProfileData(userId, profileImageId, firstName, lastName, city, createdTrips);
+        return new ProfileData(userId, profileImageId, firstName, lastName, city, new ArrayList<Integer>(createdTrips));
+    }
+
+    public UserData toUserData() {
+        return new UserData(userId, profileImageId, firstName, lastName, city, new ArrayList<Integer>(createdTrips), new ArrayList<Integer>(reviews), new ArrayList<Integer>(favoriteTrips));
     }
 }

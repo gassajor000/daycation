@@ -5,6 +5,7 @@ import com.tripdazzle.server.datamodels.ActivityType;
 import com.tripdazzle.server.datamodels.ProfileData;
 import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.TripData;
+import com.tripdazzle.server.datamodels.UserData;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -82,7 +83,8 @@ public class FakeDatabase {
         }});
 
         // Users
-        users.put("mscott", new FakeUser("mscott", 405, "Michael", "Scott", "Scranton, PA", "password123", Arrays.asList(301, 302, 303, 304), Arrays.asList(501, 506, 507, 508, 509, 510), Arrays.asList(302, 301, 304)));
+        users.put("mscott", new FakeUser("mscott", 405, "Michael", "Scott", "Scranton, PA", "password123",
+                new ArrayList<>(Arrays.asList(301, 302, 303, 304)), new ArrayList<>(Arrays.asList(501, 506, 507, 508, 509, 510)), new ArrayList<>(Arrays.asList(302, 301, 304))));
         users.put("jhalpert", new FakeUser("jhalpert", 406, "Jim", "Halpert", "Scranton, PA", "password123"));
     }
 
@@ -132,5 +134,21 @@ public class FakeDatabase {
             favorites.add(trips.get(id));
         }
         return favorites;
+    }
+
+    public void toggleFavorite(String userId, Integer tripId, Boolean addFavorite){
+        if(addFavorite){
+            users.get(userId).favoriteTrips.add(tripId);
+        } else {
+            users.get(userId).favoriteTrips.remove(tripId);
+        }
+    }
+
+    public UserData login(String userId, String password){
+        FakeUser user = users.get(userId);
+        if (user != null && user.password == password){
+            return user.toUserData();
+        }
+        return null;
     }
 }
