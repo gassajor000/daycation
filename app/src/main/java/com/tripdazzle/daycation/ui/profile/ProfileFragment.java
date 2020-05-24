@@ -95,4 +95,9 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
     public void onGetTripsById(List<Trip> trips) {
         mCreatedTripsModel.setTrips(trips);
     }
+
+    @Override
+    public void onGetFavoritesByUserId(List<Trip> favorites) {
+
+    }
 }

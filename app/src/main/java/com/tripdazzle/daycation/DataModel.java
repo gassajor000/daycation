@@ -24,6 +24,7 @@ import java.util.List;
 
 public class DataModel {
     private ProxyServer server = new ProxyServer();
+    private Profile currentUser;
 
     public void initialize(Context context){
         String localFilesDir = context.getFilesDir().getAbsolutePath();
@@ -33,6 +34,13 @@ public class DataModel {
         Integer[] images = {R.drawable.mission_bay, R.drawable.balboa, R.drawable.lajolla, R.drawable.zoo, R.drawable.mscott, R.drawable.jhalpert};
         for(Integer i: images){
             copyResources(context, localFilesDir, i);
+        }
+
+        // Set current User
+        try {
+            currentUser = new Profile(server.getProfileById("mscott"));
+        } catch (ServerError serverError) {
+            serverError.printStackTrace();
         }
     }
 
@@ -82,6 +90,14 @@ public class DataModel {
         new GetProfileByIdTask(callback).execute(userId);
     }
 
+    public Profile getCurrentUser(){
+        return currentUser;
+    }
+
+    public void getFavoritesByUserId(String userId, TripsSubscriber callback){
+        new GetFavoritesByUserIdTask(callback).execute(userId);
+    }
+
     /*
     * Asynchronous Tasks
     */
@@ -104,6 +120,7 @@ public class DataModel {
         /** called on fetch of a trip by id
          * @param trips Trip returned by query*/
         void onGetTripsById(List<Trip> trips);
+        void onGetFavoritesByUserId(List<Trip> favorites);
     }
 
     public interface ImagesSubscriber extends TaskContext {
@@ -286,6 +303,46 @@ public class DataModel {
             } else {
                 // onSuccess()?
                 context.onGetProfileById(result);
+            }
+        }
+    }
+
+    private class GetFavoritesByUserIdTask extends AsyncTask<String, Void, List<Trip>> {
+        /** Application Context*/
+        private TripsSubscriber context;
+
+        private GetFavoritesByUserIdTask(TripsSubscriber context) {
+            this.context = context;
+        }
+
+        @Override
+        protected List<Trip> doInBackground(String ... userIds) {
+            if (userIds.length > 1){
+                return null;
+            } else {
+                try {
+                    List<TripData> favoritesData = server.getFavoritesByUserId(userIds[0]);
+                    List<Trip> favorites = new ArrayList<>();
+
+                    for(TripData t: favoritesData){
+                        favorites.add(new Trip(t));
+                    }
+                    return favorites;
+                } catch (ServerError serverError) {
+                    serverError.printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Trip> result) {
+            super.onPostExecute(result);
+            if(result == null){
+                context.onError("No favorites found");
+            } else {
+                // onSuccess()?
+                context.onGetFavoritesByUserId(result);
             }
         }
     }

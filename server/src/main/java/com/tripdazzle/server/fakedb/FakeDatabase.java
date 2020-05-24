@@ -82,7 +82,7 @@ public class FakeDatabase {
         }});
 
         // Users
-        users.put("mscott", new FakeUser("mscott", 405, "Michael", "Scott", "Scranton, PA", "password123", Arrays.asList(301, 302, 303, 304), Arrays.asList(501, 506, 507, 508, 509, 510), new ArrayList<Integer>()));
+        users.put("mscott", new FakeUser("mscott", 405, "Michael", "Scott", "Scranton, PA", "password123", Arrays.asList(301, 302, 303, 304), Arrays.asList(501, 506, 507, 508, 509, 510), Arrays.asList(302, 301, 304)));
         users.put("jhalpert", new FakeUser("jhalpert", 406, "Jim", "Halpert", "Scranton, PA", "password123"));
     }
 
@@ -124,5 +124,13 @@ public class FakeDatabase {
             ret.add(reviews.get(r));
         }
         return ret;
+    }
+
+    public List<TripData> getFavoritesByUserId(String userId){
+        List<TripData> favorites = new ArrayList<>();
+        for(Integer id: users.get(userId).favoriteTrips){
+            favorites.add(trips.get(id));
+        }
+        return favorites;
     }
 }

@@ -16,7 +16,6 @@ import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class FavoritesFragment extends Fragment  implements DataModel.TripsSubscriber {
@@ -34,7 +33,7 @@ public class FavoritesFragment extends Fragment  implements DataModel.TripsSubsc
         View view = inflater.inflate(R.layout.fragment_favorites, container, false);
 
         mFavoriteTripsModel = ViewModelProviders.of(getChildFragmentManager().findFragmentById(R.id.favoritesFavoriteTripsList)).get(TripListViewModel.class);
-        mModel.getTripsByIds(Arrays.asList(301, 303, 302), this);
+        mModel.getFavoritesByUserId(mModel.getCurrentUser().userId, this);
 
         return view;
     }
@@ -61,7 +60,12 @@ public class FavoritesFragment extends Fragment  implements DataModel.TripsSubsc
 
     @Override
     public void onGetTripsById(List<Trip> trips) {
-        mFavoriteTripsModel.setTrips(trips);
+
+    }
+
+    @Override
+    public void onGetFavoritesByUserId(List<Trip> favorites) {
+        mFavoriteTripsModel.setTrips(favorites);
     }
 
 }

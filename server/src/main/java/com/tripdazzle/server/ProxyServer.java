@@ -60,4 +60,11 @@ public class ProxyServer {
     public ProfileData getProfileById(String userId) throws ServerError{
         return db.getProfileById(userId);
     }
+
+    /** retrieve the favorite trips for a user
+     * @param userId username of the profile to fetch favorites for
+     */
+    public List<TripData> getFavoritesByUserId(String userId) throws ServerError{
+        return db.getFavoritesByUserId(userId);
+    }
 }

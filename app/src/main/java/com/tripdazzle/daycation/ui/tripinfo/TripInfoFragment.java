@@ -143,6 +143,11 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     }
 
     @Override
+    public void onGetFavoritesByUserId(List<Trip> favorites) {
+
+    }
+
+    @Override
     public void onGetImagesById(List<BitmapImage> images) {
         Trip trip = mViewModel.getTrip().getValue();
         if (trip == null){ return; }
