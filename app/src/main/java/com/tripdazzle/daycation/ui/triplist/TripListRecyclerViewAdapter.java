@@ -33,7 +33,7 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ViewDataBinding b = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                R.layout.layout_trip_card, parent, false);
+                R.layout.layout_trip_card_horiz, parent, false);
 
         return new ViewHolder(b);
     }

@@ -10,4 +10,4 @@
     android:layout_marginRight="16dp"
     app:layoutManager="LinearLayoutManager"
     tools:context=".ui.triplist.TripListFragment"
-    tools:listitem="@layout/layout_trip_card" />
+    tools:listitem="@layout/layout_trip_card_horiz" />
