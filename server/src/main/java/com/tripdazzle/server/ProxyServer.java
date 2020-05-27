@@ -3,6 +3,7 @@ package com.tripdazzle.server;
 import com.tripdazzle.server.datamodels.ProfileData;
 import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.TripData;
+import com.tripdazzle.server.datamodels.UserData;
 import com.tripdazzle.server.fakedb.FakeDatabase;
 
 import java.io.File;
@@ -59,5 +60,29 @@ public class ProxyServer {
      */
     public ProfileData getProfileById(String userId) throws ServerError{
         return db.getProfileById(userId);
+    }
+
+    /** retrieve the favorite trips for a user
+     * @param userId username of the profile to fetch favorites for
+     */
+    public List<TripData> getFavoritesByUserId(String userId) throws ServerError{
+        return db.getFavoritesByUserId(userId);
+    }
+
+    /** toggle whether or not a trip is in the user's favorites
+     * @param userId username of the user to toggle favorite
+     * @param tripId trip to toggle favorite
+     * @param addFavorite add to favorites if true, remove if false
+     */
+    public void toggleFavorite(String userId, Integer tripId, Boolean addFavorite) throws ServerError{
+        db.toggleFavorite(userId, tripId, addFavorite);
+    }
+
+    /** attempts to log in with the supplied credentials
+     * @param userId username to log in as
+     * @param password password for selected user
+     */
+    public UserData login(String userId, String password) throws ServerError{
+        return db.login(userId, password);
     }
 }

@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.tripdazzle.daycation.R;
 
 public class HomeFragment extends Fragment {
@@ -30,6 +32,16 @@ public class HomeFragment extends Fragment {
                 textView.setText(s);
             }
         });
+
+        FloatingActionButton fab = root.findViewById(R.id.homeAddTripFab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
+
         return root;
     }
 }

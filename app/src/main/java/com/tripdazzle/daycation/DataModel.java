@@ -8,6 +8,7 @@ import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Profile;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.models.User;
 import com.tripdazzle.server.ProxyServer;
 import com.tripdazzle.server.ServerError;
 import com.tripdazzle.server.datamodels.ReviewData;
@@ -24,6 +25,7 @@ import java.util.List;
 
 public class DataModel {
     private ProxyServer server = new ProxyServer();
+    private User currentUser;
 
     public void initialize(Context context){
         String localFilesDir = context.getFilesDir().getAbsolutePath();
@@ -33,6 +35,13 @@ public class DataModel {
         Integer[] images = {R.drawable.mission_bay, R.drawable.balboa, R.drawable.lajolla, R.drawable.zoo, R.drawable.mscott, R.drawable.jhalpert};
         for(Integer i: images){
             copyResources(context, localFilesDir, i);
+        }
+
+        // Set current User
+        try {
+            currentUser = new User(server.login("mscott", "password123"));
+        } catch (ServerError serverError) {
+            serverError.printStackTrace();
         }
     }
 
@@ -82,6 +91,22 @@ public class DataModel {
         new GetProfileByIdTask(callback).execute(userId);
     }
 
+    public User getCurrentUser(){
+        return currentUser;
+    }
+
+    public void getFavoritesByUserId(String userId, TripsSubscriber callback){
+        new GetFavoritesByUserIdTask(callback).execute(userId);
+    }
+
+    public void toggleFavorite(String userId, Integer tripId, Boolean addFavorite, TripsSubscriber callback){
+        new ToggleFavoriteTask(callback).execute(new ToggleFavoritesParams(userId, tripId, addFavorite));
+    }
+
+    public Boolean inCurrentUsersFavorites(Integer tripId){
+        return currentUser.inFavorites(tripId);
+    }
+
     /*
     * Asynchronous Tasks
     */
@@ -104,6 +129,7 @@ public class DataModel {
         /** called on fetch of a trip by id
          * @param trips Trip returned by query*/
         void onGetTripsById(List<Trip> trips);
+        void onGetFavoritesByUserId(List<Trip> favorites);
     }
 
     public interface ImagesSubscriber extends TaskContext {
@@ -286,6 +312,97 @@ public class DataModel {
             } else {
                 // onSuccess()?
                 context.onGetProfileById(result);
+            }
+        }
+    }
+
+    private class GetFavoritesByUserIdTask extends AsyncTask<String, Void, List<Trip>> {
+        /** Application Context*/
+        private TripsSubscriber context;
+
+        private GetFavoritesByUserIdTask(TripsSubscriber context) {
+            this.context = context;
+        }
+
+        @Override
+        protected List<Trip> doInBackground(String ... userIds) {
+            if (userIds.length > 1){
+                return null;
+            } else {
+                try {
+                    List<TripData> favoritesData = server.getFavoritesByUserId(userIds[0]);
+                    List<Trip> favorites = new ArrayList<>();
+
+                    for(TripData t: favoritesData){
+                        favorites.add(new Trip(t));
+                    }
+                    return favorites;
+                } catch (ServerError serverError) {
+                    serverError.printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Trip> result) {
+            super.onPostExecute(result);
+            if(result == null){
+                context.onError("No favorites found");
+            } else {
+                // onSuccess()?
+                context.onGetFavoritesByUserId(result);
+            }
+        }
+    }
+
+    public class ToggleFavoritesParams{
+        public final String userId;
+        public final Integer tripId;
+        public final Boolean addFavorite;
+
+        public ToggleFavoritesParams(String userId, Integer tripId, Boolean addFavorite) {
+            this.userId = userId;
+            this.tripId = tripId;
+            this.addFavorite = addFavorite;
+        }
+    }
+
+    private class ToggleFavoriteTask extends AsyncTask<ToggleFavoritesParams, Void, Boolean> {
+        /** Application Context*/
+        private TripsSubscriber context;
+
+        private ToggleFavoriteTask(TripsSubscriber context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Boolean doInBackground(ToggleFavoritesParams ... params) {
+            if (params.length > 1){
+                return false;
+            } else {
+                try {
+                    ToggleFavoritesParams params1 = params[0];
+                    if(params1.userId.equals(currentUser.userId)){
+                        currentUser.toggleFavorite(params1.tripId, params1.addFavorite);
+                    }
+                    server.toggleFavorite(params1.userId, params1.tripId, params1.addFavorite);
+                } catch (ServerError err){
+                    err.printStackTrace();
+                    return false;
+                }
+                return true;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if(!result){
+                context.onError("No trip found with corresponding id");
+            }
+            else {
+                 context.onSuccess("Favorite Toggled");
             }
         }
     }

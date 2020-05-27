@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -49,6 +50,19 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
 
         view.findViewById(R.id.tripInfoToggleFavorite).setOnClickListener(new ToggleFavoriteListener());
 
+        mViewModel.getInFavorites().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(Boolean inFavorites) {
+                if(mViewModel.getTrip().getValue() != null){    // Make sure trip has been loaded
+                    Boolean alreadyInFavorites = mModel.inCurrentUsersFavorites(mViewModel.getTrip().getValue().id);
+                    if(inFavorites != alreadyInFavorites){
+                        toggleFavorite(inFavorites);
+                    }   // Don't do anything if trip is already added to/removed from favorites
+
+                }
+            }
+        });
+
         mRecyclerView = (RecyclerView) view.findViewById(R.id.tripIonfoReviewsList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -56,6 +70,10 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mRecyclerView.setAdapter(mReviewsAdapter);
 
         return view;
+    }
+
+    private void toggleFavorite(Boolean inFavorites){
+        mModel.toggleFavorite(mModel.getCurrentUser().userId, mViewModel.getTrip().getValue().id, inFavorites, this);
     }
 
     @Override
@@ -133,7 +151,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         }
 
         Trip trip = trips.get(0);
-        mViewModel.setTrip(trip);
+        mViewModel.setTrip(trip, mModel.inCurrentUsersFavorites(trip.id));
 
         // get main image
         mModel.getImageById(trip.mainImageId, this);
@@ -141,6 +159,9 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         // get reviews
         onLoadMore();
     }
+
+    @Override
+    public void onGetFavoritesByUserId(List<Trip> favorites) { }
 
     @Override
     public void onGetImagesById(List<BitmapImage> images) {
