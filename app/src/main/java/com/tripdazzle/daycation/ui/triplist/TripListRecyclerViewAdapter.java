@@ -24,16 +24,24 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
 
     private final OnTripListFragmentInteractionListener mListener;
     private TripListViewModel mViewModel;
+    private int direction;
 
-    public TripListRecyclerViewAdapter(TripListViewModel viewModel, OnTripListFragmentInteractionListener listener) {
+    public TripListRecyclerViewAdapter(TripListViewModel viewModel, OnTripListFragmentInteractionListener listener, @RecyclerView.Orientation int direction) {
         mListener = listener;
         mViewModel = viewModel;
+        this.direction = direction;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ViewDataBinding b = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                R.layout.layout_trip_card_horiz, parent, false);
+        ViewDataBinding b;
+        if(direction == RecyclerView.HORIZONTAL){
+            b = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+                    R.layout.layout_trip_card_square, parent, false);
+        } else {
+            b = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+                    R.layout.layout_trip_card_long, parent, false);
+        }
 
         return new ViewHolder(b);
     }

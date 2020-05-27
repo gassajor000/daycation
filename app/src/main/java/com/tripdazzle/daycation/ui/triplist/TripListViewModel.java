@@ -47,4 +47,5 @@ public class TripListViewModel extends ViewModel {
         }
         this.images.setValue(imagesMap);
     }
+
 }

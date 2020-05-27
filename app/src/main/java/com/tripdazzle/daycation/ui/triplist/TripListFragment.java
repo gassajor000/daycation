@@ -27,7 +27,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnTripListFragmentInteractionListener}
  * interface.
  */
-public class TripListFragment extends Fragment implements DataModel.ImagesSubscriber {
+public abstract class TripListFragment extends Fragment implements DataModel.ImagesSubscriber {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
@@ -38,23 +38,6 @@ public class TripListFragment extends Fragment implements DataModel.ImagesSubscr
     private RecyclerView.LayoutManager mLayoutManager;
 
     private OnTripListFragmentInteractionListener mListener = null;
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public TripListFragment() {
-    }
-
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static TripListFragment newInstance(int columnCount) {
-        TripListFragment fragment = new TripListFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,29 +51,30 @@ public class TripListFragment extends Fragment implements DataModel.ImagesSubscr
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_trip_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_vertical_trip_list, container, false);
         mViewModel = ViewModelProviders.of(this).get(TripListViewModel.class);
         mViewModel.getTrips().observe(this, tripListUpdateObserver);
-
 
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
-                mLayoutManager = new LinearLayoutManager(context);
+                mLayoutManager = new LinearLayoutManager(context, getDirection(), false);
             } else {
                 mLayoutManager = new GridLayoutManager(context, mColumnCount);
             }
             recyclerView.setLayoutManager(mLayoutManager);
 
-            mAdapter = new TripListRecyclerViewAdapter(mViewModel, mListener);
+            mAdapter = new TripListRecyclerViewAdapter(mViewModel, mListener, getDirection());
             recyclerView.setAdapter(mAdapter);
 
         }
         return view;
     }
 
+    /* Implementing classes must implement depending on their direction*/
+    abstract @RecyclerView.Orientation int getDirection();
 
     @Override
     public void onAttach(Context context) {
