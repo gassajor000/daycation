@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@id/nav_splash">
 
     <fragment
         android:id="@+id/nav_home"
@@ -12,10 +12,10 @@
         tools:layout="@layout/fragment_home">
 
         <action
-            android:id="@+id/actionOpenProfile"
+            android:id="@+id/action_nav_home_to_profile"
             app:destination="@id/nav_profile" />
         <action
-            android:id="@+id/action_nav_home_to_placeholder2"
+            android:id="@+id/action_nav_home_to_favorites"
             app:destination="@id/nav_favorites" />
     </fragment>
 
@@ -54,5 +54,13 @@
         <action
             android:id="@+id/action_nav_favorites_to_tripInfo"
             app:destination="@id/nav_tripInfo" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_splash"
+        android:name="com.tripdazzle.daycation.ui.splash.SplashFragment"
+        android:label="SplashFragment" >
+        <action
+            android:id="@+id/action_nav_home_to_splash"
+            app:destination="@id/nav_home" />
     </fragment>
 </navigation>
