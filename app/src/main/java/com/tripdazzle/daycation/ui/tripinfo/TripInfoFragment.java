@@ -21,6 +21,7 @@ import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
 import com.tripdazzle.daycation.models.BitmapImage;
+import com.tripdazzle.daycation.models.ProfilePicture;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 
@@ -175,4 +176,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
             }
         }
     }
+
+    @Override
+    public void onGetProfilePicturesByUserIds(List<ProfilePicture> images) {  }
 }

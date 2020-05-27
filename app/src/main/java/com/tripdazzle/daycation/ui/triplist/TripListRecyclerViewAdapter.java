@@ -1,7 +1,6 @@
 package com.tripdazzle.daycation.ui.triplist;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,12 +50,8 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
         Trip trip = mViewModel.getTrips().getValue().get(position);
 
         Bitmap bitmap = mViewModel.getImages().getValue().get(trip.mainImageId);
-        if (bitmap != null){
-            holder.bind(trip, bitmap);
-        } else{
-            holder.bind(trip, null);
-        }
-
+        Bitmap profilePic = mViewModel.getProfilePictures().getValue().get(trip.creatorId);
+        holder.bind(trip, bitmap, profilePic);
 
         holder.binding.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,21 +73,27 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final ViewDataBinding binding;
         public Trip mItem;
-        public BitmapDrawable mImage;
 
         public ViewHolder(ViewDataBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
         }
 
-        public void bind(Trip trip, Bitmap image){
+        public void bind(Trip trip, Bitmap image, Bitmap profilePic){
             mItem = trip;
             binding.setVariable(BR.trip, trip);
+
             if(image != null){
                 ((ImageView) itemView.findViewById(R.id.tripCardMainImage)).setImageBitmap(image);
             } else {
                 ((ImageView) itemView.findViewById(R.id.tripCardMainImage)).setImageResource(R.drawable.side_nav_bar);
             }
+
+            ImageView creatorPic = (ImageView) itemView.findViewById(R.id.tripCardCreatorImage);
+            if(profilePic != null &&  creatorPic != null){
+                creatorPic.setImageBitmap(profilePic);
+            }
+
             binding.executePendingBindings();
         }
 

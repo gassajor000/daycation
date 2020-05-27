@@ -1,13 +1,17 @@
 package com.tripdazzle.server.fakedb;
 
+import com.tripdazzle.server.DatabaseError;
 import com.tripdazzle.server.datamodels.ActivityData;
 import com.tripdazzle.server.datamodels.ActivityType;
+import com.tripdazzle.server.datamodels.BitmapData;
 import com.tripdazzle.server.datamodels.ProfileData;
+import com.tripdazzle.server.datamodels.ProfilePictureData;
 import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.TripData;
 import com.tripdazzle.server.datamodels.UserData;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -97,14 +101,49 @@ public class FakeDatabase {
      * @param imgIds id of the image to fetch
      * @return Image file of the image with the matching id
      */
-    public List<File> getImagesById(List<Integer> imgIds){
-        List<File> imageFiles = new ArrayList<>();
+    public List<BitmapData> getImagesById(List<Integer> imgIds) throws DatabaseError {
+        List<BitmapData> imageFiles = new ArrayList<>();
         for(Integer id: imgIds){
             String fileName = fileNames.get(id);
             if (fileName == null){
                 imageFiles.add(null);
             } else {
-                imageFiles.add(new File(dbFilePath + "/" + fileName));
+                try {
+                    imageFiles.add(new BitmapData(id, new FileInputStream(dbFilePath + "/" + fileName)));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    throw new DatabaseError(e);
+                }
+            }
+        }
+        return imageFiles;
+    }
+
+    /** Retrieve a profile image by user id. Not found images come back null.
+     * @param userIds usernames of the profile pictures to fetch
+     * @return List of Image files of the image with the matching ids
+     */
+    public List<ProfilePictureData> getProfilePicturesByUserIds(List<String> userIds) throws DatabaseError {
+        List<ProfilePictureData> imageFiles = new ArrayList<>();
+        for(String id: userIds){
+            FakeUser user = users.get(id);
+
+            if (user == null){
+                imageFiles.add(null);
+                continue;
+            }
+
+            String fileName = fileNames.get(user.profileImageId);
+            if (fileName == null){
+                imageFiles.add(null);
+            } else {
+                try {
+                    imageFiles.add(new ProfilePictureData(id,
+                            new BitmapData(user.profileImageId, new FileInputStream(dbFilePath + "/" + fileName))));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    throw new DatabaseError(e);
+                }
             }
         }
         return imageFiles;

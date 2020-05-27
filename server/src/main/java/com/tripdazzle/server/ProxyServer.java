@@ -1,16 +1,13 @@
 package com.tripdazzle.server;
 
+import com.tripdazzle.server.datamodels.BitmapData;
 import com.tripdazzle.server.datamodels.ProfileData;
+import com.tripdazzle.server.datamodels.ProfilePictureData;
 import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.TripData;
 import com.tripdazzle.server.datamodels.UserData;
 import com.tripdazzle.server.fakedb.FakeDatabase;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.List;
 
 public class ProxyServer {
@@ -23,22 +20,15 @@ public class ProxyServer {
     /** retrieve an image from the server
      * @param imageIds id of the image to fetch
      */
-    public List<InputStream> getImagesById(List<Integer> imageIds) throws ServerError {
-        List<File> imgFiles = db.getImagesById(imageIds);
-        List<InputStream> imageData = new ArrayList<>();
-        try {
-            for(File f: imgFiles){
-                if (f == null){
-                    imageData.add(null);
-                } else {
-                    imageData.add(new FileInputStream(f));
-                }
-            }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-            throw new ServerError(e);
-        }
-        return imageData;
+    public List<BitmapData> getImagesById(List<Integer> imageIds) throws ServerError {
+        return db.getImagesById(imageIds);
+    }
+
+    /** retrieve profile pictures for users
+     * @param userIds id of the image to fetch
+     */
+    public List<ProfilePictureData> getProfilePicturesByUserIds(List<String> userIds) throws ServerError {
+        return db.getProfilePicturesByUserIds(userIds);
     }
 
     /** retrieve a trip from the server

@@ -1,16 +1,18 @@
 package com.tripdazzle.daycation;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 
 import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Profile;
+import com.tripdazzle.daycation.models.ProfilePicture;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.models.User;
 import com.tripdazzle.server.ProxyServer;
 import com.tripdazzle.server.ServerError;
+import com.tripdazzle.server.datamodels.BitmapData;
+import com.tripdazzle.server.datamodels.ProfilePictureData;
 import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.TripData;
 
@@ -20,7 +22,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 public class DataModel {
@@ -73,6 +74,9 @@ public class DataModel {
     }
     public void getImagesByIds(List<Integer> imageIds, ImagesSubscriber callback) {
         new GetImagesByIdsTask(callback).execute(imageIds);
+    }
+    public void getProfilePicturesByIds(List<String> userIds, ImagesSubscriber callback) {
+        new GetProfilePicturesByUserIdsTask(callback).execute(userIds);
     }
 
     public void getTripById(int tripId, TripsSubscriber callback){
@@ -137,6 +141,7 @@ public class DataModel {
          * @param images BitmapImage returned by query
          * */
         void onGetImagesById(List<BitmapImage> images);
+        void onGetProfilePicturesByUserIds(List<ProfilePicture> images);
     }
 
     public interface ProfilesSubscriber extends TaskContext {
@@ -192,11 +197,9 @@ public class DataModel {
     private class GetImagesByIdsTask extends AsyncTask<List<Integer>, Void, List<BitmapImage>> {
         /** Application Context*/
         private ImagesSubscriber context;
-        private List<Integer> ids;
 
         private GetImagesByIdsTask(ImagesSubscriber context) {
             this.context = context;
-            this.ids = new ArrayList<>();
         }
 
         @Override
@@ -204,16 +207,14 @@ public class DataModel {
             if (imageIds.length > 1){
                 return null;
             } else {
-                this.ids = imageIds[0];
                 try {
-                    List<InputStream> imageData = server.getImagesById(imageIds[0]);
+                    List<BitmapData> imageData = server.getImagesById(imageIds[0]);
                     List<BitmapImage> images = new ArrayList<>();
 
-                    Iterator<Integer> id = imageIds[0].iterator();
-                    Iterator<InputStream> stream = imageData.iterator();
-                    while(id.hasNext() && stream.hasNext()) {
-                        images.add(new BitmapImage(BitmapFactory.decodeStream(stream.next()), id.next()));
+                    for(BitmapData bmp: imageData){
+                        images.add(new BitmapImage(bmp));
                     }
+
                     return images;
                 } catch (ServerError serverError) {
                     serverError.printStackTrace();
@@ -225,15 +226,54 @@ public class DataModel {
         @Override
         protected void onPostExecute(List<BitmapImage> result) {
             super.onPostExecute(result);
-            if(ids.size() == 0){
-                context.onError("No ids provided");
-            } else if(result == null){
-                context.onError("No image found with id " + ids);
-            } else if (result.size() != ids.size()){
-                context.onError(String.format("Incorrect number of images returned! Expecting %d, got %d", ids.size(), result.size()));
+            if(result == null || result.size() == 0){
+                context.onError("No images found");
             } else {
                 // onSuccess()?
                 context.onGetImagesById(result);
+            }
+        }
+    }
+
+    private class GetProfilePicturesByUserIdsTask extends AsyncTask<List<String>, Void, List<ProfilePicture>> {
+        /**
+         * Application Context
+         */
+        private ImagesSubscriber context;
+
+        private GetProfilePicturesByUserIdsTask(ImagesSubscriber context) {
+            this.context = context;
+        }
+
+        @Override
+        protected List<ProfilePicture> doInBackground(List<String>... userIds) {
+            if (userIds.length > 1){
+                return null;
+            } else {
+                try {
+                    List<ProfilePictureData> imageData = server.getProfilePicturesByUserIds(userIds[0]);
+                    List<ProfilePicture> images = new ArrayList<>();
+
+                    for(ProfilePictureData bmp: imageData){
+                        images.add(new ProfilePicture(bmp));
+                    }
+
+                    return images;
+                } catch (ServerError serverError) {
+                    serverError.printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<ProfilePicture> result) {
+            super.onPostExecute(result);
+            if(result == null || result.size() == 0) {
+                context.onError("No images found");
+            } else {
+                // onSuccess()?
+                context.onGetProfilePicturesByUserIds(result);
             }
         }
     }

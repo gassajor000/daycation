@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.tripdazzle.daycation.models.BitmapImage;
+import com.tripdazzle.daycation.models.ProfilePicture;
 import com.tripdazzle.daycation.models.Trip;
 
 import java.util.ArrayList;
@@ -17,6 +18,7 @@ import java.util.Map;
 public class TripListViewModel extends ViewModel {
     private MutableLiveData<List<Trip>> trips = new MutableLiveData<>();
     private MutableLiveData<Map<Integer, Bitmap>> images = new MutableLiveData<>();
+    private MutableLiveData<Map<String, Bitmap>> profilePictures = new MutableLiveData<>();
 
     public LiveData<List<Trip>> getTrips() {
         if (trips.getValue() ==  null){
@@ -46,6 +48,25 @@ public class TripListViewModel extends ViewModel {
             imagesMap.put(img.id, img.image);
         }
         this.images.setValue(imagesMap);
+    }
+
+    public LiveData<Map<String, Bitmap>> getProfilePictures(){
+        if (profilePictures.getValue() ==  null){
+            profilePictures.setValue(new HashMap<String, Bitmap>());
+        }
+        return profilePictures;
+    }
+
+    public void setProfilePictures(Map<String, Bitmap> images) {
+        this.profilePictures.setValue(images);
+    }
+
+    public void setProfilePictures(List<ProfilePicture> images) {
+        Map<String, Bitmap> imagesMap = new HashMap<>();
+        for(ProfilePicture img: images){
+            imagesMap.put(img.userId, img.bitmap.image);
+        }
+        this.profilePictures.setValue(imagesMap);
     }
 
 }

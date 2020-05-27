@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.BitmapImage;
+import com.tripdazzle.daycation.models.ProfilePicture;
 import com.tripdazzle.daycation.models.Trip;
 
 import java.util.ArrayList;
@@ -103,11 +104,17 @@ public abstract class TripListFragment extends Fragment implements DataModel.Ima
     private void getImages(){
         // Fetch images
         List<Integer> imageIds = new ArrayList<>();
+        List<String> userIds = new ArrayList<>();
         for(Trip trip: mViewModel.getTrips().getValue()){
             imageIds.add(trip.mainImageId);
+            userIds.add(trip.creatorId);
         }
 
         mModel.getImagesByIds(imageIds, this);
+
+        if(getDirection() == RecyclerView.HORIZONTAL){
+            mModel.getProfilePicturesByIds(userIds, this);
+        }
     }
 
     @Override
@@ -119,6 +126,15 @@ public abstract class TripListFragment extends Fragment implements DataModel.Ima
     @Override
     public void onGetImagesById(List<BitmapImage> images) {
         mViewModel.setImages(images);
+
+        if(recyclerView != null){
+            mAdapter.notifyDataSetChanged();
+        }
+    }
+
+    @Override
+    public void onGetProfilePicturesByUserIds(List<ProfilePicture> images) {
+        mViewModel.setProfilePictures(images);
 
         if(recyclerView != null){
             mAdapter.notifyDataSetChanged();
