@@ -22,15 +22,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
-import com.tripdazzle.daycation.models.BitmapImage;
-import com.tripdazzle.daycation.models.ProfilePicture;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.tripinfo.TripInfoFragmentDirections.ActionNavTripInfoToProfile;
 
 import java.util.List;
 
-public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ImagesSubscriber, DataModel.ReviewsSubscriber, ReviewsListAdapter.OnLoadMoreListener {
+public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ReviewsSubscriber, ReviewsListAdapter.OnLoadMoreListener {
     private TripInfoViewModel mViewModel;
     private RecyclerView mRecyclerView;
     private ReviewsListAdapter mReviewsAdapter;
@@ -129,7 +127,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     private void navigateToProfile(){
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         ActionNavTripInfoToProfile action = TripInfoFragmentDirections.actionNavTripInfoToProfile();
-        action.setProfileId(mViewModel.getTrip().getValue().creatorId);
+        action.setProfileId(mViewModel.getTrip().getValue().creator.userId);
         navController.navigate(action);
     }
 
@@ -171,7 +169,8 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mViewModel.setTrip(trip, mModel.inCurrentUsersFavorites(trip.id));
 
         // get main image
-        mModel.getImageById(trip.mainImageId, this);
+        ImageView mainImageView = (ImageView) this.getView().findViewById(R.id.tripInfoMainImageView);
+        mainImageView.setImageBitmap(trip.mainImage.image);
 
         // get reviews
         onLoadMore();
@@ -180,19 +179,4 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     @Override
     public void onGetFavoritesByUserId(List<Trip> favorites) { }
 
-    @Override
-    public void onGetImagesById(List<BitmapImage> images) {
-        Trip trip = mViewModel.getTrip().getValue();
-        if (trip == null){ return; }
-
-        for(BitmapImage img: images){
-            if(img.id == trip.mainImageId){
-                ImageView mainImageView = (ImageView) this.getView().findViewById(R.id.tripInfoMainImageView);
-                mainImageView.setImageBitmap(img.image);
-            }
-        }
-    }
-
-    @Override
-    public void onGetProfilePicturesByUserIds(List<ProfilePicture> images) {  }
 }

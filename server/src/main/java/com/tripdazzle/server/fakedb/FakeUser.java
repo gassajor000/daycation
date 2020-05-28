@@ -1,5 +1,6 @@
 package com.tripdazzle.server.fakedb;
 
+import com.tripdazzle.server.datamodels.CreatorData;
 import com.tripdazzle.server.datamodels.ProfileData;
 import com.tripdazzle.server.datamodels.UserData;
 
@@ -41,5 +42,9 @@ public class FakeUser {
 
     public UserData toUserData() {
         return new UserData(userId, profileImageId, firstName, lastName, city, new ArrayList<Integer>(createdTrips), new ArrayList<Integer>(reviews), new ArrayList<Integer>(favoriteTrips));
+    }
+
+    public CreatorData toCreatorData(FakeDatabase.ImageFactory imageFactory){
+        return new CreatorData(userId, imageFactory.getProfilePicture(userId), firstName, lastName);
     }
 }

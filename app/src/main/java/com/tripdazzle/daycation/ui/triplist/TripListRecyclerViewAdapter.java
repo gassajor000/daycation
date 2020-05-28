@@ -49,8 +49,8 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Trip trip = mViewModel.getTrips().getValue().get(position);
 
-        Bitmap bitmap = mViewModel.getImages().getValue().get(trip.mainImageId);
-        Bitmap profilePic = mViewModel.getProfilePictures().getValue().get(trip.creatorId);
+        Bitmap bitmap = trip.mainImage.image;
+        Bitmap profilePic = trip.creator.profilePicture.image;
         holder.bind(trip, bitmap, profilePic);
 
         holder.binding.getRoot().setOnClickListener(new View.OnClickListener() {
