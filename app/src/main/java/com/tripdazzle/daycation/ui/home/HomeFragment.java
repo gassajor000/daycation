@@ -20,7 +20,6 @@ import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber {
@@ -43,7 +42,13 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
         });
 
         mRecommendedTripsModel = ViewModelProviders.of(getChildFragmentManager().findFragmentById(R.id.homeRecommendedTrips)).get(TripListViewModel.class);
-        mModel.getTripsByIds(Arrays.asList(301, 302, 303), this);
+//        mModel.getTripsByIds(Arrays.asList(301, 302, 303), this);
+        mModel.getRecommendedTripsForUser(mModel.getCurrentUser().userId, new DataModel.OnRecommendedTripsListener() {
+            @Override
+            public void onRecommendedTrips(List<Trip> trips) {
+                mRecommendedTripsModel.setTrips(trips);
+            }
+        });
 
 
         FloatingActionButton fab = root.findViewById(R.id.homeAddTripFab);
@@ -77,7 +82,7 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
 
     @Override
     public void onGetTripsById(List<Trip> trips) {
-        mRecommendedTripsModel.setTrips(trips);
+//        mRecommendedTripsModel.setTrips(trips);
     }
 
     @Override

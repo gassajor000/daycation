@@ -15,6 +15,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.navigation.NavigationView;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.favorites.FavoritesFragmentDirections;
+import com.tripdazzle.daycation.ui.home.HomeFragmentDirections;
 import com.tripdazzle.daycation.ui.profile.ProfileFragmentDirections;
 import com.tripdazzle.daycation.ui.triplist.TripListFragment;
 
@@ -72,8 +73,12 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
                 action = FavoritesFragmentDirections.actionNavFavoritesToTripInfo(item.id);
                 break;
             }
+            case R.id.nav_home: {
+                action = HomeFragmentDirections.actionNavHomeToTripInfo(item.id);
+                break;
+            }
             default: {
-                throw new RuntimeException("Unknown destination: " + navController.getCurrentDestination().toString());
+                throw new RuntimeException("Unknown destination: " + navController.getCurrentDestination().getLabel());
             }
         }
 

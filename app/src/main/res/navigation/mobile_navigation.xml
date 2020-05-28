@@ -17,6 +17,9 @@
         <action
             android:id="@+id/action_nav_home_to_favorites"
             app:destination="@id/nav_favorites" />
+        <action
+            android:id="@+id/action_nav_home_to_tripInfo"
+            app:destination="@id/nav_tripInfo" />
     </fragment>
 
     <fragment

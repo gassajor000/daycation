@@ -23,6 +23,7 @@ public class FakeDatabase {
     private HashMap<Integer, TripData> trips = new HashMap<>();
     private HashMap<Integer, ReviewData> reviews = new HashMap<>();
     private HashMap<String, FakeUser> users = new HashMap<>();
+    private HashMap<String, List<Integer>> recommendations = new HashMap<>();
 
     private String dbFilePath;
 
@@ -51,7 +52,7 @@ public class FakeDatabase {
                 401, new ActivityData[]{activities[0], activities[1], activities[2]},
                 (float) 3.7, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507,
                 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520))));
-        trips.put(302, new TripData("La Jolla Trip", 302, "mscott","Fun Trip in La Jolla.",
+        trips.put(302, new TripData("La Jolla Trip", 302, "jhalpert","Fun Trip in La Jolla.",
                 403, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 4.2, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
         trips.put(303, new TripData("Balboa Park", 303, "mscott","A day at Balboa Park.",
@@ -90,6 +91,10 @@ public class FakeDatabase {
         users.put("mscott", new FakeUser("mscott", 405, "Michael", "Scott", "Scranton, PA", "password123",
                 new ArrayList<>(Arrays.asList(301, 302, 303, 304)), new ArrayList<>(Arrays.asList(501, 506, 507, 508, 509, 510)), new ArrayList<>(Arrays.asList(302, 301, 304))));
         users.put("jhalpert", new FakeUser("jhalpert", 406, "Jim", "Halpert", "Scranton, PA", "password123"));
+
+        // Recommendations
+        recommendations.put("mscott", Arrays.asList(302, 304, 303));
+        recommendations.put("jhalpert", Arrays.asList(301, 303, 304));
     }
 
     public void setDbFilePath(String dbFilePath) {
@@ -173,6 +178,14 @@ public class FakeDatabase {
             favorites.add(trips.get(id));
         }
         return favorites;
+    }
+
+    public List<TripData> getRecommendedTripsForUser(String userId){
+        List<TripData> recTrips = new ArrayList<>();
+        for(Integer tripId: recommendations.get(userId)){
+            recTrips.add(trips.get(tripId));
+        }
+        return recTrips;
     }
 
     public void toggleFavorite(String userId, Integer tripId, Boolean addFavorite){

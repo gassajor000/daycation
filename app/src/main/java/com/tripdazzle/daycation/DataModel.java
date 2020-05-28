@@ -111,6 +111,10 @@ public class DataModel {
         return currentUser.inFavorites(tripId);
     }
 
+    public void getRecommendedTripsForUser(String userId, OnRecommendedTripsListener callback){
+        new GetRecommendedTripsByUserIdTask(callback).execute(userId);
+    }
+
     /*
     * Asynchronous Tasks
     */
@@ -156,6 +160,10 @@ public class DataModel {
          * @param reviews Reviews returned by query
          * */
         void onGetReviewsByIds(List<Review> reviews);
+    }
+
+    public interface OnRecommendedTripsListener {
+        void onRecommendedTrips(List<Trip> trips);
     }
 
     // Tasks
@@ -392,6 +400,46 @@ public class DataModel {
             } else {
                 // onSuccess()?
                 context.onGetFavoritesByUserId(result);
+            }
+        }
+    }
+
+    private class GetRecommendedTripsByUserIdTask extends AsyncTask<String, Void, List<Trip>> {
+        /** Application Context*/
+        private OnRecommendedTripsListener context;
+
+        private GetRecommendedTripsByUserIdTask(OnRecommendedTripsListener context) {
+            this.context = context;
+        }
+
+        @Override
+        protected List<Trip> doInBackground(String ... userIds) {
+            if (userIds.length > 1){
+                return null;
+            } else {
+                try {
+                    List<TripData> recommendationsData = server.getRecommendedTripsByUserId(userIds[0]);
+                    List<Trip> recommendedTrips = new ArrayList<>();
+
+                    for(TripData t: recommendationsData){
+                        recommendedTrips.add(new Trip(t));
+                    }
+                    return recommendedTrips;
+                } catch (ServerError serverError) {
+                    serverError.printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Trip> result) {
+            super.onPostExecute(result);
+            if(result == null){
+//                context.onError("No favorites found");
+            } else {
+                // onSuccess()?
+                context.onRecommendedTrips(result);
             }
         }
     }
