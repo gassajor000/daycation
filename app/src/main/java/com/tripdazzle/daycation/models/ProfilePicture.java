@@ -1,18 +1,20 @@
 package com.tripdazzle.daycation.models;
 
+import android.graphics.Bitmap;
+
+import com.tripdazzle.server.datamodels.BitmapData;
 import com.tripdazzle.server.datamodels.ProfilePictureData;
 
-public class ProfilePicture {
+public class ProfilePicture extends BitmapImage{
     public final String userId;
-    public final BitmapImage bitmap;
 
-    public ProfilePicture(String userId, BitmapImage bitmap) {
+    public ProfilePicture(String userId, Integer id, Bitmap bitmap) {
+        super(bitmap, id);
         this.userId = userId;
-        this.bitmap = bitmap;
     }
 
     public ProfilePicture(ProfilePictureData data){
+        super((BitmapData) data);
         this.userId = data.userId;
-        this.bitmap = new BitmapImage(data.bitmap);
     }
 }

@@ -143,8 +143,7 @@ public class FakeDatabase {
                 imageFiles.add(null);
             } else {
                 try {
-                    imageFiles.add(new ProfilePictureData(id,
-                            new BitmapData(user.profileImageId, new FileInputStream(dbFilePath + "/" + fileName))));
+                    imageFiles.add(new ProfilePictureData(id, user.profileImageId, new FileInputStream(dbFilePath + "/" + fileName)));
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                     throw new DatabaseError(e);

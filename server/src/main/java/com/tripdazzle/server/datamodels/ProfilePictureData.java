@@ -1,11 +1,12 @@
 package com.tripdazzle.server.datamodels;
 
-public class ProfilePictureData {
-    public final String userId;
-    public final BitmapData bitmap;
+import java.io.InputStream;
 
-    public ProfilePictureData(String userId, BitmapData bitmap) {
+public class ProfilePictureData extends BitmapData{
+    public final String userId;
+
+    public ProfilePictureData(String userId, Integer id, InputStream dataStream) {
+        super(id, dataStream);
         this.userId = userId;
-        this.bitmap = bitmap;
     }
 }

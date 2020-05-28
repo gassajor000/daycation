@@ -42,7 +42,6 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
         });
 
         mRecommendedTripsModel = ViewModelProviders.of(getChildFragmentManager().findFragmentById(R.id.homeRecommendedTrips)).get(TripListViewModel.class);
-//        mModel.getTripsByIds(Arrays.asList(301, 302, 303), this);
         mModel.getRecommendedTripsForUser(mModel.getCurrentUser().userId, new DataModel.OnRecommendedTripsListener() {
             @Override
             public void onRecommendedTrips(List<Trip> trips) {

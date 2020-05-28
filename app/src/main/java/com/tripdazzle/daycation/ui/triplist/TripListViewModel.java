@@ -64,7 +64,7 @@ public class TripListViewModel extends ViewModel {
     public void setProfilePictures(List<ProfilePicture> images) {
         Map<String, Bitmap> imagesMap = new HashMap<>();
         for(ProfilePicture img: images){
-            imagesMap.put(img.userId, img.bitmap.image);
+            imagesMap.put(img.userId, img.image);
         }
         this.profilePictures.setValue(imagesMap);
     }
