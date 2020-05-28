@@ -168,9 +168,14 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         Trip trip = trips.get(0);
         mViewModel.setTrip(trip, mModel.inCurrentUsersFavorites(trip.id));
 
-        // get main image
+        // set main image
         ImageView mainImageView = (ImageView) this.getView().findViewById(R.id.tripInfoMainImageView);
         mainImageView.setImageBitmap(trip.mainImage.image);
+
+        // set creator image
+        ImageView creatorImageView = (ImageView) this.getView().findViewById(R.id.tripInfoCreatorProfilePic);
+        creatorImageView.setImageBitmap(trip.creator.profilePicture.image);
+
 
         // get reviews
         onLoadMore();
