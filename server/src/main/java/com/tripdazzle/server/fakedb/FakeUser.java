@@ -2,6 +2,7 @@ package com.tripdazzle.server.fakedb;
 
 import com.tripdazzle.server.datamodels.CreatorData;
 import com.tripdazzle.server.datamodels.ProfileData;
+import com.tripdazzle.server.datamodels.ReviewerData;
 import com.tripdazzle.server.datamodels.UserData;
 
 import java.util.ArrayList;
@@ -46,5 +47,9 @@ public class FakeUser {
 
     public CreatorData toCreatorData(FakeDatabase.ImageFactory imageFactory){
         return new CreatorData(userId, imageFactory.getProfilePicture(userId), firstName, lastName);
+    }
+
+    public ReviewerData toReviewerData(FakeDatabase.ImageFactory imageFactory){
+        return new ReviewerData(userId, imageFactory.getProfilePicture(userId), firstName, lastName);
     }
 }

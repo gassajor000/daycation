@@ -3,6 +3,7 @@ package com.tripdazzle.daycation.ui.tripinfo;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import androidx.databinding.DataBindingUtil;
@@ -140,6 +141,10 @@ public class ReviewsListAdapter extends RecyclerView.Adapter {
             binding.setVariable(BR.review, review);
             binding.setVariable(BR.dateFormat, dateFormat);
             binding.executePendingBindings();
+
+            if(review.reviewer.profilePicture != null){
+                ((ImageView) itemView.findViewById(R.id.reviewReviewerProfilePic)).setImageBitmap(review.reviewer.profilePicture.image);
+            }
         }
     }
 

@@ -8,6 +8,7 @@ import com.tripdazzle.server.datamodels.CreatorData;
 import com.tripdazzle.server.datamodels.ProfileData;
 import com.tripdazzle.server.datamodels.ProfilePictureData;
 import com.tripdazzle.server.datamodels.ReviewData;
+import com.tripdazzle.server.datamodels.ReviewerData;
 import com.tripdazzle.server.datamodels.TripData;
 import com.tripdazzle.server.datamodels.UserData;
 
@@ -22,7 +23,7 @@ import java.util.List;
 public class FakeDatabase {
     private HashMap<Integer, String> fileNames;
     private HashMap<Integer, FakeTrip> trips = new HashMap<>();
-    private HashMap<Integer, ReviewData> reviews = new HashMap<>();
+    private HashMap<Integer, FakeReview> reviews = new HashMap<>();
     private HashMap<String, FakeUser> users = new HashMap<>();
     private HashMap<String, List<Integer>> recommendations = new HashMap<>();
 
@@ -67,36 +68,37 @@ public class FakeDatabase {
                 404, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 2.3, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
 
-
-        // Reviews
-        reviews.putAll(new HashMap<Integer, ReviewData>(){{
-            put(501,  new ReviewData(501, "Michael Scott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 501"));
-            put(502,  new ReviewData(502, "Kevin Malone", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 502"));
-            put(503,  new ReviewData(503, "Jim Halpert", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 503"));
-            put(504,  new ReviewData(504, "Pam Beesley", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 504"));
-            put(505,  new ReviewData(505, "Angela Martin", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 505"));
-            put(506,  new ReviewData(506, "Michael Scott", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 506"));
-            put(507,  new ReviewData(507, "Michael Scott", (float) 2.0, new Date(), "Totally awesome experience but I lost my iPhone 507"));
-            put(508,  new ReviewData(508, "Michael Scott", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 508"));
-            put(509,  new ReviewData(509, "Michael Scott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 509"));
-            put(510,  new ReviewData(510, "Michael Scott", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 510"));
-            put(511,  new ReviewData(511, "Michael Scott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 511"));
-            put(512,  new ReviewData(512, "Kevin Malone", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 512"));
-            put(513,  new ReviewData(513, "Jim Halpert", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 513"));
-            put(514,  new ReviewData(514, "Pam Beesley", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 514"));
-            put(515,  new ReviewData(515, "Angela Martin", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 515"));
-            put(516,  new ReviewData(516, "Michael Scott", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 516"));
-            put(517,  new ReviewData(517, "Michael Scott", (float) 2.0, new Date(), "Totally awesome experience but I lost my iPhone 517"));
-            put(518,  new ReviewData(518, "Michael Scott", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 518"));
-            put(519,  new ReviewData(519, "Michael Scott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 519"));
-            put(520,  new ReviewData(520, "Michael Scott", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 520"));
-        }});
-
         // Users
         users.put("mscott", new FakeUser("mscott", 405, "Michael", "Scott", "Scranton, PA", "password123",
                 new ArrayList<>(Arrays.asList(301, 303, 304)), new ArrayList<>(Arrays.asList(501, 506, 507, 508, 509, 510)), new ArrayList<>(Arrays.asList(302, 301, 304))));
         users.put("jhalpert", new FakeUser("jhalpert", 406, "Jim", "Halpert", "Scranton, PA", "password123",
                 new ArrayList<>(Arrays.asList(302)), new ArrayList<Integer>(), new ArrayList<>(Arrays.asList(304, 301, 303))));
+
+        // Reviews
+        reviews.putAll(new HashMap<Integer, FakeReview>(){{
+            put(501,  new FakeReview(501, "mscott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 501"));
+            put(502,  new FakeReview(502, "jhalpert", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 502"));
+            put(503,  new FakeReview(503, "jhalpert", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 503"));
+            put(504,  new FakeReview(504, "jhalpert", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 504"));
+            put(505,  new FakeReview(505, "jhalpert", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 505"));
+            put(506,  new FakeReview(506, "mscott", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 506"));
+            put(507,  new FakeReview(507, "mscott", (float) 2.0, new Date(), "Totally awesome experience but I lost my iPhone 507"));
+            put(508,  new FakeReview(508, "mscott", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 508"));
+            put(509,  new FakeReview(509, "mscott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 509"));
+            put(510,  new FakeReview(510, "mscott", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 510"));
+            put(511,  new FakeReview(511, "mscott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 511"));
+            put(512,  new FakeReview(512, "jhalpert", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 512"));
+            put(513,  new FakeReview(513, "jhalpert", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 513"));
+            put(514,  new FakeReview(514, "jhalpert", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 514"));
+            put(515,  new FakeReview(515, "jhalpert", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 515"));
+            put(516,  new FakeReview(516, "mscott", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 516"));
+            put(517,  new FakeReview(517, "mscott", (float) 2.0, new Date(), "Totally awesome experience but I lost my iPhone 517"));
+            put(518,  new FakeReview(518, "mscott", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 518"));
+            put(519,  new FakeReview(519, "mscott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 519"));
+            put(520,  new FakeReview(520, "mscott", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 520"));
+        }});
+
+
 
         // Recommendations
         recommendations.put("mscott", Arrays.asList(302, 304, 303));
@@ -172,7 +174,7 @@ public class FakeDatabase {
     public List<ReviewData> getReviewsById(List<Integer> reviewIds){
         List<ReviewData> ret =  new ArrayList<>();
         for(Integer r: reviewIds){
-            ret.add(reviews.get(r));
+            ret.add(reviews.get(r).toReviewData(userFactory));
         }
         return ret;
     }
@@ -251,5 +253,7 @@ public class FakeDatabase {
         public ProfileData getProfile(String userId){
             return users.get(userId).toProfile();
         }
+        
+        public ReviewerData getReviewer(String userId){ return users.get(userId).toReviewerData(imageFactory); }
     }
 }
