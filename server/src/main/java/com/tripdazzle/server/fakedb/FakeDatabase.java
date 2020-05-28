@@ -89,8 +89,9 @@ public class FakeDatabase {
 
         // Users
         users.put("mscott", new FakeUser("mscott", 405, "Michael", "Scott", "Scranton, PA", "password123",
-                new ArrayList<>(Arrays.asList(301, 302, 303, 304)), new ArrayList<>(Arrays.asList(501, 506, 507, 508, 509, 510)), new ArrayList<>(Arrays.asList(302, 301, 304))));
-        users.put("jhalpert", new FakeUser("jhalpert", 406, "Jim", "Halpert", "Scranton, PA", "password123"));
+                new ArrayList<>(Arrays.asList(301, 303, 304)), new ArrayList<>(Arrays.asList(501, 506, 507, 508, 509, 510)), new ArrayList<>(Arrays.asList(302, 301, 304))));
+        users.put("jhalpert", new FakeUser("jhalpert", 406, "Jim", "Halpert", "Scranton, PA", "password123",
+                new ArrayList<>(Arrays.asList(302)), new ArrayList<Integer>(), new ArrayList<>(Arrays.asList(304, 301, 303))));
 
         // Recommendations
         recommendations.put("mscott", Arrays.asList(302, 304, 303));

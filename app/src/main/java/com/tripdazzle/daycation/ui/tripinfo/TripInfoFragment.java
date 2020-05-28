@@ -14,6 +14,8 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -24,6 +26,7 @@ import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.ProfilePicture;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.ui.tripinfo.TripInfoFragmentDirections.ActionNavTripInfoToProfile;
 
 import java.util.List;
 
@@ -50,6 +53,12 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         View view = binding.getRoot();
 
         view.findViewById(R.id.tripInfoToggleFavorite).setOnClickListener(new ToggleFavoriteListener());
+        view.findViewById(R.id.tripInfoCreatorProfilePic).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                navigateToProfile();
+            }
+        });
 
         mViewModel.getInFavorites().observe(this, new Observer<Boolean>() {
             @Override
@@ -115,6 +124,13 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         } else { // load all remaining
             mModel.getReviewsByIds(trip.reviews.subList(numLoaded, trip.reviews.size()), this);
         }
+    }
+
+    private void navigateToProfile(){
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        ActionNavTripInfoToProfile action = TripInfoFragmentDirections.actionNavTripInfoToProfile();
+        action.setProfileId(mViewModel.getTrip().getValue().creatorId);
+        navController.navigate(action);
     }
 
     @Override
