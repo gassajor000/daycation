@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:bind="http://schemas.android.com/tools">
 
     <data>
         <variable
@@ -33,82 +34,77 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/side_nav_bar" />
 
-            <androidx.cardview.widget.CardView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <include
+                layout="@layout/layout_profile_pic_rounded"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                bind:profilePic="@{trip.creator.profilePicture}"
+                bind:cornerRadiusDP='@{20}'
                 android:layout_marginTop="45dp"
-                app:cardCornerRadius="@dimen/profile_pic_corner_radius"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent">
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:id="@+id/tripCardCreatorImage"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:srcCompat="@drawable/ic_logo_beachball" />
-            </androidx.cardview.widget.CardView>
+                        <LinearLayout
+                            android:id="@+id/linearLayout"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:gravity="start"
+                            android:orientation="vertical"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:layout_constraintStart_toStartOf="parent">
 
-            <LinearLayout
-                android:id="@+id/linearLayout"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:gravity="start"
-                android:orientation="vertical"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent">
+                            <TextView
+                                android:id="@+id/tripTitle"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_weight="1"
+                                android:text='@{trip.title, default="Trip Name"}'
+                                android:textAlignment="center"
+                                android:textSize="18sp" />
 
-                <TextView
-                    android:id="@+id/tripTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_weight="1"
-                    android:text='@{trip.title, default="Trip Name"}'
-                    android:textAlignment="center"
-                    android:textSize="18sp" />
+                            <TextView
+                                android:id="@+id/tripLocation"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="8dp"
+                                android:layout_marginTop="8dp"
+                                android:layout_marginEnd="8dp"
+                                android:layout_marginBottom="8dp"
+                                android:lines="1"
+                                android:text='@{trip.location, default="Trip City"}'
+                                android:textAlignment="center" />
 
-                <TextView
-                    android:id="@+id/tripLocation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:lines="1"
-                    android:text='@{trip.location, default="Trip City"}'
-                    android:textAlignment="center" />
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1"
+                                android:gravity="center_horizontal|center_vertical"
+                                android:orientation="horizontal">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:gravity="center_horizontal|center_vertical"
-                    android:orientation="horizontal">
+                                <RatingBar
+                                    android:id="@+id/tripAverageRatingBar"
+                                    style="@android:style/Widget.DeviceDefault.Light.RatingBar.Small"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="0dp"
+                                    android:isIndicator="true"
+                                    android:rating="@{trip.reviewsAverage, default=3.5}" />
 
-                    <RatingBar
-                        android:id="@+id/tripAverageRatingBar"
-                        style="@android:style/Widget.DeviceDefault.Light.RatingBar.Small"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="0dp"
-                        android:isIndicator="true"
-                        android:rating="@{trip.reviewsAverage, default=3.5}" />
+                                <TextView
+                                    android:id="@+id/tripNumReviews"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:text='@{trip.getNumReviews().toString() + " reviews", default="502 reviews"}' />
+                            </LinearLayout>
 
-                    <TextView
-                        android:id="@+id/tripNumReviews"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="16dp"
-                        android:text='@{trip.getNumReviews().toString() + " reviews", default="502 reviews"}' />
-                </LinearLayout>
+                        </LinearLayout>
 
-            </LinearLayout>
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
-</layout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
+                </androidx.cardview.widget.CardView>
+            </layout>

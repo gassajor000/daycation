@@ -17,4 +17,5 @@ public class ProfilePicture extends BitmapImage{
         super((BitmapData) data);
         this.userId = data.userId;
     }
+
 }

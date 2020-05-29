@@ -89,11 +89,6 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
                 ((ImageView) itemView.findViewById(R.id.tripCardMainImage)).setImageResource(R.drawable.side_nav_bar);
             }
 
-            ImageView creatorPic = (ImageView) itemView.findViewById(R.id.tripCardCreatorImage);
-            if(profilePic != null &&  creatorPic != null){
-                creatorPic.setImageBitmap(profilePic);
-            }
-
             binding.executePendingBindings();
         }
 

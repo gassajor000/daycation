@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+        <variable
+            name="profilePic"
+            type="com.tripdazzle.daycation.models.ProfilePicture" />
+        <variable
+            name="cornerRadiusDP"
+            type="Integer" />
+    </data>
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <androidx.cardview.widget.CardView
+            android:layout_width='match_parent'
+            android:layout_height='match_parent'
+            app:cardCornerRadius='@{(float) cornerRadiusDP * context.getResources().getDisplayMetrics().density, default="20dp"}'>
+
+            <ImageView
+                android:id="@+id/profilePictureImageView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src='@{profilePic.getDrawable(context), default="@drawable/ic_launcher_background"}' />
+        </androidx.cardview.widget.CardView>
+    </FrameLayout>
+
+</layout>
