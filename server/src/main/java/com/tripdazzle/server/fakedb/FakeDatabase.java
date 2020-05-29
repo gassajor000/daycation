@@ -54,17 +54,17 @@ public class FakeDatabase {
                 new ActivityData(ActivityType.ICE_CREAM, "In n Out", "Get an In n Out Shake"),
                 new ActivityData(ActivityType.BEACH, "Black's Beach", "Go surfing at Black's Beach")
         };
-        trips.put(301, new FakeTrip("SD Vacay", 301, "mscott","Fun Trip around the San Diego Bay.",
+        trips.put(301, new FakeTrip("SD Vacay", 301, "mscott", "San Diego, CA", "Fun Trip around the San Diego Bay.",
                 401, new ActivityData[]{activities[0], activities[1], activities[2]},
                 (float) 3.7, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507,
                 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520))));
-        trips.put(302, new FakeTrip("La Jolla Trip", 302, "jhalpert","Fun Trip in La Jolla.",
+        trips.put(302, new FakeTrip("La Jolla Trip", 302, "jhalpert", "La Jolla, CA", "Fun Trip in La Jolla.",
                 403, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 4.2, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
-        trips.put(303, new FakeTrip("Balboa Park", 303, "mscott","A day at Balboa Park.",
+        trips.put(303, new FakeTrip("Balboa Park", 303, "mscott", "Balboa Park, San Diego, CA", "A day at Balboa Park.",
                 402, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 4.5, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
-        trips.put(304, new FakeTrip("Zoo Trip", 304, "mscott","Things to do around the Zoo",
+        trips.put(304, new FakeTrip("Zoo Trip", 304, "mscott", "San Diego Zoo, San Diego, CA", "Things to do around the Zoo",
                 404, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 2.3, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
 

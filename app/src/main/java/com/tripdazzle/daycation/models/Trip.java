@@ -10,14 +10,16 @@ public class Trip {
     public final int id;
     public final Creator creator;
     public final String description;
+    public final String location;
     public final BitmapImage mainImage;
     public final Activity[] activities;
     public final Float reviewsAverage;
     public final List<Integer> reviews;
 
-    public Trip(String title, int id, String description, Activity[] activities, Float reviewsAverage, List<Integer> reviews, Creator creator, BitmapImage mainImage) {
+    public Trip(String title, int id, String description, String location, Activity[] activities, Float reviewsAverage, List<Integer> reviews, Creator creator, BitmapImage mainImage) {
         this.title = title;
         this.id = id;
+        this.location = location;
         this.creator = creator;
         this.description = description;
         this.mainImage = mainImage;
@@ -31,6 +33,7 @@ public class Trip {
         this.id = data.id;
         this.creator = new Creator(data.creator);
         this.description = data.description;
+        this.location = data.location;
         this.mainImage = new BitmapImage(data.mainImage);
         this.activities = convertActivities(data.activities);
         this.reviewsAverage = data.reviewsAverage;
