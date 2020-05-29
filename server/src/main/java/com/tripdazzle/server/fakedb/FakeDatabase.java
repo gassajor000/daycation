@@ -169,7 +169,7 @@ public class FakeDatabase {
         return ret;
     }
 
-    public ProfileData getProfileById(String userId) { return users.get(userId).toProfile(); }
+    public ProfileData getProfileById(String userId) { return users.get(userId).toProfile(imageFactory); }
 
     public List<ReviewData> getReviewsById(List<Integer> reviewIds){
         List<ReviewData> ret =  new ArrayList<>();
@@ -251,7 +251,7 @@ public class FakeDatabase {
         }
 
         public ProfileData getProfile(String userId){
-            return users.get(userId).toProfile();
+            return users.get(userId).toProfile(imageFactory);
         }
         
         public ReviewerData getReviewer(String userId){ return users.get(userId).toReviewerData(imageFactory); }

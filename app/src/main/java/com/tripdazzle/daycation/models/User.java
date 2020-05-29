@@ -14,10 +14,6 @@ public class User extends UserData {
         super(data.userId, data.profileImageId, data.firstName, data.lastName, data.city, data.createdTrips, data.reviews, data.favoriteTrips);
     }
 
-    public Profile toProfile(){
-        return new Profile(userId, profileImageId, firstName, lastName, city, createdTrips);
-    }
-
     public Boolean inFavorites(Integer tripId){
         return favoriteTrips.contains(tripId);
     }

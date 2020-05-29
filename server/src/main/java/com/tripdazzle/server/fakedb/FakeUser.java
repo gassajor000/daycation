@@ -37,8 +37,8 @@ public class FakeUser {
         this.favoriteTrips = favoriteTrips;
     }
 
-    public ProfileData toProfile(){
-        return new ProfileData(userId, profileImageId, firstName, lastName, city, new ArrayList<Integer>(createdTrips));
+    public ProfileData toProfile(FakeDatabase.ImageFactory imageFactory){
+        return new ProfileData(userId, imageFactory.getProfilePicture(userId), firstName, lastName, city, new ArrayList<Integer>(createdTrips));
     }
 
     public UserData toUserData() {
