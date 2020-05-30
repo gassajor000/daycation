@@ -18,6 +18,7 @@ import com.google.android.material.snackbar.Snackbar;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.ui.feed.FeedViewModel;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
 import java.util.List;
@@ -27,6 +28,7 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
     private HomeViewModel homeViewModel;
     private DataModel mModel;
     private TripListViewModel mRecommendedTripsModel;
+    private FeedViewModel mNewsFeedViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -42,12 +44,15 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
         });
 
         mRecommendedTripsModel = ViewModelProviders.of(getChildFragmentManager().findFragmentById(R.id.homeRecommendedTrips)).get(TripListViewModel.class);
+        mNewsFeedViewModel = ViewModelProviders.of(getChildFragmentManager().findFragmentById(R.id.homeNewsFeed)).get(FeedViewModel.class);
         mModel.getRecommendedTripsForUser(mModel.getCurrentUser().userId, new DataModel.OnRecommendedTripsListener() {
             @Override
             public void onRecommendedTrips(List<Trip> trips) {
                 mRecommendedTripsModel.setTrips(trips);
             }
         });
+
+        mNewsFeedViewModel.setEvents(mModel.getNewsFeed("mscott"));
 
 
         FloatingActionButton fab = root.findViewById(R.id.homeAddTripFab);

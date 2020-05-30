@@ -11,6 +11,11 @@ import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.ReviewerData;
 import com.tripdazzle.server.datamodels.TripData;
 import com.tripdazzle.server.datamodels.UserData;
+import com.tripdazzle.server.datamodels.feed.FeedEventData;
+import com.tripdazzle.server.fakedb.feed.FakeAddFavoriteEvent;
+import com.tripdazzle.server.fakedb.feed.FakeCreatedTripEvent;
+import com.tripdazzle.server.fakedb.feed.FakeFeedEvent;
+import com.tripdazzle.server.fakedb.feed.FakeReviewEvent;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -26,9 +31,12 @@ public class FakeDatabase {
     private HashMap<Integer, FakeReview> reviews = new HashMap<>();
     private HashMap<String, FakeUser> users = new HashMap<>();
     private HashMap<String, List<Integer>> recommendations = new HashMap<>();
+    private HashMap<String, List<FakeFeedEvent>> newsFeeds = new HashMap<>();
 
     private ImageFactory imageFactory = new ImageFactory();
     private UserFactory userFactory = new UserFactory();
+    private TripFactory tripFactory = new TripFactory();
+    private ReviewFactory reviewFactory = new ReviewFactory();
 
 
     private String dbFilePath;
@@ -103,6 +111,13 @@ public class FakeDatabase {
         // Recommendations
         recommendations.put("mscott", Arrays.asList(302, 304, 303));
         recommendations.put("jhalpert", Arrays.asList(301, 303, 304));
+
+        // News Feeds
+        newsFeeds.put("mscott", Arrays.<FakeFeedEvent>asList(
+                new FakeReviewEvent("mscott", new Date(), 501),
+                new FakeCreatedTripEvent("mscott", new Date(), 302),
+                new FakeAddFavoriteEvent("mscott", new Date(), 301)
+        ));
     }
 
     public void setDbFilePath(String dbFilePath) {
@@ -211,6 +226,14 @@ public class FakeDatabase {
         return null;
     }
 
+    public List<FeedEventData> getNewsFeed(String userId){
+        List<FeedEventData> feed = new ArrayList<>();
+        for(FakeFeedEvent event: newsFeeds.get(userId)){
+            feed.add(event.toFeedEventData(userFactory, reviewFactory, tripFactory));
+        }
+        return feed;
+    }
+
     public class ImageFactory {
 
         public BitmapData getImage(Integer imageId){
@@ -255,5 +278,17 @@ public class FakeDatabase {
         }
         
         public ReviewerData getReviewer(String userId){ return users.get(userId).toReviewerData(imageFactory); }
+    }
+
+    public class TripFactory {
+        public TripData getTrip(Integer tripId){
+            return trips.get(tripId).toTripData(imageFactory, userFactory);
+        }
+    }
+
+    public class ReviewFactory {
+        public ReviewData getReview(Integer reviewId){
+            return reviews.get(reviewId).toReviewData(userFactory);
+        }
     }
 }

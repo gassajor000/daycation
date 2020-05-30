@@ -6,6 +6,7 @@ import com.tripdazzle.server.datamodels.ProfilePictureData;
 import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.TripData;
 import com.tripdazzle.server.datamodels.UserData;
+import com.tripdazzle.server.datamodels.feed.FeedEventData;
 import com.tripdazzle.server.fakedb.FakeDatabase;
 
 import java.util.List;
@@ -81,5 +82,12 @@ public class ProxyServer {
      */
     public UserData login(String userId, String password) throws ServerError{
         return db.login(userId, password);
+    }
+
+    /** retrieves the news feed for a use
+     * @param userId user to fetch feed for
+     */
+    public List<FeedEventData> getNewsFeed(String userId) throws ServerError{
+        return db.getNewsFeed(userId);
     }
 }

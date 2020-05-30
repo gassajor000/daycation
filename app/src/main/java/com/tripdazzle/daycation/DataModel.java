@@ -9,12 +9,20 @@ import com.tripdazzle.daycation.models.ProfilePicture;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.models.User;
+import com.tripdazzle.daycation.models.feed.AddFavoriteEvent;
+import com.tripdazzle.daycation.models.feed.CreatedTripEvent;
+import com.tripdazzle.daycation.models.feed.FeedEvent;
+import com.tripdazzle.daycation.models.feed.ReviewEvent;
 import com.tripdazzle.server.ProxyServer;
 import com.tripdazzle.server.ServerError;
 import com.tripdazzle.server.datamodels.BitmapData;
 import com.tripdazzle.server.datamodels.ProfilePictureData;
 import com.tripdazzle.server.datamodels.ReviewData;
 import com.tripdazzle.server.datamodels.TripData;
+import com.tripdazzle.server.datamodels.feed.AddFavoriteEventData;
+import com.tripdazzle.server.datamodels.feed.CreatedTripEventData;
+import com.tripdazzle.server.datamodels.feed.FeedEventData;
+import com.tripdazzle.server.datamodels.feed.ReviewEventData;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -93,6 +101,26 @@ public class DataModel {
 
     public void getProfileById(String userId, ProfilesSubscriber callback) {
         new GetProfileByIdTask(callback).execute(userId);
+    }
+
+    public List<FeedEvent> getNewsFeed(String userId){
+        try {
+            List<FeedEventData> feedData = server.getNewsFeed(userId);
+            List<FeedEvent> feed = new ArrayList<>();
+            for(FeedEventData event: feedData){
+                if(event instanceof ReviewEventData){
+                    feed.add(new ReviewEvent((ReviewEventData) event));
+                } else if(event instanceof AddFavoriteEventData){
+                    feed.add(new AddFavoriteEvent((AddFavoriteEventData) event));
+                } else if(event instanceof CreatedTripEventData){
+                    feed.add(new CreatedTripEvent((CreatedTripEventData) event));
+                }
+            }
+            return feed;
+        } catch (ServerError serverError) {
+            serverError.printStackTrace();
+            return null;
+        }
     }
 
     public User getCurrentUser(){

@@ -14,12 +14,14 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.models.feed.FeedEvent;
 import com.tripdazzle.daycation.ui.favorites.FavoritesFragmentDirections;
+import com.tripdazzle.daycation.ui.feed.FeedFragment;
 import com.tripdazzle.daycation.ui.home.HomeFragmentDirections;
 import com.tripdazzle.daycation.ui.profile.ProfileFragmentDirections;
 import com.tripdazzle.daycation.ui.triplist.TripListFragment;
 
-public class MainActivity extends AppCompatActivity  implements TripListFragment.OnTripListFragmentInteractionListener, DataModel.DataManager {
+public class MainActivity extends AppCompatActivity  implements TripListFragment.OnTripListFragmentInteractionListener, DataModel.DataManager, FeedFragment.OnListFragmentInteractionListener {
 
     private AppBarConfiguration mAppBarConfiguration;
     private DataModel mModel = new DataModel();
@@ -88,5 +90,10 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
     @Override
     public DataModel getModel() {
         return mModel;
+    }
+
+    @Override
+    public void onListFragmentInteraction(FeedEvent event) {
+        // TODO Navigate somewhere
     }
 }

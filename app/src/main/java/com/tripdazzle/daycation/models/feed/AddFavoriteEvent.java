@@ -2,6 +2,7 @@ package com.tripdazzle.daycation.models.feed;
 
 import com.tripdazzle.daycation.models.Creator;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.server.datamodels.feed.AddFavoriteEventData;
 
 import java.util.Date;
 
@@ -12,5 +13,10 @@ public class AddFavoriteEvent extends FeedEvent {
     protected AddFavoriteEvent(Creator creator, Date date, Trip trip) {
         super(creator, date, DESCRIPTION);
         this.trip = trip;
+    }
+
+    public AddFavoriteEvent(AddFavoriteEventData data){
+        super(new Creator(data.creator), data.date, DESCRIPTION);
+        this.trip = new Trip(data.trip);
     }
 }
