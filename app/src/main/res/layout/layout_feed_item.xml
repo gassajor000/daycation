@@ -32,16 +32,17 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/feedDate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <include
+                    android:id="@+id/feedProfilePic"
+                    layout="@layout/layout_profile_pic_rounded"
+                    android:layout_width="40dp"
+                    android:layout_height="40dp"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="4dp"
-                    android:text="Yesterday"
-                    android:textSize="12sp"
-                    app:layout_constraintStart_toEndOf="@+id/feedProfilePic"
-                    app:layout_constraintTop_toBottomOf="@+id/feedName" />
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    bind:cornerRadiusDP='@{20}'
+                    bind:profilePic="@{event.creator.profilePicture}" />
 
                 <TextView
                     android:id="@+id/feedName"
@@ -54,49 +55,35 @@
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text='@{event.creator.firstName + " " + event.creator.lastName, default="firstName lastName"}' />
 
-                <include
-                    android:id="@+id/feedProfilePic"
-                    layout="@layout/layout_profile_pic_rounded"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    bind:profilePic="@{event.creator.profilePicture}"
-                    bind:cornerRadiusDP='@{15}'
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/feedEventType"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/feedHeader">
-
                 <ImageView
                     android:id="@+id/feedEventIcon"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_menu_favorites" />
+                    android:src='@{event.getIcon(context), default="@drawable/ic_star_yellow_24dp"}'
+                    app:layout_constraintBottom_toBottomOf="@+id/feedName"
+                    app:layout_constraintStart_toEndOf="@+id/feedName" />
 
                 <TextView
                     android:id="@+id/feedEventAction"
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
                     android:text='@{event.description, default="Did Something"}'
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/feedEventIcon"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintBottom_toBottomOf="@+id/feedName"
+                    app:layout_constraintStart_toEndOf="@+id/feedEventIcon" />
+
+                <TextView
+                    android:id="@+id/feedDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="4dp"
+                    android:text='@{event.formatDate(context), default="Yesterday"}'
+                    android:textSize="12sp"
+                    app:layout_constraintStart_toEndOf="@+id/feedProfilePic"
+                    app:layout_constraintTop_toBottomOf="@+id/feedName" />
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <ViewStub
@@ -104,12 +91,10 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/feedEventType" />
+                app:layout_constraintStart_toStartOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>

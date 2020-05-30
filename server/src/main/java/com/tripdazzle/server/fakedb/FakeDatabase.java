@@ -21,6 +21,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -114,9 +115,9 @@ public class FakeDatabase {
 
         // News Feeds
         newsFeeds.put("mscott", Arrays.<FakeFeedEvent>asList(
-                new FakeReviewEvent("mscott", new Date(), 501),
-                new FakeCreatedTripEvent("mscott", new Date(), 302),
-                new FakeAddFavoriteEvent("mscott", new Date(), 301)
+                new FakeReviewEvent("jhalpert", new Date(111, Calendar.SEPTEMBER, 5), 503),
+                new FakeCreatedTripEvent("mscott", new Date(120, Calendar.MAY, 30), 302),
+                new FakeAddFavoriteEvent("jhalpert", new Date(120, Calendar.APRIL, 28), 303)
         ));
     }
 
