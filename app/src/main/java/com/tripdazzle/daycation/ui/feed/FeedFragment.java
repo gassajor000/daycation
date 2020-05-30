@@ -1,4 +1,4 @@
-package com.tripdazzle.daycation.ui;
+package com.tripdazzle.daycation.ui.feed;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
  * Activities containing this fragment MUST implement the {@link OnListFragmentInteractionListener}
  * interface.
  */
-public class FeedItemFragment extends Fragment {
+public class FeedFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
@@ -34,13 +34,13 @@ public class FeedItemFragment extends Fragment {
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
-    public FeedItemFragment() {
+    public FeedFragment() {
     }
 
     // TODO: Customize parameter initialization
     @SuppressWarnings("unused")
-    public static FeedItemFragment newInstance(int columnCount) {
-        FeedItemFragment fragment = new FeedItemFragment();
+    public static FeedFragment newInstance(int columnCount) {
+        FeedFragment fragment = new FeedFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
@@ -59,7 +59,7 @@ public class FeedItemFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_feed_, container, false);
+        View view = inflater.inflate(R.layout.fragment_feed, container, false);
 
         // Set the adapter
         if (view instanceof RecyclerView) {

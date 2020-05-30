@@ -50,8 +50,7 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
         Trip trip = mViewModel.getTrips().getValue().get(position);
 
         Bitmap bitmap = trip.mainImage.image;
-        Bitmap profilePic = trip.creator.profilePicture.image;
-        holder.bind(trip, bitmap, profilePic);
+        holder.bind(trip, bitmap);
 
         holder.binding.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -79,7 +78,7 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
             this.binding = binding;
         }
 
-        public void bind(Trip trip, Bitmap image, Bitmap profilePic){
+        public void bind(Trip trip, Bitmap image){
             mItem = trip;
             binding.setVariable(BR.trip, trip);
 

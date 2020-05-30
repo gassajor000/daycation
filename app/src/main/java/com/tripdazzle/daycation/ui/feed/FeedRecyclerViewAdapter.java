@@ -1,4 +1,4 @@
-package com.tripdazzle.daycation.ui;
+package com.tripdazzle.daycation.ui.feed;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
-import com.tripdazzle.daycation.ui.FeedItemFragment.OnListFragmentInteractionListener;
+import com.tripdazzle.daycation.ui.feed.FeedFragment.OnListFragmentInteractionListener;
 
 import java.util.List;
 
@@ -66,7 +66,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
+            mIdView = (TextView) view.findViewById(R.id.feedName);
             mContentView = (TextView) view.findViewById(R.id.content);
         }
 
