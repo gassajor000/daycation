@@ -3,15 +3,16 @@ package com.tripdazzle.daycation.ui.feed;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
+import androidx.databinding.DataBindingUtil;
+import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.tripdazzle.daycation.BR;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.models.feed.FeedEvent;
 import com.tripdazzle.daycation.ui.feed.FeedFragment.OnListFragmentInteractionListener;
-
-import java.util.List;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Trip} and makes a call to the
@@ -20,25 +21,25 @@ import java.util.List;
  */
 public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Trip> mValues;
     private final OnListFragmentInteractionListener mListener;
+    private FeedViewModel mViewModel;
 
-    public FeedRecyclerViewAdapter(List<Trip> items, OnListFragmentInteractionListener listener) {
-        mValues = items;
+    public FeedRecyclerViewAdapter(OnListFragmentInteractionListener listener, FeedViewModel mViewModel) {
         mListener = listener;
+        this.mViewModel = mViewModel;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.layout_feed_item, parent, false);
-        return new ViewHolder(view);
+        ViewDataBinding b = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+                R.layout.layout_feed_item, parent, false);
+        return new ViewHolder(b);
     }
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
+        FeedEvent event = mViewModel.getEvents().getValue().get(position);
+        holder.bind(event);
 
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -54,25 +55,31 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mViewModel.getEvents().getValue().size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
+        public final ViewDataBinding binding;
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public Trip mItem;
+        public FeedEvent mItem;
 
-        public ViewHolder(View view) {
-            super(view);
-            mView = view;
-            mIdView = (TextView) view.findViewById(R.id.feedName);
-            mContentView = (TextView) view.findViewById(R.id.content);
+        public ViewHolder(ViewDataBinding binding) {
+            super(binding.getRoot());
+            mView = binding.getRoot();
+            this.binding = binding;
+        }
+
+        public void bind(FeedEvent event){
+            mItem = event;
+            binding.setVariable(BR.event, event);
+            binding.executePendingBindings();
+
+            // TODO Inflate nested layout
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mItem.description + "'";
         }
     }
 }

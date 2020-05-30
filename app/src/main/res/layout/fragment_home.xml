@@ -51,7 +51,7 @@
         app:layout_constraintTop_toBottomOf="@+id/homeRecommendedTrips" />
 
     <fragment
-        android:id="@+id/fragment"
+        android:id="@+id/homeNewsFeed"
         android:name="com.tripdazzle.daycation.ui.feed.FeedFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"

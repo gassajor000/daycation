@@ -7,14 +7,16 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tripdazzle.daycation.R;
-import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.models.feed.FeedEvent;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -29,6 +31,9 @@ public class FeedFragment extends Fragment {
     // TODO: Customize parameters
     private int mColumnCount = 1;
     private OnListFragmentInteractionListener mListener;
+    private FeedViewModel mViewModel;
+    private RecyclerView mRecyclerView;
+    private FeedRecyclerViewAdapter mAdapter;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -60,17 +65,27 @@ public class FeedFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_feed, container, false);
+        mViewModel = ViewModelProviders.of(this).get(FeedViewModel.class);
+        mViewModel.getEvents().observe(this, new Observer<List<FeedEvent>>() {
+            @Override
+            public void onChanged(List<FeedEvent> feedEvents) {
+                if (mRecyclerView != null) {
+                    mAdapter.notifyDataSetChanged();
+                }
+            }
+        });
 
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            RecyclerView recyclerView = (RecyclerView) view;
+            mRecyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(context));
             } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
+                mRecyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
             }
-            recyclerView.setAdapter(new FeedRecyclerViewAdapter(new ArrayList<Trip>(), mListener));
+            mAdapter = new FeedRecyclerViewAdapter(mListener, mViewModel);
+            mRecyclerView.setAdapter(mAdapter);
         }
         return view;
     }
@@ -105,6 +120,6 @@ public class FeedFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(Trip item);
+        void onListFragmentInteraction(FeedEvent event);
     }
 }
