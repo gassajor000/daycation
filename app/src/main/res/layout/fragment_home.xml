@@ -23,7 +23,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:text="Recommendations"
-        android:textSize="24sp"
+        android:textSize="@dimen/text_h1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputEditText" />
 
@@ -38,6 +38,29 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView9"
         tools:layout="@layout/fragment_horizontal_trip_list" />
+
+    <TextView
+        android:id="@+id/homeFeedTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:text="News Feed"
+        android:textSize="@dimen/text_h1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/homeRecommendedTrips" />
+
+    <fragment
+        android:id="@+id/fragment"
+        android:name="com.tripdazzle.daycation.ui.feed.FeedFragment"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/homeFeedTitle"
+        tools:layout="@layout/fragment_feed" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/homeAddTripFab"
