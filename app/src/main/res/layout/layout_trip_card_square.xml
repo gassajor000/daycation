@@ -32,7 +32,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/side_nav_bar" />
+                android:src='@{trip.mainImage.getDrawable(context), default="@drawable/side_nav_bar"}' />
 
             <include
                 layout="@layout/layout_profile_pic_rounded"

@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -81,12 +80,6 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
         public void bind(Trip trip, Bitmap image){
             mItem = trip;
             binding.setVariable(BR.trip, trip);
-
-            if(image != null){
-                ((ImageView) itemView.findViewById(R.id.tripCardMainImage)).setImageBitmap(image);
-            } else {
-                ((ImageView) itemView.findViewById(R.id.tripCardMainImage)).setImageResource(R.drawable.side_nav_bar);
-            }
 
             binding.executePendingBindings();
         }
