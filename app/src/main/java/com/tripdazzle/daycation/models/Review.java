@@ -10,13 +10,15 @@ public class Review {
     public final Float reviewRating;
     public final Date reviewDate;
     public final String reviewComment;
+    public final Integer tripId;
 
-    public Review(Integer id, Reviewer reviewer, Float reviewRating, Date reviewDate, String reviewComment) {
+    public Review(Integer id, Reviewer reviewer, Float reviewRating, Date reviewDate, String reviewComment, Integer tripId) {
         this.id = id;
         this.reviewer = reviewer;
         this.reviewRating = reviewRating;
         this.reviewDate = reviewDate;
         this.reviewComment = reviewComment;
+        this.tripId = tripId;
     }
 
 
@@ -26,5 +28,6 @@ public class Review {
         this.reviewRating = data.reviewRating;
         this.reviewDate = data.reviewDate;
         this.reviewComment = data.reviewComment;
+        this.tripId = data.tripId;
     }
 }

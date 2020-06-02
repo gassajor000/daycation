@@ -104,8 +104,7 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
         } else if(event instanceof CreatedTripEvent) {
             action = HomeFragmentDirections.actionNavHomeToTripInfo(((CreatedTripEvent) event).trip.id);
         }  else if(event instanceof ReviewEvent) {
-//            action = HomeFragmentDirections.actionNavHomeToTripInfo(((ReviewEvent) event).review);
-            return; // Do nothing TODO: nav to trip
+            action = HomeFragmentDirections.actionNavHomeToTripInfo(((ReviewEvent) event).review.tripId);
         } else {
             throw new RuntimeException("Unknown feed event type: " + event.toString());
         }
