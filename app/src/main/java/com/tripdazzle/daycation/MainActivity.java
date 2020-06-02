@@ -18,6 +18,7 @@ import com.tripdazzle.daycation.models.feed.AddFavoriteEvent;
 import com.tripdazzle.daycation.models.feed.CreatedTripEvent;
 import com.tripdazzle.daycation.models.feed.FeedEvent;
 import com.tripdazzle.daycation.models.feed.ReviewEvent;
+import com.tripdazzle.daycation.ui.accountinfo.AccountInfoFragmentDirections;
 import com.tripdazzle.daycation.ui.favorites.FavoritesFragmentDirections;
 import com.tripdazzle.daycation.ui.feed.FeedFragment;
 import com.tripdazzle.daycation.ui.home.HomeFragmentDirections;
@@ -41,7 +42,7 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_profile)
+                R.id.nav_home, R.id.nav_accountInfo, R.id.nav_favorites)
                 .setDrawerLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
@@ -72,6 +73,10 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
         switch (navController.getCurrentDestination().getId()){
             case R.id.nav_profile: {
                 action = ProfileFragmentDirections.actionNavProfileToTripInfo(item.id);
+                break;
+            }
+            case R.id.nav_accountInfo: {
+                action = AccountInfoFragmentDirections.actionNavAccountInfoToTripInfo(item.id);
                 break;
             }
             case R.id.nav_favorites: {

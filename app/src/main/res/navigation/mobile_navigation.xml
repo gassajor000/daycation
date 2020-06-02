@@ -12,21 +12,15 @@
         tools:layout="@layout/fragment_home">
 
         <action
-            android:id="@+id/action_nav_home_to_profile"
-            app:destination="@id/nav_profile" />
-        <action
             android:id="@+id/action_nav_home_to_favorites"
             app:destination="@id/nav_favorites" />
         <action
             android:id="@+id/action_nav_home_to_tripInfo"
             app:destination="@id/nav_tripInfo" />
+        <action
+            android:id="@+id/action_nav_home_to_accountInfo"
+            app:destination="@id/nav_accountInfo" />
     </fragment>
-
-    <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.tripdazzle.daycation.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
 
     <fragment
         android:id="@+id/nav_tripInfo"
@@ -44,11 +38,11 @@
         android:id="@+id/nav_profile"
         android:name="com.tripdazzle.daycation.ui.profile.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" >
+        tools:layout="@layout/fragment_profile">
         <argument
             android:name="profileId"
-            app:argType="string"
-            android:defaultValue="mscott" />
+            android:defaultValue="mscott"
+            app:argType="string" />
         <action
             android:id="@+id/actionNavProfileToTripInfo"
             app:destination="@id/nav_tripInfo" />
@@ -68,5 +62,13 @@
         <action
             android:id="@+id/action_nav_home_to_splash"
             app:destination="@id/nav_home" />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_accountInfo"
+        android:name="com.tripdazzle.daycation.ui.accountinfo.AccountInfoFragment"
+        android:label="fragment_account_info">
+        <action
+            android:id="@+id/action_nav_accountInfo_to_tripInfo"
+            app:destination="@id/nav_tripInfo" />
     </fragment>
 </navigation>
