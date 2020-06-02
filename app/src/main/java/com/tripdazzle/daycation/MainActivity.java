@@ -14,14 +14,17 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.models.feed.AddFavoriteEvent;
+import com.tripdazzle.daycation.models.feed.CreatedTripEvent;
 import com.tripdazzle.daycation.models.feed.FeedEvent;
+import com.tripdazzle.daycation.models.feed.ReviewEvent;
 import com.tripdazzle.daycation.ui.favorites.FavoritesFragmentDirections;
 import com.tripdazzle.daycation.ui.feed.FeedFragment;
 import com.tripdazzle.daycation.ui.home.HomeFragmentDirections;
 import com.tripdazzle.daycation.ui.profile.ProfileFragmentDirections;
 import com.tripdazzle.daycation.ui.triplist.TripListFragment;
 
-public class MainActivity extends AppCompatActivity  implements TripListFragment.OnTripListFragmentInteractionListener, DataModel.DataManager, FeedFragment.OnListFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity  implements TripListFragment.OnTripListFragmentInteractionListener, DataModel.DataManager, FeedFragment.OnFeedEventInteractionListener {
 
     private AppBarConfiguration mAppBarConfiguration;
     private DataModel mModel = new DataModel();
@@ -93,7 +96,19 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
     }
 
     @Override
-    public void onListFragmentInteraction(FeedEvent event) {
-        // TODO Navigate somewhere
+    public void onFeedEventInteraction(FeedEvent event) {
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
+        NavDirections action;
+        if (event instanceof AddFavoriteEvent){
+            action = HomeFragmentDirections.actionNavHomeToTripInfo(((AddFavoriteEvent) event).trip.id);
+        } else if(event instanceof CreatedTripEvent) {
+            action = HomeFragmentDirections.actionNavHomeToTripInfo(((CreatedTripEvent) event).trip.id);
+        }  else if(event instanceof ReviewEvent) {
+//            action = HomeFragmentDirections.actionNavHomeToTripInfo(((ReviewEvent) event).review);
+            return; // Do nothing TODO: nav to trip
+        } else {
+            throw new RuntimeException("Unknown feed event type: " + event.toString());
+        }
+        navController.navigate(action);
     }
 }

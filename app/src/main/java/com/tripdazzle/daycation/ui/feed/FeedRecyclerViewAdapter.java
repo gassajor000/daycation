@@ -16,22 +16,22 @@ import com.tripdazzle.daycation.models.feed.AddFavoriteEvent;
 import com.tripdazzle.daycation.models.feed.CreatedTripEvent;
 import com.tripdazzle.daycation.models.feed.FeedEvent;
 import com.tripdazzle.daycation.models.feed.ReviewEvent;
-import com.tripdazzle.daycation.ui.feed.FeedFragment.OnListFragmentInteractionListener;
+import com.tripdazzle.daycation.ui.feed.FeedFragment.OnFeedEventInteractionListener;
 
 import java.text.DateFormat;
 
 /**
  * {@link RecyclerView.Adapter} that can display a {@link Trip} and makes a call to the
- * specified {@link OnListFragmentInteractionListener}.
+ * specified {@link OnFeedEventInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerViewAdapter.ViewHolder> {
 
-    private final OnListFragmentInteractionListener mListener;
+    private final OnFeedEventInteractionListener mListener;
     private FeedViewModel mViewModel;
     private static DateFormat dateFormat =  DateFormat.getDateInstance();
 
-    public FeedRecyclerViewAdapter(OnListFragmentInteractionListener listener, FeedViewModel mViewModel) {
+    public FeedRecyclerViewAdapter(OnFeedEventInteractionListener listener, FeedViewModel mViewModel) {
         mListener = listener;
         this.mViewModel = mViewModel;
     }
@@ -69,7 +69,7 @@ public class FeedRecyclerViewAdapter extends RecyclerView.Adapter<FeedRecyclerVi
                 if (null != mListener) {
                     // Notify the active callbacks interface (the activity, if the
                     // fragment is attached to one) that an item has been selected.
-                    mListener.onListFragmentInteraction(holder.mItem);
+                    mListener.onFeedEventInteraction(holder.mItem);
                 }
             }
         });
