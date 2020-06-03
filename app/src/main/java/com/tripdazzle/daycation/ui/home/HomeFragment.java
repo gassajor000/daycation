@@ -12,9 +12,11 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.NavController;
+import androidx.navigation.NavDirections;
+import androidx.navigation.Navigation;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
@@ -59,8 +61,7 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                navigateToCreateTrip();
             }
         });
 
@@ -76,6 +77,12 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
             throw new RuntimeException(context.toString()
                     + " must implement DataModel.DataManager");
         }
+    }
+
+    private void navigateToCreateTrip(){
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        NavDirections action = HomeFragmentDirections.actionNavHomeToCreateTrip();
+        navController.navigate(action);
     }
 
     @Override

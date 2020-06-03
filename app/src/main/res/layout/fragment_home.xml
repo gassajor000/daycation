@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-    <FrameLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         xmlns:android="http://schemas.android.com/apk/res/android"
@@ -74,19 +74,18 @@
                 app:layout_constraintTop_toBottomOf="@id/homeFeedTitle"
                 tools:layout="@layout/fragment_feed" />
 
-            <com.google.android.material.floatingactionbutton.FloatingActionButton
-                android:id="@+id/homeAddTripFab"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-
-                android:layout_margin="@dimen/fab_margin"
-                app:fabSize="auto"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:maxImageSize="32dp"
-                app:srcCompat="@drawable/ic_add_white_24dp" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         </ScrollView>
-</FrameLayout>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/homeAddTripFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_margin="@dimen/fab_margin"
+        app:fabSize="auto"
+        android:layout_gravity="bottom|end"
+        app:maxImageSize="32dp"
+        app:srcCompat="@drawable/ic_add_white_24dp" />
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

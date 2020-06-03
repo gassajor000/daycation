@@ -20,6 +20,9 @@
         <action
             android:id="@+id/action_nav_home_to_accountInfo"
             app:destination="@id/nav_accountInfo" />
+        <action
+            android:id="@+id/action_nav_home_to_createTrip"
+            app:destination="@id/nav_createTrip" />
     </fragment>
 
     <fragment
@@ -71,4 +74,9 @@
             android:id="@+id/action_nav_accountInfo_to_tripInfo"
             app:destination="@id/nav_tripInfo" />
     </fragment>
+    <fragment
+        android:id="@+id/nav_createTrip"
+        android:name="com.tripdazzle.daycation.ui.CreateTripFragment"
+        android:label="fragment_create_trip"
+        tools:layout="@layout/fragment_create_trip" />
 </navigation>
