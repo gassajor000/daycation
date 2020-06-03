@@ -1,11 +1,9 @@
 package com.tripdazzle.daycation.ui.triplist;
 
 import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
@@ -24,16 +22,24 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
 
     private final OnTripListFragmentInteractionListener mListener;
     private TripListViewModel mViewModel;
+    private int direction;
 
-    public TripListRecyclerViewAdapter(TripListViewModel viewModel, OnTripListFragmentInteractionListener listener) {
+    public TripListRecyclerViewAdapter(TripListViewModel viewModel, OnTripListFragmentInteractionListener listener, @RecyclerView.Orientation int direction) {
         mListener = listener;
         mViewModel = viewModel;
+        this.direction = direction;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ViewDataBinding b = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                R.layout.layout_trip_card, parent, false);
+        ViewDataBinding b;
+        if(direction == RecyclerView.HORIZONTAL){
+            b = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+                    R.layout.layout_trip_card_square, parent, false);
+        } else {
+            b = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+                    R.layout.layout_trip_card_long, parent, false);
+        }
 
         return new ViewHolder(b);
     }
@@ -42,13 +48,8 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Trip trip = mViewModel.getTrips().getValue().get(position);
 
-        Bitmap bitmap = mViewModel.getImages().getValue().get(trip.mainImageId);
-        if (bitmap != null){
-            holder.bind(trip, bitmap);
-        } else{
-            holder.bind(trip, null);
-        }
-
+        Bitmap bitmap = trip.mainImage.image;
+        holder.bind(trip, bitmap);
 
         holder.binding.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -70,7 +71,6 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final ViewDataBinding binding;
         public Trip mItem;
-        public BitmapDrawable mImage;
 
         public ViewHolder(ViewDataBinding binding) {
             super(binding.getRoot());
@@ -80,11 +80,7 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
         public void bind(Trip trip, Bitmap image){
             mItem = trip;
             binding.setVariable(BR.trip, trip);
-            if(image != null){
-                ((ImageView) itemView.findViewById(R.id.tripCardMainImage)).setImageBitmap(image);
-            } else {
-                ((ImageView) itemView.findViewById(R.id.tripCardMainImage)).setImageResource(R.drawable.side_nav_bar);
-            }
+
             binding.executePendingBindings();
         }
 

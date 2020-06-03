@@ -1,24 +1,44 @@
 package com.tripdazzle.server.fakedb;
 
+import com.tripdazzle.server.DatabaseError;
 import com.tripdazzle.server.datamodels.ActivityData;
 import com.tripdazzle.server.datamodels.ActivityType;
+import com.tripdazzle.server.datamodels.BitmapData;
+import com.tripdazzle.server.datamodels.CreatorData;
 import com.tripdazzle.server.datamodels.ProfileData;
+import com.tripdazzle.server.datamodels.ProfilePictureData;
 import com.tripdazzle.server.datamodels.ReviewData;
+import com.tripdazzle.server.datamodels.ReviewerData;
 import com.tripdazzle.server.datamodels.TripData;
 import com.tripdazzle.server.datamodels.UserData;
+import com.tripdazzle.server.datamodels.feed.FeedEventData;
+import com.tripdazzle.server.fakedb.feed.FakeAddFavoriteEvent;
+import com.tripdazzle.server.fakedb.feed.FakeCreatedTripEvent;
+import com.tripdazzle.server.fakedb.feed.FakeFeedEvent;
+import com.tripdazzle.server.fakedb.feed.FakeReviewEvent;
 
-import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 public class FakeDatabase {
     private HashMap<Integer, String> fileNames;
-    private HashMap<Integer, TripData> trips = new HashMap<>();
-    private HashMap<Integer, ReviewData> reviews = new HashMap<>();
+    private HashMap<Integer, FakeTrip> trips = new HashMap<>();
+    private HashMap<Integer, FakeReview> reviews = new HashMap<>();
     private HashMap<String, FakeUser> users = new HashMap<>();
+    private HashMap<String, List<Integer>> recommendations = new HashMap<>();
+    private HashMap<String, List<FakeFeedEvent>> newsFeeds = new HashMap<>();
+
+    private ImageFactory imageFactory = new ImageFactory();
+    private UserFactory userFactory = new UserFactory();
+    private TripFactory tripFactory = new TripFactory();
+    private ReviewFactory reviewFactory = new ReviewFactory();
+
 
     private String dbFilePath;
 
@@ -43,49 +63,62 @@ public class FakeDatabase {
                 new ActivityData(ActivityType.ICE_CREAM, "In n Out", "Get an In n Out Shake"),
                 new ActivityData(ActivityType.BEACH, "Black's Beach", "Go surfing at Black's Beach")
         };
-        trips.put(301, new TripData("SD Vacay", 301, "mscott","Fun Trip around the San Diego Bay.",
+        trips.put(301, new FakeTrip("SD Vacay", 301, "mscott", "San Diego, CA", "Fun Trip around the San Diego Bay.",
                 401, new ActivityData[]{activities[0], activities[1], activities[2]},
                 (float) 3.7, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507,
                 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520))));
-        trips.put(302, new TripData("La Jolla Trip", 302, "mscott","Fun Trip in La Jolla.",
+        trips.put(302, new FakeTrip("La Jolla Trip", 302, "jhalpert", "La Jolla, CA", "Fun Trip in La Jolla.",
                 403, new ActivityData[]{activities[2], activities[3], activities[4]},
-                (float) 4.2, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
-        trips.put(303, new TripData("Balboa Park", 303, "mscott","A day at Balboa Park.",
+                (float) 4.2, new ArrayList<Integer>(Arrays.asList(506, 507, 508, 509, 510))));
+        trips.put(303, new FakeTrip("Balboa Park", 303, "mscott", "Balboa Park, San Diego, CA", "A day at Balboa Park.",
                 402, new ActivityData[]{activities[2], activities[3], activities[4]},
-                (float) 4.5, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
-        trips.put(304, new TripData("Zoo Trip", 304, "mscott","Things to do around the Zoo",
+                (float) 4.5, new ArrayList<Integer>(Arrays.asList(511, 512, 513, 514, 515))));
+        trips.put(304, new FakeTrip("Zoo Trip", 304, "mscott", "San Diego Zoo, San Diego, CA", "Things to do around the Zoo",
                 404, new ActivityData[]{activities[2], activities[3], activities[4]},
-                (float) 2.3, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507))));
-
-
-        // Reviews
-        reviews.putAll(new HashMap<Integer, ReviewData>(){{
-            put(501,  new ReviewData(501, "Michael Scott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 501"));
-            put(502,  new ReviewData(502, "Kevin Malone", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 502"));
-            put(503,  new ReviewData(503, "Jim Halpert", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 503"));
-            put(504,  new ReviewData(504, "Pam Beesley", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 504"));
-            put(505,  new ReviewData(505, "Angela Martin", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 505"));
-            put(506,  new ReviewData(506, "Michael Scott", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 506"));
-            put(507,  new ReviewData(507, "Michael Scott", (float) 2.0, new Date(), "Totally awesome experience but I lost my iPhone 507"));
-            put(508,  new ReviewData(508, "Michael Scott", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 508"));
-            put(509,  new ReviewData(509, "Michael Scott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 509"));
-            put(510,  new ReviewData(510, "Michael Scott", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 510"));
-            put(511,  new ReviewData(511, "Michael Scott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 511"));
-            put(512,  new ReviewData(512, "Kevin Malone", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 512"));
-            put(513,  new ReviewData(513, "Jim Halpert", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 513"));
-            put(514,  new ReviewData(514, "Pam Beesley", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 514"));
-            put(515,  new ReviewData(515, "Angela Martin", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 515"));
-            put(516,  new ReviewData(516, "Michael Scott", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 516"));
-            put(517,  new ReviewData(517, "Michael Scott", (float) 2.0, new Date(), "Totally awesome experience but I lost my iPhone 517"));
-            put(518,  new ReviewData(518, "Michael Scott", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 518"));
-            put(519,  new ReviewData(519, "Michael Scott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 519"));
-            put(520,  new ReviewData(520, "Michael Scott", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 520"));
-        }});
+                (float) 2.3, new ArrayList<Integer>(Arrays.asList(516, 517, 518, 519, 520))));
 
         // Users
         users.put("mscott", new FakeUser("mscott", 405, "Michael", "Scott", "Scranton, PA", "password123",
-                new ArrayList<>(Arrays.asList(301, 302, 303, 304)), new ArrayList<>(Arrays.asList(501, 506, 507, 508, 509, 510)), new ArrayList<>(Arrays.asList(302, 301, 304))));
-        users.put("jhalpert", new FakeUser("jhalpert", 406, "Jim", "Halpert", "Scranton, PA", "password123"));
+                new ArrayList<>(Arrays.asList(301, 303, 304)), new ArrayList<>(Arrays.asList(501, 506, 507, 508, 509, 510)), new ArrayList<>(Arrays.asList(302, 301, 304))));
+        users.put("jhalpert", new FakeUser("jhalpert", 406, "Jim", "Halpert", "Scranton, PA", "password123",
+                new ArrayList<>(Arrays.asList(302)), new ArrayList<Integer>(), new ArrayList<>(Arrays.asList(304, 301, 303))));
+
+        // Reviews
+        reviews.putAll(new HashMap<Integer, FakeReview>(){{
+            put(501,  new FakeReview(501, "mscott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 501", 301));
+            put(502,  new FakeReview(502, "jhalpert", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 502", 301));
+            put(503,  new FakeReview(503, "jhalpert", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 503", 301));
+            put(504,  new FakeReview(504, "jhalpert", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 504", 301));
+            put(505,  new FakeReview(505, "jhalpert", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 505", 301));
+            put(506,  new FakeReview(506, "mscott", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 506", 302));
+            put(507,  new FakeReview(507, "mscott", (float) 2.0, new Date(), "Totally awesome experience but I lost my iPhone 507", 302));
+            put(508,  new FakeReview(508, "mscott", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 508", 302));
+            put(509,  new FakeReview(509, "mscott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 509", 302));
+            put(510,  new FakeReview(510, "mscott", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 510", 302));
+            put(511,  new FakeReview(511, "mscott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 511", 303));
+            put(512,  new FakeReview(512, "jhalpert", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 512", 303));
+            put(513,  new FakeReview(513, "jhalpert", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 513", 303));
+            put(514,  new FakeReview(514, "jhalpert", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 514", 303));
+            put(515,  new FakeReview(515, "jhalpert", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 515", 303));
+            put(516,  new FakeReview(516, "mscott", (float) 1.0, new Date(), "Totally awesome experience but I lost my iPhone 516", 304));
+            put(517,  new FakeReview(517, "mscott", (float) 2.0, new Date(), "Totally awesome experience but I lost my iPhone 517", 304));
+            put(518,  new FakeReview(518, "mscott", (float) 3.0, new Date(), "Totally awesome experience but I lost my iPhone 518", 304));
+            put(519,  new FakeReview(519, "mscott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 519", 304));
+            put(520,  new FakeReview(520, "mscott", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 520", 304));
+        }});
+
+
+
+        // Recommendations
+        recommendations.put("mscott", Arrays.asList(302, 304, 303));
+        recommendations.put("jhalpert", Arrays.asList(301, 303, 304));
+
+        // News Feeds
+        newsFeeds.put("mscott", Arrays.<FakeFeedEvent>asList(
+                new FakeReviewEvent("jhalpert", new Date(111, Calendar.SEPTEMBER, 5), 503),
+                new FakeCreatedTripEvent("mscott", new Date(120, Calendar.MAY, 30), 302),
+                new FakeAddFavoriteEvent("jhalpert", new Date(120, Calendar.APRIL, 28), 303)
+        ));
     }
 
     public void setDbFilePath(String dbFilePath) {
@@ -97,14 +130,48 @@ public class FakeDatabase {
      * @param imgIds id of the image to fetch
      * @return Image file of the image with the matching id
      */
-    public List<File> getImagesById(List<Integer> imgIds){
-        List<File> imageFiles = new ArrayList<>();
+    public List<BitmapData> getImagesById(List<Integer> imgIds) throws DatabaseError {
+        List<BitmapData> imageFiles = new ArrayList<>();
         for(Integer id: imgIds){
             String fileName = fileNames.get(id);
             if (fileName == null){
                 imageFiles.add(null);
             } else {
-                imageFiles.add(new File(dbFilePath + "/" + fileName));
+                try {
+                    imageFiles.add(new BitmapData(id, new FileInputStream(dbFilePath + "/" + fileName)));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    throw new DatabaseError(e);
+                }
+            }
+        }
+        return imageFiles;
+    }
+
+    /** Retrieve a profile image by user id. Not found images come back null.
+     * @param userIds usernames of the profile pictures to fetch
+     * @return List of Image files of the image with the matching ids
+     */
+    public List<ProfilePictureData> getProfilePicturesByUserIds(List<String> userIds) throws DatabaseError {
+        List<ProfilePictureData> imageFiles = new ArrayList<>();
+        for(String id: userIds){
+            FakeUser user = users.get(id);
+
+            if (user == null){
+                imageFiles.add(null);
+                continue;
+            }
+
+            String fileName = fileNames.get(user.profileImageId);
+            if (fileName == null){
+                imageFiles.add(null);
+            } else {
+                try {
+                    imageFiles.add(new ProfilePictureData(id, user.profileImageId, new FileInputStream(dbFilePath + "/" + fileName)));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    throw new DatabaseError(e);
+                }
             }
         }
         return imageFiles;
@@ -113,17 +180,17 @@ public class FakeDatabase {
     public List<TripData> getTripsById(List<Integer> tripIds) {
         List<TripData> ret = new ArrayList<>();
         for(Integer id: tripIds){
-            ret.add(trips.get(id));
+            ret.add(trips.get(id).toTripData(imageFactory, userFactory));
         }
         return ret;
     }
 
-    public ProfileData getProfileById(String userId) { return users.get(userId).toProfile(); }
+    public ProfileData getProfileById(String userId) { return users.get(userId).toProfile(imageFactory); }
 
     public List<ReviewData> getReviewsById(List<Integer> reviewIds){
         List<ReviewData> ret =  new ArrayList<>();
         for(Integer r: reviewIds){
-            ret.add(reviews.get(r));
+            ret.add(reviews.get(r).toReviewData(userFactory));
         }
         return ret;
     }
@@ -131,9 +198,17 @@ public class FakeDatabase {
     public List<TripData> getFavoritesByUserId(String userId){
         List<TripData> favorites = new ArrayList<>();
         for(Integer id: users.get(userId).favoriteTrips){
-            favorites.add(trips.get(id));
+            favorites.add(trips.get(id).toTripData(imageFactory, userFactory));
         }
         return favorites;
+    }
+
+    public List<TripData> getRecommendedTripsForUser(String userId){
+        List<TripData> recTrips = new ArrayList<>();
+        for(Integer tripId: recommendations.get(userId)){
+            recTrips.add(trips.get(tripId).toTripData(imageFactory, userFactory));
+        }
+        return recTrips;
     }
 
     public void toggleFavorite(String userId, Integer tripId, Boolean addFavorite){
@@ -146,9 +221,75 @@ public class FakeDatabase {
 
     public UserData login(String userId, String password){
         FakeUser user = users.get(userId);
-        if (user != null && user.password == password){
+        if (user != null && user.password.equals(password)){
             return user.toUserData();
         }
         return null;
+    }
+
+    public List<FeedEventData> getNewsFeed(String userId){
+        List<FeedEventData> feed = new ArrayList<>();
+        for(FakeFeedEvent event: newsFeeds.get(userId)){
+            feed.add(event.toFeedEventData(userFactory, reviewFactory, tripFactory));
+        }
+        return feed;
+    }
+
+    public class ImageFactory {
+
+        public BitmapData getImage(Integer imageId){
+            String fileName = fileNames.get(imageId);
+            if(fileName == null){
+                return null;
+            }
+            try {
+                return new BitmapData(imageId, new FileInputStream(dbFilePath + "/" + fileName));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+
+        public ProfilePictureData getProfilePicture(String userId){
+            Integer imageId = users.get(userId).profileImageId;
+            String fileName = fileNames.get(imageId);
+            if(fileName == null){
+                return null;
+            }
+            try {
+                return new ProfilePictureData(userId, imageId, new FileInputStream(dbFilePath + "/" + fileName));
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+    }
+
+    public class UserFactory {
+        public UserData getUser(String userId){
+            return users.get(userId).toUserData();
+        }
+
+        public CreatorData getCreator(String userId){
+            return users.get(userId).toCreatorData(imageFactory);
+        }
+
+        public ProfileData getProfile(String userId){
+            return users.get(userId).toProfile(imageFactory);
+        }
+        
+        public ReviewerData getReviewer(String userId){ return users.get(userId).toReviewerData(imageFactory); }
+    }
+
+    public class TripFactory {
+        public TripData getTrip(Integer tripId){
+            return trips.get(tripId).toTripData(imageFactory, userFactory);
+        }
+    }
+
+    public class ReviewFactory {
+        public ReviewData getReview(Integer reviewId){
+            return reviews.get(reviewId).toReviewData(userFactory);
+        }
     }
 }

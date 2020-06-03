@@ -13,12 +13,9 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
-import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Trip;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,34 +24,16 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnTripListFragmentInteractionListener}
  * interface.
  */
-public class TripListFragment extends Fragment implements DataModel.ImagesSubscriber {
+public abstract class TripListFragment extends Fragment {
 
     private static final String ARG_COLUMN_COUNT = "column-count";
     private int mColumnCount = 1;
-    private DataModel mModel;
     private TripListViewModel mViewModel;       // Data is loaded externally via the viewModel
     private TripListRecyclerViewAdapter mAdapter;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
 
     private OnTripListFragmentInteractionListener mListener = null;
-
-    /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
-     */
-    public TripListFragment() {
-    }
-
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static TripListFragment newInstance(int columnCount) {
-        TripListFragment fragment = new TripListFragment();
-        Bundle args = new Bundle();
-        args.putInt(ARG_COLUMN_COUNT, columnCount);
-        fragment.setArguments(args);
-        return fragment;
-    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -68,29 +47,30 @@ public class TripListFragment extends Fragment implements DataModel.ImagesSubscr
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_trip_list, container, false);
+        View view = inflater.inflate(R.layout.fragment_vertical_trip_list, container, false);
         mViewModel = ViewModelProviders.of(this).get(TripListViewModel.class);
         mViewModel.getTrips().observe(this, tripListUpdateObserver);
-
 
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             recyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
-                mLayoutManager = new LinearLayoutManager(context);
+                mLayoutManager = new LinearLayoutManager(context, getDirection(), false);
             } else {
                 mLayoutManager = new GridLayoutManager(context, mColumnCount);
             }
             recyclerView.setLayoutManager(mLayoutManager);
 
-            mAdapter = new TripListRecyclerViewAdapter(mViewModel, mListener);
+            mAdapter = new TripListRecyclerViewAdapter(mViewModel, mListener, getDirection());
             recyclerView.setAdapter(mAdapter);
 
         }
         return view;
     }
 
+    /* Implementing classes must implement depending on their direction*/
+    abstract @RecyclerView.Orientation int getDirection();
 
     @Override
     public void onAttach(Context context) {
@@ -101,13 +81,6 @@ public class TripListFragment extends Fragment implements DataModel.ImagesSubscr
             throw new RuntimeException(context.toString()
                     + " must implement OnListFragmentInteractionListener");
         }
-
-        if (context instanceof DataModel.DataManager) {
-            mModel = ((DataModel.DataManager) context).getModel();
-        } else {
-            throw new RuntimeException(context.toString()
-                    + " must implement DataModel.DataManager");
-        }
     }
 
     @Override
@@ -116,30 +89,6 @@ public class TripListFragment extends Fragment implements DataModel.ImagesSubscr
         mListener = null;
     }
 
-    private void getImages(){
-        // Fetch images
-        List<Integer> imageIds = new ArrayList<>();
-        for(Trip trip: mViewModel.getTrips().getValue()){
-            imageIds.add(trip.mainImageId);
-        }
-
-        mModel.getImagesByIds(imageIds, this);
-    }
-
-    @Override
-    public void onSuccess(String message) { }
-
-    @Override
-    public void onError(String message) { }
-
-    @Override
-    public void onGetImagesById(List<BitmapImage> images) {
-        mViewModel.setImages(images);
-
-        if(recyclerView != null){
-            mAdapter.notifyDataSetChanged();
-        }
-    }
 
     /**
      * This interface must be implemented by activities that contain this
@@ -161,8 +110,6 @@ public class TripListFragment extends Fragment implements DataModel.ImagesSubscr
             if(recyclerView != null){
                 mAdapter.notifyDataSetChanged();
             }
-
-            getImages();
         }
     };
 }

@@ -16,14 +16,13 @@ import androidx.lifecycle.ViewModelProviders;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentProfileBinding;
-import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Profile;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
 import java.util.List;
 
-public class ProfileFragment extends Fragment implements DataModel.ProfilesSubscriber, DataModel.ImagesSubscriber, DataModel.TripsSubscriber {
+public class ProfileFragment extends Fragment implements DataModel.ProfilesSubscriber, DataModel.TripsSubscriber {
 
     private ProfileViewModel mViewModel;
     private TripListViewModel mCreatedTripsModel;
@@ -75,20 +74,9 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
     public void onGetProfileById(Profile profile) {
         mViewModel.setProfile(profile);
         mModel.getTripsByIds(profile.createdTrips, this);
-        mModel.getImageById(profile.profileImageId, this);
-    }
 
-    @Override
-    public void onGetImagesById(List<BitmapImage> images) {
-        Profile profile = mViewModel.getProfile().getValue();
-        if (profile == null){ return; }
-
-        for(BitmapImage img: images){
-            if(img.id.equals(profile.profileImageId)){
-                ImageView profileImage = (ImageView) this.getView().findViewById(R.id.profileImage);
-                profileImage.setImageBitmap(img.image);
-            }
-        }
+        ImageView profileImage = (ImageView) this.getView().findViewById(R.id.profileImage);
+        profileImage.setImageBitmap(profile.profilePicture.image);
     }
 
     @Override
