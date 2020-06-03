@@ -41,8 +41,8 @@ public class FakeUser {
         return new ProfileData(userId, imageFactory.getProfilePicture(userId), firstName, lastName, city, new ArrayList<Integer>(createdTrips));
     }
 
-    public UserData toUserData() {
-        return new UserData(userId, profileImageId, firstName, lastName, city, new ArrayList<Integer>(createdTrips), new ArrayList<Integer>(reviews), new ArrayList<Integer>(favoriteTrips));
+    public UserData toUserData(FakeDatabase.ImageFactory imageFactory) {
+        return new UserData(userId, imageFactory.getProfilePicture(userId), firstName, lastName, city, new ArrayList<Integer>(createdTrips), new ArrayList<Integer>(reviews), new ArrayList<Integer>(favoriteTrips));
     }
 
     public CreatorData toCreatorData(FakeDatabase.ImageFactory imageFactory){
