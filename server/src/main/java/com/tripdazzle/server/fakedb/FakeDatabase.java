@@ -222,7 +222,7 @@ public class FakeDatabase {
     public UserData login(String userId, String password){
         FakeUser user = users.get(userId);
         if (user != null && user.password.equals(password)){
-            return user.toUserData();
+            return user.toUserData(imageFactory);
         }
         return null;
     }
@@ -267,7 +267,7 @@ public class FakeDatabase {
 
     public class UserFactory {
         public UserData getUser(String userId){
-            return users.get(userId).toUserData();
+            return users.get(userId).toUserData(imageFactory);
         }
 
         public CreatorData getCreator(String userId){
