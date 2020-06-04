@@ -6,20 +6,30 @@ import android.graphics.drawable.Drawable;
 import com.tripdazzle.server.datamodels.ActivityData;
 import com.tripdazzle.server.datamodels.ActivityTypeData;
 
-public class Activity extends com.tripdazzle.server.datamodels.ActivityData {
-    private ActivityType resourcedType;
+public class Activity {
+    private ActivityType type;
+    public final String location;
+    public final String description;
+
+    public Activity(ActivityType type, String location, String description) {
+        this.type = type;
+        this.location = location;
+        this.description = description;
+    }
 
     public Activity(ActivityTypeData type, String location, String description) {
-        super(type, location, description);
-        resourcedType = ActivityType.fromActivityType(type);
+        this.location = location;
+        this.description = description;
+        this.type = ActivityType.fromActivityTypeData(type);
     }
 
     public Activity(ActivityData activityData){
-        super(activityData.type, activityData.description, activityData.location);
-        resourcedType = ActivityType.fromActivityType(activityData.type);
+        this.location = activityData.location;
+        this.description = activityData.description;
+        type = ActivityType.fromActivityTypeData(activityData.type);
     }
 
     public Drawable getIcon(Context context){
-        return resourcedType.getIcon(context);
+        return type.getIcon(context);
     }
 }

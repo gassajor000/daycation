@@ -91,5 +91,11 @@
             android:text="Activities"
             android:textSize="18sp" />
 
+        <fragment
+            android:id="@+id/fragment"
+            android:name="com.tripdazzle.daycation.ui.activityselector.ActivitySelectorFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
     </LinearLayout>
 </layout>
