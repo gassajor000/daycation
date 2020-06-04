@@ -1,12 +1,13 @@
-package com.tripdazzle.daycation.ui.createtrip;
+package com.tripdazzle.daycation.ui.activityselector;
 
-import com.tripdazzle.daycation.models.Activity;
-import com.tripdazzle.server.datamodels.ActivityType;
+import androidx.lifecycle.ViewModel;
 
-public class ActivitySelectorViewModel {
+import com.tripdazzle.server.datamodels.ActivityTypeData;
+
+public class ActivitySelectorViewModel extends ViewModel {
     private String description = "";
     private String location = "";
-    private ActivityType type;
+    private ActivityTypeData type;
 
     public String getDescription() {
         return description;
@@ -22,14 +23,11 @@ public class ActivitySelectorViewModel {
         this.location = location;
     }
 
-    public ActivityType getType() {
+    public ActivityTypeData getType() {
         return type;
     }
-    public void setType(ActivityType type) {
+    public void setType(ActivityTypeData type) {
         this.type = type;
     }
 
-    public Activity toActivity(){
-        return new Activity(type, location, description);
-    }
 }

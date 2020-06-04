@@ -6,29 +6,29 @@ import android.graphics.drawable.Drawable;
 import androidx.core.content.ContextCompat;
 
 import com.tripdazzle.daycation.R;
-import com.tripdazzle.server.datamodels.ActivityType;
+import com.tripdazzle.server.datamodels.ActivityTypeData;
 
 /**
  * ActivityType that is mapped to local resources
  */
-public enum ResourcedActivityType {
+public enum ActivityType {
     HIKING(R.drawable.ic_activity_hiking),
     SWIMMING(R.drawable.ic_activity_swimming),
     ICE_CREAM(R.drawable.ic_activity_ice_cream),
     BEACH(R.drawable.ic_activity_beach);
 
     private int iconId;
-    ResourcedActivityType(int iconId){
+    ActivityType(int iconId){
         this.iconId = iconId;
     }
 
-    public static ResourcedActivityType fromActivityType(ActivityType type){
+    public static ActivityType fromActivityType(ActivityTypeData type){
         switch (type){
-            case HIKING: return ResourcedActivityType.HIKING;
-            case SWIMMING: return ResourcedActivityType.SWIMMING;
-            case ICE_CREAM: return ResourcedActivityType.ICE_CREAM;
-            case BEACH: return ResourcedActivityType.BEACH;
-            default: return ResourcedActivityType.SWIMMING;
+            case HIKING: return ActivityType.HIKING;
+            case SWIMMING: return ActivityType.SWIMMING;
+            case ICE_CREAM: return ActivityType.ICE_CREAM;
+            case BEACH: return ActivityType.BEACH;
+            default: return ActivityType.SWIMMING;
         }
     }
 

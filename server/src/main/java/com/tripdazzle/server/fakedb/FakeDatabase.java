@@ -2,7 +2,7 @@ package com.tripdazzle.server.fakedb;
 
 import com.tripdazzle.server.DatabaseError;
 import com.tripdazzle.server.datamodels.ActivityData;
-import com.tripdazzle.server.datamodels.ActivityType;
+import com.tripdazzle.server.datamodels.ActivityTypeData;
 import com.tripdazzle.server.datamodels.BitmapData;
 import com.tripdazzle.server.datamodels.CreatorData;
 import com.tripdazzle.server.datamodels.ProfileData;
@@ -56,12 +56,12 @@ public class FakeDatabase {
 
         // Trips
         ActivityData[] activities = {
-                new ActivityData(ActivityType.HIKING, "Rose Canyon", "Hike Rose Canyon"),
-                new ActivityData(ActivityType.ICE_CREAM, "Shake Shack", "Get Ice cream at Shake Shack"),
-                new ActivityData(ActivityType.BEACH, "Mission Beach", "Go Swimming at Mission Beach"),
-                new ActivityData(ActivityType.SWIMMING, "Mission Bay", "Swim Across Mission Bay"),
-                new ActivityData(ActivityType.ICE_CREAM, "In n Out", "Get an In n Out Shake"),
-                new ActivityData(ActivityType.BEACH, "Black's Beach", "Go surfing at Black's Beach")
+                new ActivityData(ActivityTypeData.HIKING, "Rose Canyon", "Hike Rose Canyon"),
+                new ActivityData(ActivityTypeData.ICE_CREAM, "Shake Shack", "Get Ice cream at Shake Shack"),
+                new ActivityData(ActivityTypeData.BEACH, "Mission Beach", "Go Swimming at Mission Beach"),
+                new ActivityData(ActivityTypeData.SWIMMING, "Mission Bay", "Swim Across Mission Bay"),
+                new ActivityData(ActivityTypeData.ICE_CREAM, "In n Out", "Get an In n Out Shake"),
+                new ActivityData(ActivityTypeData.BEACH, "Black's Beach", "Go surfing at Black's Beach")
         };
         trips.put(301, new FakeTrip("SD Vacay", 301, "mscott", "San Diego, CA", "Fun Trip around the San Diego Bay.",
                 401, new ActivityData[]{activities[0], activities[1], activities[2]},
