@@ -10,4 +10,5 @@
     <dimen name="card_corner_radius">15dp</dimen>
     <dimen name="profile_pic_corner_round_large">40dp</dimen>
     <dimen name="text_h1">24sp</dimen>
+    <dimen name="text_image_height">24dp</dimen>
 </resources>
