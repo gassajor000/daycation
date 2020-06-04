@@ -48,4 +48,8 @@ public class User {
             favoriteTrips.remove(tripId);
         }
     }
+
+    public Creator toCreator(){
+        return new Creator(userId, profilePicture, firstName, lastName);
+    }
 }

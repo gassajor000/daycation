@@ -25,7 +25,7 @@
                 android:drawableLeft="@drawable/ic_beach_ball_24dp"
                 android:drawablePadding="4dp"
                 android:hint="Name"
-                android:text="@={viewModel.trip.title}" />
+                android:text="@={viewModel.title}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -40,7 +40,7 @@
                 android:drawableLeft="@drawable/ic_place_gray_24dp"
                 android:drawablePadding="4dp"
                 android:hint="Location"
-                android:text="@={viewModel.trip.location}" />
+                android:text="@={viewModel.location}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -59,7 +59,7 @@
                 android:maxLines="5"
                 android:minLines="3"
                 android:singleLine="false"
-                android:text="@={viewModel.trip.description}" />
+                android:text="@={viewModel.description}" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -67,7 +67,7 @@
             android:id="@+id/imageView4"
             android:layout_width="match_parent"
             android:layout_height="120dp"
-            android:src='@{viewModel.trip.mainImage.getDrawable(context), default="@drawable/side_nav_bar"}'
+            android:src='@{viewModel.mainImage.getDrawable(context), default="@drawable/side_nav_bar"}'
             tools:visibility="gone" />
 
         <Button
@@ -92,10 +92,25 @@
             android:textSize="18sp" />
 
         <fragment
-            android:id="@+id/fragment"
+            android:id="@+id/createTripActivity0"
             android:name="com.tripdazzle.daycation.ui.activityselector.ActivitySelectorFragment"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_activity_selector" />
+
+        <fragment
+            android:id="@+id/createTripActivity1"
+            android:name="com.tripdazzle.daycation.ui.activityselector.ActivitySelectorFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_activity_selector" />
+
+        <fragment
+            android:id="@+id/createTripActivity2"
+            android:name="com.tripdazzle.daycation.ui.activityselector.ActivitySelectorFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:layout="@layout/fragment_activity_selector" />
 
     </LinearLayout>
 </layout>

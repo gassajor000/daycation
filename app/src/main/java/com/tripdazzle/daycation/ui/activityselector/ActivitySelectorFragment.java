@@ -7,7 +7,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -40,7 +39,8 @@ public class ActivitySelectorFragment extends Fragment  implements AdapterView.O
         View view = binding.getRoot();
 
         mSpinner = (Spinner) view.findViewById(R.id.activitySelectorActivityType);
-        SpinnerAdapter mAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, ActivityType.values());
+        ArrayAdapter mAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, ActivityType.values());
+        mAdapter.setDropDownViewResource(R.layout.support_simple_spinner_dropdown_item);
         mSpinner.setAdapter(mAdapter);
         mSpinner.setOnItemSelectedListener(this);
 
