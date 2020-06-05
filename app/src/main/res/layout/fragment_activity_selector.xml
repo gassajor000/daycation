@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
+        <com.tripdazzle.daycation.ui.activityselector.ActivityNumberIcon
             android:id="@+id/imageView5"
             android:layout_width="40dp"
             android:layout_height="40dp"
@@ -19,7 +19,8 @@
             android:layout_marginTop="8dp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_logo_beachball" />
+            app:activityNumber="Three"
+            android:src="@drawable/activity_number_icon" />
 
         <Spinner
             android:id="@+id/activitySelectorActivityType"

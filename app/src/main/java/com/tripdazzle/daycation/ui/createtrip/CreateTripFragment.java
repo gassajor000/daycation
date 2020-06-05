@@ -49,7 +49,6 @@ public class CreateTripFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 Log.i("CreateTripFragment", "select trip image clicked");
-                makeTrip();
             }
         });
 
