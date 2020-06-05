@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <declare-styleable name="activityNumberIcon">
-        <attr name="activityNumber" format="enum">
-            <enum name="One" value="1" />
-            <enum name="Two" value="2" />
-            <enum name="Three" value="3" />
-        </attr>
+        <attr name="activityNumber" format="integer" />
+        <attr name="state_activity_0" format="boolean" />
         <attr name="state_activity_1" format="boolean" />
         <attr name="state_activity_2" format="boolean" />
-        <attr name="state_activity_3" format="boolean" />
     </declare-styleable>
 </resources>

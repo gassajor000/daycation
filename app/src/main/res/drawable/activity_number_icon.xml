@@ -2,9 +2,9 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item android:drawable="@drawable/ic_star_yellow_24dp"
-        app:state_activity_1="true" />
+        app:state_activity_0="true" />
+    <item android:drawable="@drawable/ic_star_border_yellow_24dp"
+        app:state_activity_1="true"/>
     <item android:drawable="@drawable/ic_star_border_yellow_24dp"
         app:state_activity_2="true"/>
-    <item android:drawable="@drawable/ic_star_border_yellow_24dp"
-        app:state_activity_3="true"/>
 </selector>

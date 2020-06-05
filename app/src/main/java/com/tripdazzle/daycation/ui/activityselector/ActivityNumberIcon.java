@@ -8,9 +8,9 @@ import com.tripdazzle.daycation.R;
 
 public class ActivityNumberIcon extends androidx.appcompat.widget.AppCompatImageView {
 
+    private static final int[] STATE_ACTIVITY_0 = {R.attr.state_activity_0};
     private static final int[] STATE_ACTIVITY_1 = {R.attr.state_activity_1};
     private static final int[] STATE_ACTIVITY_2 = {R.attr.state_activity_2};
-    private static final int[] STATE_ACTIVITY_3 = {R.attr.state_activity_3};
 
     private int activityNumber;
 
@@ -27,18 +27,27 @@ public class ActivityNumberIcon extends androidx.appcompat.widget.AppCompatImage
     public int[] onCreateDrawableState(int extraSpace) {
         final int[] drawableState = super.onCreateDrawableState(extraSpace + 1);
 
-        if (activityNumber == 1) {
+        if (activityNumber == 0) {
+            mergeDrawableStates(drawableState, STATE_ACTIVITY_0);
+            return drawableState;
+        } else if (activityNumber == 1) {
             mergeDrawableStates(drawableState, STATE_ACTIVITY_1);
             return drawableState;
         } else if (activityNumber == 2) {
             mergeDrawableStates(drawableState, STATE_ACTIVITY_2);
             return drawableState;
-        } else if (activityNumber == 3) {
-            mergeDrawableStates(drawableState, STATE_ACTIVITY_3);
-            return drawableState;
         } else {
             return super.onCreateDrawableState(extraSpace);
 
         }
+    }
+
+    public int getActivityNumber() {
+        return activityNumber;
+    }
+
+    public void setActivityNumber(int activityNumber) {
+        this.activityNumber = activityNumber;
+        refreshDrawableState();
     }
 }
