@@ -4,6 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,6 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
@@ -38,6 +43,8 @@ public class CreateTripFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
+        setHasOptionsMenu(true);
+
         mViewModel = ViewModelProviders.of(this).get(CreateTripViewModel.class);
 
         FragmentCreateTripBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_create_trip, container, false);
@@ -65,6 +72,29 @@ public class CreateTripFragment extends Fragment {
         activityModels[2].setActivityNumber(2);
 
         return view;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_createtrip_fragment, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection;,
+        if (item.getItemId() == R.id.option_create_trip) {
+            createTrip();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void createTrip(){
+        // Send request to server
+
+        // navigate back to previous screen
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        navController.navigateUp();
     }
 
     @Override
