@@ -29,7 +29,7 @@ import com.tripdazzle.daycation.ui.activityselector.ActivitySelectorViewModel;
 
 import java.util.ArrayList;
 
-public class CreateTripFragment extends Fragment {
+public class CreateTripFragment extends Fragment implements DataModel.TaskContext {
 
     private CreateTripViewModel mViewModel;
     private ActivitySelectorFragment[] activitySelectors =  new ActivitySelectorFragment[3];
@@ -91,6 +91,7 @@ public class CreateTripFragment extends Fragment {
 
     private void createTrip(){
         // Send request to server
+        mModel.createTrip(makeTrip(), this);
 
         // navigate back to previous screen
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
@@ -120,4 +121,13 @@ public class CreateTripFragment extends Fragment {
                 0f, new ArrayList<Integer>(), creator, mViewModel.getMainImage().getValue());
     }
 
+    @Override
+    public void onSuccess(String message) {
+
+    }
+
+    @Override
+    public void onError(String message) {
+
+    }
 }

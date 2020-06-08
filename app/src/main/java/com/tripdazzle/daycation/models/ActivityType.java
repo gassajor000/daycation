@@ -32,11 +32,19 @@ public enum ActivityType {
             case SWIMMING: return ActivityType.SWIMMING;
             case ICE_CREAM: return ActivityType.ICE_CREAM;
             case BEACH: return ActivityType.BEACH;
-            default: return ActivityType.SWIMMING;
+            default: return null;
         }
     }
 
-
+    public ActivityTypeData toData(){
+        switch (this){
+            case BEACH: return ActivityTypeData.BEACH;
+            case SWIMMING: return ActivityTypeData.SWIMMING;
+            case ICE_CREAM: return ActivityTypeData.ICE_CREAM;
+            case HIKING: return ActivityTypeData.HIKING;
+            default: return null;
+        }
+    }
 
     public Drawable getIcon(Context context){
         return ContextCompat.getDrawable(context, iconId);

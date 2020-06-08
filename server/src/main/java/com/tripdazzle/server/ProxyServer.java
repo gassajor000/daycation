@@ -67,6 +67,13 @@ public class ProxyServer {
         return db.getRecommendedTripsForUser(userId);
     }
 
+    /** retrieve the recommended trips for a user
+     * @param trip data for the trip to create
+     */
+    public void createTrip(TripData trip) throws ServerError{
+        db.createTrip(trip);
+    }
+
     /** toggle whether or not a trip is in the user's favorites
      * @param userId username of the user to toggle favorite
      * @param tripId trip to toggle favorite

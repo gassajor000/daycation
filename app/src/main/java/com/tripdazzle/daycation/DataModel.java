@@ -76,6 +76,15 @@ public class DataModel {
         }
     }
 
+    // Call when the user's data changes
+    private void refreshUser(){
+        try {
+            this.currentUser = new User(server.login("mscott", "password123"));
+        } catch (ServerError serverError) {
+            serverError.printStackTrace();
+        }
+    }
+
     /* Data getters/setters*/
     public void getImageById(int imageId, ImagesSubscriber callback) {
         new GetImagesByIdsTask(callback).execute(Collections.singletonList(imageId));
@@ -141,6 +150,10 @@ public class DataModel {
 
     public void getRecommendedTripsForUser(String userId, OnRecommendedTripsListener callback){
         new GetRecommendedTripsByUserIdTask(callback).execute(userId);
+    }
+
+    public void createTrip(Trip trip, TaskContext context){
+        new CreateTripTask(context).execute(trip);
     }
 
     /*
@@ -226,6 +239,42 @@ public class DataModel {
             else {
                 // onSuccess()?
                 context.onGetTripsById(result);
+            }
+        }
+    }
+
+    private class CreateTripTask extends AsyncTask<Trip, Void, Boolean> {
+        /** Application Context*/
+        private TaskContext context;
+
+        private CreateTripTask(TaskContext context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Boolean doInBackground(Trip ... trips) {
+            if (trips.length > 1){
+                return false;
+            }
+            try {
+                server.createTrip(trips[0].toData());
+                refreshUser();
+            } catch (ServerError serverError) {
+                serverError.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if(result == false){
+                context.onError("No trip found with corresponding id");
+            }
+            else {
+                // onSuccess()?
+                context.onSuccess("Trip successfully created");
             }
         }
     }

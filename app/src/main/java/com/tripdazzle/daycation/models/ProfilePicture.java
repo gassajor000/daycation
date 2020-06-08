@@ -18,4 +18,8 @@ public class ProfilePicture extends BitmapImage{
         this.userId = data.userId;
     }
 
+    public ProfilePictureData toData(){
+        BitmapData bitmapData = super.toData();
+        return new ProfilePictureData(userId, bitmapData.id, bitmapData.dataStream);
+    }
 }

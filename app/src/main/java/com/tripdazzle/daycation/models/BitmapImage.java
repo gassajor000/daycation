@@ -26,4 +26,8 @@ public class BitmapImage {
     public Drawable getDrawable(Context context) {
         return new BitmapDrawable(context.getResources(), image);
     }
+
+    public BitmapData toData(){
+        return new BitmapData(id, null);
+    }
 }

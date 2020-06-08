@@ -39,6 +39,9 @@ public class FakeDatabase {
     private TripFactory tripFactory = new TripFactory();
     private ReviewFactory reviewFactory = new ReviewFactory();
 
+    private int nextTrip;
+    private int nextReview;
+    private int nextImage;
 
     private String dbFilePath;
 
@@ -53,6 +56,7 @@ public class FakeDatabase {
         fileNames.put(404, "zoo.png");
         fileNames.put(405, "mscott.png");
         fileNames.put(406, "jhalpert.png");
+        nextImage = 400 + fileNames.size() + 1;
 
         // Trips
         ActivityData[] activities = {
@@ -76,6 +80,7 @@ public class FakeDatabase {
         trips.put(304, new FakeTrip("Zoo Trip", 304, "mscott", "San Diego Zoo, San Diego, CA", "Things to do around the Zoo",
                 404, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 2.3, new ArrayList<Integer>(Arrays.asList(516, 517, 518, 519, 520))));
+        nextTrip = 300 + trips.size() + 1;
 
         // Users
         users.put("mscott", new FakeUser("mscott", 405, "Michael", "Scott", "Scranton, PA", "password123",
@@ -106,6 +111,7 @@ public class FakeDatabase {
             put(519,  new FakeReview(519, "mscott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 519", 304));
             put(520,  new FakeReview(520, "mscott", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 520", 304));
         }});
+        nextReview = 500 + reviews.size() + 1;
 
 
 
@@ -183,6 +189,16 @@ public class FakeDatabase {
             ret.add(trips.get(id).toTripData(imageFactory, userFactory));
         }
         return ret;
+    }
+
+    public void createTrip(TripData trip) throws DatabaseError{
+        if(trips.get(nextTrip) != null){
+            throw new DatabaseError(String.format("Trip with id %s already exists!", nextTrip));
+        }
+        // TODO handle adding image
+        trips.put(nextTrip, new FakeTrip(trip.title, nextTrip, trip.creator.userId, trip.location, trip.description, trip.mainImage.id, trip.activities, 0.0f, new ArrayList<Integer>()));
+        users.get(trip.creator.userId).createdTrips.add(nextTrip);
+        nextTrip++;
     }
 
     public ProfileData getProfileById(String userId) { return users.get(userId).toProfile(imageFactory); }

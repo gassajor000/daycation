@@ -32,4 +32,8 @@ public class Activity {
     public Drawable getIcon(Context context){
         return type.getIcon(context);
     }
+
+    public ActivityData toData(){
+        return new ActivityData(type.toData(), location, description);
+    }
 }

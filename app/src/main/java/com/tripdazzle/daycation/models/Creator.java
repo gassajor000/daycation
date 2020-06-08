@@ -21,4 +21,8 @@ public class Creator {
         firstName = data.firstName;
         lastName = data.lastName;
     }
+
+    public CreatorData toData(){
+        return new CreatorData(userId, profilePicture.toData(), firstName, lastName);
+    }
 }
