@@ -24,6 +24,10 @@ public class ProxyServer {
     public List<BitmapData> getImagesById(List<Integer> imageIds) throws ServerError {
         return db.getImagesById(imageIds);
     }
+    /*
+    * Add an image to the database
+    * */
+    public int addImage(BitmapData image) throws ServerError{  return db.addImage(image); }
 
     /** retrieve profile pictures for users
      * @param userIds id of the image to fetch

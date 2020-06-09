@@ -41,7 +41,11 @@ public class Trip {
     }
 
     public TripData toData(){
-        return new TripData(title, id, creator.toData(), description, location, creator.profilePicture.toData(), activitiesToData(), reviewsAverage, reviews);
+        return new TripData(title, id, creator.toData(), description, location, mainImage.toData(), activitiesToData(), reviewsAverage, reviews);
+    }
+
+    public TripData toDataNewImage(int mainImageId){
+        return new TripData(title, id, creator.toData(), description, location, mainImage.toData(mainImageId), activitiesToData(), reviewsAverage, reviews);
     }
 
     private static Activity[] convertActivities(ActivityData[] activityData){

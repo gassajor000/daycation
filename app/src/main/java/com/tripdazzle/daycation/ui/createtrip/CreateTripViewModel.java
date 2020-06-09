@@ -39,4 +39,5 @@ public class CreateTripViewModel extends ViewModel {
     public void setMainImage(MutableLiveData<BitmapImage> mainImage) {
         this.mainImage = mainImage;
     }
+    public void setMainImage(BitmapImage mainImage){ this.mainImage.setValue(mainImage);}
 }

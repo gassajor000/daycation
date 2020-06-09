@@ -8,6 +8,9 @@ import android.graphics.drawable.Drawable;
 
 import com.tripdazzle.server.datamodels.BitmapData;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+
 /* Wrapper class for bitmap images*/
 public class BitmapImage {
     public final Bitmap image;
@@ -28,6 +31,15 @@ public class BitmapImage {
     }
 
     public BitmapData toData(){
-        return new BitmapData(id, null);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
+        return new BitmapData(id, new ByteArrayInputStream(outputStream.toByteArray()));
+    }
+
+    // Used when you want to update the imageId
+    public BitmapData toData(int imageId){
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        image.compress(Bitmap.CompressFormat.PNG, 0, outputStream);
+        return new BitmapData(imageId, new ByteArrayInputStream(outputStream.toByteArray()));
     }
 }

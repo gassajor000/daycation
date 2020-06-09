@@ -1,14 +1,18 @@
 package com.tripdazzle.daycation.ui.createtrip;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,11 +26,13 @@ import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentCreateTripBinding;
 import com.tripdazzle.daycation.models.Activity;
+import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Creator;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.activityselector.ActivitySelectorFragment;
 import com.tripdazzle.daycation.ui.activityselector.ActivitySelectorViewModel;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class CreateTripFragment extends Fragment implements DataModel.TaskContext {
@@ -55,10 +61,11 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
         view.findViewById(R.id.createTripSelectImageButton).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.i("CreateTripFragment", "select trip image clicked");
+                selectImage();
             }
         });
 
+        // Activity Selectors
         activitySelectors[0] = (ActivitySelectorFragment) getChildFragmentManager().findFragmentById(R.id.createTripActivity0);
         activitySelectors[1] = (ActivitySelectorFragment) getChildFragmentManager().findFragmentById(R.id.createTripActivity1);
         activitySelectors[2] = (ActivitySelectorFragment) getChildFragmentManager().findFragmentById(R.id.createTripActivity2);
@@ -83,19 +90,52 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle item selection;,
         if (item.getItemId() == R.id.option_create_trip) {
-            createTrip();
+            onCreateTrip();
             return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    private void createTrip(){
+    private void onCreateTrip(){
+        if(mViewModel.getMainImage().getValue() == null){
+            Toast chooseImgMsg = Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_SHORT);
+            chooseImgMsg.show();
+            return;
+        }
+
         // Send request to server
         mModel.createTrip(makeTrip(), this);
 
         // navigate back to previous screen
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         navController.navigateUp();
+    }
+
+    public void selectImage(){
+        Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
+        photoPickerIntent.setType("image/*");
+        startActivityForResult(photoPickerIntent, 1);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if (resultCode == android.app.Activity.RESULT_OK) {
+                Uri selectedImage = data.getData();
+
+                try {
+                    Bitmap image = BitmapFactory.decodeStream(getContext().getContentResolver().openInputStream(selectedImage));
+                    mViewModel.setMainImage(new BitmapImage(image, -1));
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                    throw new RuntimeException("File not found " + selectedImage);
+                }
+            }
+        }
+        else {
+            super.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     @Override
