@@ -21,4 +21,7 @@
     <string name="desc_trip_main_image">main image</string>
     <string name="text_lorem_ipsum">description: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Aenean vel elit scelerisque mauris pellentesque pulvinar pellentesque habitant morbi. Nunc sed blandit libero volutpat sed. Vitae tortor condimentum lacinia quis vel. Sit amet consectetur adipiscing elit pellentesque habitant morbi tristique senectus.</string>
     <string name="menu_favorites">Favorites</string>
+
+    <string name="activity_main">MainActivity</string>
+    <string name="search_hint">Search for Trips</string>
 </resources>

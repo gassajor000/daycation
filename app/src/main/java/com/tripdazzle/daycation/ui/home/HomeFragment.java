@@ -65,9 +65,13 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
             }
         });
 
-        root.findViewById(R.id.homeSearchBar).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.homeSearchBar).setOnFocusChangeListener(new View.OnFocusChangeListener() {
             @Override
-            public void onClick(View v) { navigateToSearch(); }
+            public void onFocusChange(View v, boolean hasFocus) {
+                if(hasFocus){
+                    navigateToSearch();
+                }
+            }
         });
 
         return root;
