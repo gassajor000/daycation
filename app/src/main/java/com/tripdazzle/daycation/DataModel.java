@@ -24,9 +24,6 @@ import com.tripdazzle.server.datamodels.feed.CreatedTripEventData;
 import com.tripdazzle.server.datamodels.feed.FeedEventData;
 import com.tripdazzle.server.datamodels.feed.ReviewEventData;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -36,14 +33,20 @@ public class DataModel {
     private ProxyServer server = new ProxyServer();
     private User currentUser;
 
-    public void initialize(Context context){
+    public void initialize(Context context) {
         String localFilesDir = context.getFilesDir().getAbsolutePath();
         server.setDbLocation(localFilesDir);
 
-        // copy demo images over
+        // add demo images to db
         Integer[] images = {R.drawable.mission_bay, R.drawable.balboa, R.drawable.lajolla, R.drawable.zoo, R.drawable.mscott, R.drawable.jhalpert};
         for(Integer i: images){
-            copyResources(context, localFilesDir, i);
+            InputStream in = context.getResources().openRawResource(i);
+            try {
+                server.addImage(new BitmapData(-1, in));
+            } catch (ServerError serverError) {
+                serverError.printStackTrace();
+                throw new RuntimeException(serverError);
+            }
         }
 
         // Set current User
@@ -54,25 +57,12 @@ public class DataModel {
         }
     }
 
-    private void copyResources(Context context, String localStorageDir, int resId){
-        InputStream in = context.getResources().openRawResource(resId);
-        String filename = context.getResources().getResourceEntryName(resId) + ".png";
-
-        File f = new File(localStorageDir, filename);
-
-        if(!f.exists()){
-            try {
-                FileOutputStream out = new FileOutputStream(new File(localStorageDir, filename));
-                byte[] buffer = new byte[1024];
-                int len;
-                while((len = in.read(buffer, 0, buffer.length)) != -1){
-                    out.write(buffer, 0, len);
-                }
-                in.close();
-                out.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+    // Call when the user's data changes
+    private void refreshUser(){
+        try {
+            this.currentUser = new User(server.login("mscott", "password123"));
+        } catch (ServerError serverError) {
+            serverError.printStackTrace();
         }
     }
 
@@ -141,6 +131,10 @@ public class DataModel {
 
     public void getRecommendedTripsForUser(String userId, OnRecommendedTripsListener callback){
         new GetRecommendedTripsByUserIdTask(callback).execute(userId);
+    }
+
+    public void createTrip(Trip trip, TaskContext context){
+        new CreateTripTask(context).execute(trip);
     }
 
     /*
@@ -226,6 +220,49 @@ public class DataModel {
             else {
                 // onSuccess()?
                 context.onGetTripsById(result);
+            }
+        }
+    }
+
+    private class CreateTripTask extends AsyncTask<Trip, Void, Boolean> {
+        /** Application Context*/
+        private TaskContext context;
+
+        private CreateTripTask(TaskContext context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Boolean doInBackground(Trip ... trips) {
+            if (trips.length > 1){
+                return false;
+            }
+            try {
+                if(trips[0].mainImage.id == -1){        // Add the image if it doesn't exist yet
+                    Trip trip = trips[0];
+                    int imgId = server.addImage(trip.mainImage.toData());
+                    server.createTrip(trip.toDataNewImage(imgId));
+                } else {
+                    server.createTrip(trips[0].toData());
+                }
+
+                refreshUser();
+            } catch (ServerError serverError) {
+                serverError.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if(result == false){
+                context.onError("No trip found with corresponding id");
+            }
+            else {
+                // onSuccess()?
+                context.onSuccess("Trip successfully created");
             }
         }
     }

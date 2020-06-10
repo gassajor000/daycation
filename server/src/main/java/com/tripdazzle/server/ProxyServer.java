@@ -24,6 +24,10 @@ public class ProxyServer {
     public List<BitmapData> getImagesById(List<Integer> imageIds) throws ServerError {
         return db.getImagesById(imageIds);
     }
+    /*
+    * Add an image to the database
+    * */
+    public int addImage(BitmapData image) throws ServerError{  return db.addImage(image); }
 
     /** retrieve profile pictures for users
      * @param userIds id of the image to fetch
@@ -65,6 +69,13 @@ public class ProxyServer {
      */
     public List<TripData> getRecommendedTripsByUserId(String userId) throws ServerError{
         return db.getRecommendedTripsForUser(userId);
+    }
+
+    /** retrieve the recommended trips for a user
+     * @param trip data for the trip to create
+     */
+    public void createTrip(TripData trip) throws ServerError{
+        db.createTrip(trip);
     }
 
     /** toggle whether or not a trip is in the user's favorites

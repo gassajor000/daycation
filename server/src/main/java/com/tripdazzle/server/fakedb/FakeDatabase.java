@@ -1,8 +1,9 @@
 package com.tripdazzle.server.fakedb;
 
 import com.tripdazzle.server.DatabaseError;
+import com.tripdazzle.server.ServerError;
 import com.tripdazzle.server.datamodels.ActivityData;
-import com.tripdazzle.server.datamodels.ActivityType;
+import com.tripdazzle.server.datamodels.ActivityTypeData;
 import com.tripdazzle.server.datamodels.BitmapData;
 import com.tripdazzle.server.datamodels.CreatorData;
 import com.tripdazzle.server.datamodels.ProfileData;
@@ -17,8 +18,7 @@ import com.tripdazzle.server.fakedb.feed.FakeCreatedTripEvent;
 import com.tripdazzle.server.fakedb.feed.FakeFeedEvent;
 import com.tripdazzle.server.fakedb.feed.FakeReviewEvent;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class FakeDatabase {
-    private HashMap<Integer, String> fileNames;
+    private HashMap<Integer, FakeImage> images = new HashMap<>();
     private HashMap<Integer, FakeTrip> trips = new HashMap<>();
     private HashMap<Integer, FakeReview> reviews = new HashMap<>();
     private HashMap<String, FakeUser> users = new HashMap<>();
@@ -39,29 +39,26 @@ public class FakeDatabase {
     private TripFactory tripFactory = new TripFactory();
     private ReviewFactory reviewFactory = new ReviewFactory();
 
+    private int nextTrip;
+    private int nextReview;
+    private int nextImage;
 
     private String dbFilePath;
 
     public FakeDatabase(String dbFilePath) {
         this.dbFilePath = dbFilePath;
-        this.fileNames = new HashMap<>();
 
         // Images
-        fileNames.put(401, "mission_bay.png");
-        fileNames.put(402, "balboa.png");
-        fileNames.put(403, "lajolla.png");
-        fileNames.put(404, "zoo.png");
-        fileNames.put(405, "mscott.png");
-        fileNames.put(406, "jhalpert.png");
+        nextImage = 401;
 
         // Trips
         ActivityData[] activities = {
-                new ActivityData(ActivityType.HIKING, "Rose Canyon", "Hike Rose Canyon"),
-                new ActivityData(ActivityType.ICE_CREAM, "Shake Shack", "Get Ice cream at Shake Shack"),
-                new ActivityData(ActivityType.BEACH, "Mission Beach", "Go Swimming at Mission Beach"),
-                new ActivityData(ActivityType.SWIMMING, "Mission Bay", "Swim Across Mission Bay"),
-                new ActivityData(ActivityType.ICE_CREAM, "In n Out", "Get an In n Out Shake"),
-                new ActivityData(ActivityType.BEACH, "Black's Beach", "Go surfing at Black's Beach")
+                new ActivityData(ActivityTypeData.HIKING, "Rose Canyon", "Hike Rose Canyon"),
+                new ActivityData(ActivityTypeData.ICE_CREAM, "Shake Shack", "Get Ice cream at Shake Shack"),
+                new ActivityData(ActivityTypeData.BEACH, "Mission Beach", "Go Swimming at Mission Beach"),
+                new ActivityData(ActivityTypeData.SWIMMING, "Mission Bay", "Swim Across Mission Bay"),
+                new ActivityData(ActivityTypeData.ICE_CREAM, "In n Out", "Get an In n Out Shake"),
+                new ActivityData(ActivityTypeData.BEACH, "Black's Beach", "Go surfing at Black's Beach")
         };
         trips.put(301, new FakeTrip("SD Vacay", 301, "mscott", "San Diego, CA", "Fun Trip around the San Diego Bay.",
                 401, new ActivityData[]{activities[0], activities[1], activities[2]},
@@ -76,6 +73,7 @@ public class FakeDatabase {
         trips.put(304, new FakeTrip("Zoo Trip", 304, "mscott", "San Diego Zoo, San Diego, CA", "Things to do around the Zoo",
                 404, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 2.3, new ArrayList<Integer>(Arrays.asList(516, 517, 518, 519, 520))));
+        nextTrip = 300 + trips.size() + 1;
 
         // Users
         users.put("mscott", new FakeUser("mscott", 405, "Michael", "Scott", "Scranton, PA", "password123",
@@ -106,6 +104,7 @@ public class FakeDatabase {
             put(519,  new FakeReview(519, "mscott", (float) 4.0, new Date(), "Totally awesome experience but I lost my iPhone 519", 304));
             put(520,  new FakeReview(520, "mscott", (float) 5.0, new Date(), "Totally awesome experience but I lost my iPhone 520", 304));
         }});
+        nextReview = 500 + reviews.size() + 1;
 
 
 
@@ -133,19 +132,28 @@ public class FakeDatabase {
     public List<BitmapData> getImagesById(List<Integer> imgIds) throws DatabaseError {
         List<BitmapData> imageFiles = new ArrayList<>();
         for(Integer id: imgIds){
-            String fileName = fileNames.get(id);
-            if (fileName == null){
-                imageFiles.add(null);
-            } else {
-                try {
-                    imageFiles.add(new BitmapData(id, new FileInputStream(dbFilePath + "/" + fileName)));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    throw new DatabaseError(e);
-                }
-            }
+            imageFiles.add(imageFactory.getImage(id));
         }
         return imageFiles;
+    }
+
+    /** Adds an image to the database
+     * @param image Image to add to the database
+     */
+    public int addImage(BitmapData image) throws ServerError {
+        if(image.id != -1){
+            return image.id; // Image already has an id so it is already in the database
+        }
+        try {
+            byte[] inputBytes = new byte[image.dataStream.available()];
+            image.dataStream.read(inputBytes);
+            images.put(nextImage, new FakeImage(nextImage, inputBytes));
+            nextImage++;
+            return nextImage -1;
+        } catch (IOException e) {
+            e.printStackTrace();
+            throw new ServerError(e);
+        }
     }
 
     /** Retrieve a profile image by user id. Not found images come back null.
@@ -161,18 +169,7 @@ public class FakeDatabase {
                 imageFiles.add(null);
                 continue;
             }
-
-            String fileName = fileNames.get(user.profileImageId);
-            if (fileName == null){
-                imageFiles.add(null);
-            } else {
-                try {
-                    imageFiles.add(new ProfilePictureData(id, user.profileImageId, new FileInputStream(dbFilePath + "/" + fileName)));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                    throw new DatabaseError(e);
-                }
-            }
+            imageFiles.add(imageFactory.getProfilePicture(id));
         }
         return imageFiles;
     }
@@ -183,6 +180,22 @@ public class FakeDatabase {
             ret.add(trips.get(id).toTripData(imageFactory, userFactory));
         }
         return ret;
+    }
+
+    public void createTrip(TripData trip) throws DatabaseError{
+        if(trips.get(nextTrip) != null){
+            throw new DatabaseError(String.format("Trip with id %s already exists!", nextTrip));
+        }
+        if (trip.mainImage.id == -1){
+            // Handle adding image
+
+            trips.put(nextTrip, new FakeTrip(trip.title, nextTrip, trip.creator.userId, trip.location, trip.description, trip.mainImage.id, trip.activities, 0.0f, new ArrayList<Integer>()));
+        } else {
+            trips.put(nextTrip, new FakeTrip(trip.title, nextTrip, trip.creator.userId, trip.location, trip.description, trip.mainImage.id, trip.activities, 0.0f, new ArrayList<Integer>()));
+        }
+
+        users.get(trip.creator.userId).createdTrips.add(nextTrip);
+        nextTrip++;
     }
 
     public ProfileData getProfileById(String userId) { return users.get(userId).toProfile(imageFactory); }
@@ -238,30 +251,20 @@ public class FakeDatabase {
     public class ImageFactory {
 
         public BitmapData getImage(Integer imageId){
-            String fileName = fileNames.get(imageId);
-            if(fileName == null){
+            FakeImage image = images.get(imageId);
+            if(image == null){
                 return null;
             }
-            try {
-                return new BitmapData(imageId, new FileInputStream(dbFilePath + "/" + fileName));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return null;
-            }
+            return image.toData();
         }
 
         public ProfilePictureData getProfilePicture(String userId){
             Integer imageId = users.get(userId).profileImageId;
-            String fileName = fileNames.get(imageId);
-            if(fileName == null){
+            FakeImage image = images.get(imageId);
+            if(image == null){
                 return null;
             }
-            try {
-                return new ProfilePictureData(userId, imageId, new FileInputStream(dbFilePath + "/" + fileName));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                return null;
-            }
+            return image.toProfilePictureData(userId);
         }
     }
 

@@ -40,9 +40,21 @@ public class Trip {
         this.reviews = data.reviews;
     }
 
+    public TripData toData(){
+        return new TripData(title, id, creator.toData(), description, location, mainImage.toData(), activitiesToData(), reviewsAverage, reviews);
+    }
+
+    public TripData toDataNewImage(int mainImageId){
+        return new TripData(title, id, creator.toData(), description, location, mainImage.toData(mainImageId), activitiesToData(), reviewsAverage, reviews);
+    }
+
     private static Activity[] convertActivities(ActivityData[] activityData){
         return new Activity[]{ new Activity(activityData[0]),
                 new Activity(activityData[1]), new Activity(activityData[2]) };
+    }
+
+    private ActivityData[] activitiesToData(){
+        return new ActivityData[] { activities[0].toData(), activities[1].toData(), activities[2].toData() };
     }
 
     /**

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:drawable="@drawable/ic_looks_one_gray_24dp"
+        app:state_activity_0="true" />
+    <item android:drawable="@drawable/ic_looks_two_gray_24dp"
+        app:state_activity_1="true"/>
+    <item android:drawable="@drawable/ic_looks_3_gray_24dp"
+        app:state_activity_2="true"/>
+</selector>

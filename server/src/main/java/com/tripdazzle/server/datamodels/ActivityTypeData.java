@@ -1,6 +1,6 @@
 package com.tripdazzle.server.datamodels;
 
-public enum ActivityType {
+public enum ActivityTypeData {
     HIKING,
     SWIMMING,
     ICE_CREAM,
