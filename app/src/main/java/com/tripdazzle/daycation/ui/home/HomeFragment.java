@@ -65,6 +65,11 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
             }
         });
 
+        root.findViewById(R.id.homeSearchBar).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { navigateToSearch(); }
+        });
+
         return root;
     }
 
@@ -82,6 +87,12 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
     private void navigateToCreateTrip(){
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         NavDirections action = HomeFragmentDirections.actionNavHomeToCreateTrip();
+        navController.navigate(action);
+    }
+
+    private void navigateToSearch(){
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        NavDirections action = HomeFragmentDirections.actionNavHomeToSearch();
         navController.navigate(action);
     }
 
