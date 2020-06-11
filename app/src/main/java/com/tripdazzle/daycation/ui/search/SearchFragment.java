@@ -54,6 +54,7 @@ public class SearchFragment extends Fragment {
                 mViewModel.setSelectedTrip(mResultsListViewModel.getTrips().getValue().get(firstVisibleItemPosition));
             }
         });
+        resultsListFragment.setSnapping(true);
 
         onSearchResults = new DataModel.OnSearchTripsListener() {
             @Override

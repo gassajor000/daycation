@@ -13,6 +13,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tripdazzle.daycation.models.Trip;
@@ -31,9 +32,10 @@ public abstract class TripListFragment extends Fragment {
     private int mColumnCount = 1;
     private TripListViewModel mViewModel;       // Data is loaded externally via the viewModel
     private TripListRecyclerViewAdapter mAdapter;
-    private RecyclerView recyclerView;
+    private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
     private OnListScrollListener scrollListener;
+    private LinearSnapHelper snapHelper;
 
     private OnTripListFragmentInteractionListener mListener = null;
 
@@ -52,25 +54,26 @@ public abstract class TripListFragment extends Fragment {
         View view = inflater.inflate(getFragmentLayout(), container, false);
         mViewModel = ViewModelProviders.of(this).get(TripListViewModel.class);
         mViewModel.getTrips().observe(this, tripListUpdateObserver);
+        snapHelper = new LinearSnapHelper();
 
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
+            mRecyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 mLayoutManager = new LinearLayoutManager(context, getDirection(), false);
             } else {
                 mLayoutManager = new GridLayoutManager(context, mColumnCount);
             }
-            recyclerView.setLayoutManager(mLayoutManager);
+            mRecyclerView.setLayoutManager(mLayoutManager);
 
             mAdapter = new TripListRecyclerViewAdapter(mViewModel, mListener, getCardLayout());
-            recyclerView.setAdapter(mAdapter);
+            mRecyclerView.setAdapter(mAdapter);
 
-            recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
                 @Override
-                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
-                    super.onScrollStateChanged(recyclerView, newState);
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
                     if (scrollListener != null){
                         scrollListener.onListScroll(((LinearLayoutManager) mLayoutManager).findFirstVisibleItemPosition());
                     }
@@ -79,6 +82,14 @@ public abstract class TripListFragment extends Fragment {
 
         }
         return view;
+    }
+
+    public void setSnapping(Boolean snapping){
+        if(snapping){
+            snapHelper.attachToRecyclerView(mRecyclerView);
+        } else {
+            snapHelper.attachToRecyclerView(null);
+        }
     }
 
     /* Implementing classes must implement depending on their direction*/
@@ -125,7 +136,7 @@ public abstract class TripListFragment extends Fragment {
     Observer<List<Trip>> tripListUpdateObserver = new Observer<List<Trip>>() {
         @Override
         public void onChanged(List<Trip> trips) {
-            if(recyclerView != null){
+            if(mRecyclerView != null){
                 mAdapter.notifyDataSetChanged();
             }
         }
