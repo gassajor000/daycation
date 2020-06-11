@@ -1,6 +1,5 @@
 package com.tripdazzle.daycation.ui.triplist;
 
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,13 +21,11 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
 
     private final OnTripListFragmentInteractionListener mListener;
     private TripListViewModel mViewModel;
-    private int direction;
     private @LayoutRes int cardType;
 
-    public TripListRecyclerViewAdapter(TripListViewModel viewModel, OnTripListFragmentInteractionListener listener, @RecyclerView.Orientation int direction, @LayoutRes int cardType) {
+    public TripListRecyclerViewAdapter(TripListViewModel viewModel, OnTripListFragmentInteractionListener listener, @LayoutRes int cardType) {
         mListener = listener;
         mViewModel = viewModel;
-        this.direction = direction;
         this.cardType = cardType;
     }
 
@@ -45,8 +42,7 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
     public void onBindViewHolder(final ViewHolder holder, int position) {
         Trip trip = mViewModel.getTrips().getValue().get(position);
 
-        Bitmap bitmap = trip.mainImage.image;
-        holder.bind(trip, bitmap);
+        holder.bind(trip);
 
         holder.binding.getRoot().setOnClickListener(new View.OnClickListener() {
             @Override
@@ -74,7 +70,7 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
             this.binding = binding;
         }
 
-        public void bind(Trip trip, Bitmap image){
+        public void bind(Trip trip){
             mItem = trip;
             binding.setVariable(BR.trip, trip);
 

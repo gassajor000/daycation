@@ -10,7 +10,7 @@ import com.tripdazzle.daycation.R;
  * Activities containing this fragment MUST implement the {@link OnTripListFragmentInteractionListener}
  * interface.
  */
-public class VerticalTripListFragment extends TripListFragment {
+public class VerticalLongTripListFragment extends TripListFragment {
 
     @Override
     int getDirection() {
@@ -20,5 +20,10 @@ public class VerticalTripListFragment extends TripListFragment {
     @Override
     int getCardLayout() {
         return R.layout.layout_trip_card_long;
+    }
+
+    @Override
+    int getFragmentLayout() {
+        return R.layout.fragment_vertical_long_trip_list;
     }
 }

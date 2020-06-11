@@ -22,7 +22,7 @@
 
     <fragment
         android:id="@+id/favoritesFavoriteTripsList"
-        android:name="com.tripdazzle.daycation.ui.triplist.VerticalTripListFragment"
+        android:name="com.tripdazzle.daycation.ui.triplist.VerticalLongTripListFragment"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"

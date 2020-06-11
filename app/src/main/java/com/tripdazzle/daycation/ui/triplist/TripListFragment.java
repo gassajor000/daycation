@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
 
 import java.util.List;
@@ -48,7 +47,7 @@ public abstract class TripListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_vertical_trip_list, container, false);
+        View view = inflater.inflate(getFragmentLayout(), container, false);
         mViewModel = ViewModelProviders.of(this).get(TripListViewModel.class);
         mViewModel.getTrips().observe(this, tripListUpdateObserver);
 
@@ -63,7 +62,7 @@ public abstract class TripListFragment extends Fragment {
             }
             recyclerView.setLayoutManager(mLayoutManager);
 
-            mAdapter = new TripListRecyclerViewAdapter(mViewModel, mListener, getDirection(), getCardLayout());
+            mAdapter = new TripListRecyclerViewAdapter(mViewModel, mListener, getCardLayout());
             recyclerView.setAdapter(mAdapter);
 
         }
@@ -75,6 +74,9 @@ public abstract class TripListFragment extends Fragment {
 
     /* Implementing classes must implement depending on the card layout they use*/
     abstract @LayoutRes int getCardLayout();
+
+    /* Implementing classes must implement depending on the fragment layout*/
+    abstract @LayoutRes int getFragmentLayout();
 
     @Override
     public void onAttach(Context context) {

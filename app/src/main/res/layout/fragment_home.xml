@@ -41,7 +41,7 @@
 
             <fragment
                 android:id="@+id/homeRecommendedTrips"
-                android:name="com.tripdazzle.daycation.ui.triplist.HorizontalTripListFragment"
+                android:name="com.tripdazzle.daycation.ui.triplist.HorizontalSquareTripListFragment"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -49,7 +49,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView9"
-                tools:layout="@layout/fragment_horizontal_trip_list" />
+                tools:layout="@layout/fragment_horizontal_square_trip_list" />
 
             <TextView
                 android:id="@+id/homeFeedTitle"

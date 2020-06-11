@@ -14,11 +14,16 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
+import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
-public class SearchFragment extends Fragment {
+import java.util.List;
+
+public class SearchFragment extends Fragment implements DataModel.TripsSubscriber {
 
     private SearchViewModel mViewModel;
     private DataModel mModel;
+    private TripListViewModel mResultsListViewModel;
 
     public static SearchFragment newInstance() {
         return new SearchFragment();
@@ -30,14 +35,17 @@ public class SearchFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_search, container, false);
         setupSearchView((SearchView) view.findViewById(R.id.searchSearchView));
 
+        mViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
+        mResultsListViewModel = ViewModelProviders.of(getChildFragmentManager().findFragmentById(R.id.searchResultsList)).get(TripListViewModel.class);
+
+        mModel.getFavoritesByUserId("mscott", this);
+
         return view;
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        mViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
-        // TODO: Use the ViewModel
     }
 
     @Override
@@ -65,5 +73,25 @@ public class SearchFragment extends Fragment {
                 return false;
             }
         });
+    }
+
+    @Override
+    public void onSuccess(String message) {
+
+    }
+
+    @Override
+    public void onError(String message) {
+
+    }
+
+    @Override
+    public void onGetTripsById(List<Trip> trips) {
+
+    }
+
+    @Override
+    public void onGetFavoritesByUserId(List<Trip> favorites) {
+        mResultsListViewModel.setTrips(favorites);
     }
 }
