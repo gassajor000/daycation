@@ -19,11 +19,12 @@ import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
 import java.util.List;
 
-public class SearchFragment extends Fragment implements DataModel.TripsSubscriber {
+public class SearchFragment extends Fragment {
 
     private SearchViewModel mViewModel;
     private DataModel mModel;
     private TripListViewModel mResultsListViewModel;
+    private DataModel.OnSearchTripsListener onSearchResults;
 
     public static SearchFragment newInstance() {
         return new SearchFragment();
@@ -38,7 +39,12 @@ public class SearchFragment extends Fragment implements DataModel.TripsSubscribe
         mViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
         mResultsListViewModel = ViewModelProviders.of(getChildFragmentManager().findFragmentById(R.id.searchResultsList)).get(TripListViewModel.class);
 
-        mModel.getFavoritesByUserId("mscott", this);
+        onSearchResults = new DataModel.OnSearchTripsListener() {
+            @Override
+            public void onSearchTripsResults(List<Trip> trips) {
+                mResultsListViewModel.setTrips(trips);
+            }
+        };
 
         return view;
     }
@@ -64,6 +70,7 @@ public class SearchFragment extends Fragment implements DataModel.TripsSubscribe
             @Override
             public boolean onQueryTextSubmit(String query) {
 //                Log.i("Search fragment", "submit "+ query);
+                searchTrips();
                 return false;
             }
 
@@ -75,23 +82,8 @@ public class SearchFragment extends Fragment implements DataModel.TripsSubscribe
         });
     }
 
-    @Override
-    public void onSuccess(String message) {
-
+    private void searchTrips(){
+        mModel.searchTrips("stuff", onSearchResults);
     }
 
-    @Override
-    public void onError(String message) {
-
-    }
-
-    @Override
-    public void onGetTripsById(List<Trip> trips) {
-
-    }
-
-    @Override
-    public void onGetFavoritesByUserId(List<Trip> favorites) {
-        mResultsListViewModel.setTrips(favorites);
-    }
 }

@@ -113,6 +113,10 @@ public class DataModel {
         }
     }
 
+    public void searchTrips(String query, OnSearchTripsListener callback) {
+        new SearchTripsTask(callback).execute(query);
+    }
+
     public User getCurrentUser(){
         return currentUser;
     }
@@ -186,6 +190,10 @@ public class DataModel {
 
     public interface OnRecommendedTripsListener {
         void onRecommendedTrips(List<Trip> trips);
+    }
+
+    public interface OnSearchTripsListener {
+        void onSearchTripsResults(List<Trip> trips);
     }
 
     // Tasks
@@ -556,6 +564,45 @@ public class DataModel {
             }
             else {
                  context.onSuccess("Favorite Toggled");
+            }
+        }
+    }
+
+    private class SearchTripsTask extends AsyncTask<String, Void, List<Trip>> {
+        /** Application Context*/
+        private OnSearchTripsListener context;
+
+        private SearchTripsTask(OnSearchTripsListener context) {
+            this.context = context;
+        }
+
+        @Override
+        protected List<Trip> doInBackground(String ... params) {
+            if (params.length > 1){
+                return null;
+            } else {
+                try {
+                    List<TripData> tripData = server.searchTrips(params[0]);
+                    List<Trip> trips = new ArrayList<>();
+                    for(TripData trip: tripData){
+                        trips.add(new Trip(trip));
+                    }
+                    return trips;
+                } catch (ServerError err){
+                    err.printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Trip> results) {
+            super.onPostExecute(results);
+            if(results == null){
+                //                context.onError("Error occurred");
+            }
+            else {
+                context.onSearchTripsResults(results);
             }
         }
     }

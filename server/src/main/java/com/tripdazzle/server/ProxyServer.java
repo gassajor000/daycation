@@ -101,4 +101,11 @@ public class ProxyServer {
     public List<FeedEventData> getNewsFeed(String userId) throws ServerError{
         return db.getNewsFeed(userId);
     }
+
+    /** retrieves search results for a trips query
+     * @param query string to search for
+     */
+    public List<TripData> searchTrips(String query) throws ServerError{
+        return db.searchTrips(query);
+    }
 }

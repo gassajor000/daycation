@@ -248,6 +248,14 @@ public class FakeDatabase {
         return feed;
     }
 
+    public List<TripData> searchTrips(String query){
+        List<TripData> results = new ArrayList<>();
+        for(int id: Arrays.asList(302, 301, 303)){
+            results.add(trips.get(id).toTripData(imageFactory, userFactory));
+        }
+        return results;
+    }
+
     public class ImageFactory {
 
         public BitmapData getImage(Integer imageId){
