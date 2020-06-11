@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.LayoutRes;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -62,7 +63,7 @@ public abstract class TripListFragment extends Fragment {
             }
             recyclerView.setLayoutManager(mLayoutManager);
 
-            mAdapter = new TripListRecyclerViewAdapter(mViewModel, mListener, getDirection());
+            mAdapter = new TripListRecyclerViewAdapter(mViewModel, mListener, getDirection(), getCardLayout());
             recyclerView.setAdapter(mAdapter);
 
         }
@@ -71,6 +72,9 @@ public abstract class TripListFragment extends Fragment {
 
     /* Implementing classes must implement depending on their direction*/
     abstract @RecyclerView.Orientation int getDirection();
+
+    /* Implementing classes must implement depending on the card layout they use*/
+    abstract @LayoutRes int getCardLayout();
 
     @Override
     public void onAttach(Context context) {

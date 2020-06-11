@@ -2,6 +2,7 @@ package com.tripdazzle.daycation.ui.triplist;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.tripdazzle.daycation.R;
 /**
  * A fragment representing a list of Items.
  * <p/>
@@ -13,5 +14,10 @@ public class HorizontalTripListFragment extends TripListFragment {
     @Override
     int getDirection() {
         return RecyclerView.HORIZONTAL;
+    }
+
+    @Override
+    int getCardLayout() {
+        return R.layout.layout_trip_card_square;
     }
 }

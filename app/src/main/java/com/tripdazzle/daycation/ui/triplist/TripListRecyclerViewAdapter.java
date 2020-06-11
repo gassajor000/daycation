@@ -5,12 +5,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.LayoutRes;
 import androidx.databinding.DataBindingUtil;
 import androidx.databinding.ViewDataBinding;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tripdazzle.daycation.BR;
-import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.triplist.TripListFragment.OnTripListFragmentInteractionListener;
 
@@ -23,23 +23,20 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
     private final OnTripListFragmentInteractionListener mListener;
     private TripListViewModel mViewModel;
     private int direction;
+    private @LayoutRes int cardType;
 
-    public TripListRecyclerViewAdapter(TripListViewModel viewModel, OnTripListFragmentInteractionListener listener, @RecyclerView.Orientation int direction) {
+    public TripListRecyclerViewAdapter(TripListViewModel viewModel, OnTripListFragmentInteractionListener listener, @RecyclerView.Orientation int direction, @LayoutRes int cardType) {
         mListener = listener;
         mViewModel = viewModel;
         this.direction = direction;
+        this.cardType = cardType;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         ViewDataBinding b;
-        if(direction == RecyclerView.HORIZONTAL){
-            b = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                    R.layout.layout_trip_card_square, parent, false);
-        } else {
-            b = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
-                    R.layout.layout_trip_card_long, parent, false);
-        }
+        b = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
+                cardType, parent, false);
 
         return new ViewHolder(b);
     }
