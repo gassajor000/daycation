@@ -9,12 +9,16 @@ import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
+import com.tripdazzle.daycation.databinding.FragmentSearchBinding;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.ui.triplist.HorizontalLongTripListFragment;
+import com.tripdazzle.daycation.ui.triplist.TripListFragment;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
 import java.util.List;
@@ -33,16 +37,31 @@ public class SearchFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_search, container, false);
+        mViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
+
+        FragmentSearchBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_search, container, false);
+        binding.setViewModel(mViewModel);
+        binding.setLifecycleOwner(this);
+        View view = binding.getRoot();
+
         setupSearchView((SearchView) view.findViewById(R.id.searchSearchView));
 
-        mViewModel = ViewModelProviders.of(this).get(SearchViewModel.class);
-        mResultsListViewModel = ViewModelProviders.of(getChildFragmentManager().findFragmentById(R.id.searchResultsList)).get(TripListViewModel.class);
+        HorizontalLongTripListFragment resultsListFragment = (HorizontalLongTripListFragment) getChildFragmentManager().findFragmentById(R.id.searchResultsList);
+        mResultsListViewModel = ViewModelProviders.of(resultsListFragment).get(TripListViewModel.class);
+        resultsListFragment.setScrollListener(new TripListFragment.OnListScrollListener() {
+            @Override
+            public void onListScroll(int firstVisibleItemPosition) {
+                mViewModel.setSelectedTrip(mResultsListViewModel.getTrips().getValue().get(firstVisibleItemPosition));
+            }
+        });
 
         onSearchResults = new DataModel.OnSearchTripsListener() {
             @Override
             public void onSearchTripsResults(List<Trip> trips) {
                 mResultsListViewModel.setTrips(trips);
+                if (trips.size() > 0){
+                    mViewModel.setSelectedTrip(trips.get(0));
+                }
             }
         };
 

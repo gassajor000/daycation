@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -32,6 +33,7 @@ public abstract class TripListFragment extends Fragment {
     private TripListRecyclerViewAdapter mAdapter;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
+    private OnListScrollListener scrollListener;
 
     private OnTripListFragmentInteractionListener mListener = null;
 
@@ -64,6 +66,16 @@ public abstract class TripListFragment extends Fragment {
 
             mAdapter = new TripListRecyclerViewAdapter(mViewModel, mListener, getCardLayout());
             recyclerView.setAdapter(mAdapter);
+
+            recyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                    super.onScrollStateChanged(recyclerView, newState);
+                    if (scrollListener != null){
+                        scrollListener.onListScroll(((LinearLayoutManager) mLayoutManager).findFirstVisibleItemPosition());
+                    }
+                }
+            });
 
         }
         return view;
@@ -118,4 +130,12 @@ public abstract class TripListFragment extends Fragment {
             }
         }
     };
+
+    public interface OnListScrollListener{
+        void onListScroll(int firstVisibleItemPosition);
+    }
+
+    public void setScrollListener(OnListScrollListener listener){
+        this.scrollListener = listener;
+    }
 }

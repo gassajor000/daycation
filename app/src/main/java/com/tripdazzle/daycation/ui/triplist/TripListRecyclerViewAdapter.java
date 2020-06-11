@@ -56,6 +56,8 @@ public class TripListRecyclerViewAdapter extends RecyclerView.Adapter<TripListRe
         });
     }
 
+
+
     @Override
     public int getItemCount() {
         return mViewModel.getTrips().getValue().size();
