@@ -13,6 +13,11 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentSearchBinding;
@@ -23,12 +28,13 @@ import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
 import java.util.List;
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements OnMapReadyCallback {
 
     private SearchViewModel mViewModel;
     private DataModel mModel;
     private TripListViewModel mResultsListViewModel;
     private DataModel.OnSearchTripsListener onSearchResults;
+    private MapView mapView;
 
     public static SearchFragment newInstance() {
         return new SearchFragment();
@@ -66,7 +72,35 @@ public class SearchFragment extends Fragment {
             }
         };
 
+        mapView = view.findViewById(R.id.searchMapView);
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
+
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
     }
 
     @Override
@@ -106,4 +140,8 @@ public class SearchFragment extends Fragment {
         mModel.searchTrips("stuff", onSearchResults);
     }
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        googleMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).title("Marker"));
+    }
 }
