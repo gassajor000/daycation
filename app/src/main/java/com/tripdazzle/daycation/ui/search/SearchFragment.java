@@ -16,8 +16,11 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentSearchBinding;
@@ -26,6 +29,7 @@ import com.tripdazzle.daycation.ui.triplist.HorizontalLongTripListFragment;
 import com.tripdazzle.daycation.ui.triplist.TripListFragment;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class SearchFragment extends Fragment implements OnMapReadyCallback {
@@ -141,7 +145,15 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback {
     }
 
     @Override
-    public void onMapReady(GoogleMap googleMap) {
-        googleMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).title("Marker"));
+    public void onMapReady(final GoogleMap googleMap) {
+//        googleMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).title("Marker"));
+        FetchPlaceRequest request = FetchPlaceRequest.newInstance("ChIJm4tNIXaq3oARZ_p_loyw1wc", Arrays.asList(Place.Field.NAME, Place.Field.ID, Place.Field.LAT_LNG));
+        mModel.placesClient.fetchPlace(request).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
+            @Override
+            public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
+                Place place = fetchPlaceResponse.getPlace();
+                googleMap.addMarker(new MarkerOptions().position(place.getLatLng()));
+            }
+        });
     }
 }

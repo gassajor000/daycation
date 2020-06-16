@@ -1,8 +1,11 @@
 package com.tripdazzle.daycation;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Profile;
 import com.tripdazzle.daycation.models.ProfilePicture;
@@ -32,6 +35,7 @@ import java.util.List;
 public class DataModel {
     private ProxyServer server = new ProxyServer();
     private User currentUser;
+    public PlacesClient placesClient;
 
     public void initialize(Context context) {
         String localFilesDir = context.getFilesDir().getAbsolutePath();
@@ -55,6 +59,17 @@ public class DataModel {
         } catch (ServerError serverError) {
             serverError.printStackTrace();
         }
+
+        // Initialize places SDK
+        String apiKey = null;
+        try {
+            apiKey = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA).metaData.getString("com.google.android.geo.API_KEY");
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        Places.initialize(context, apiKey);
+        placesClient = Places.createClient(context);
     }
 
     // Call when the user's data changes
