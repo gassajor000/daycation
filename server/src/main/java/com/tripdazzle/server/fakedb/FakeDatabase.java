@@ -13,6 +13,7 @@ import com.tripdazzle.server.datamodels.ReviewerData;
 import com.tripdazzle.server.datamodels.TripData;
 import com.tripdazzle.server.datamodels.UserData;
 import com.tripdazzle.server.datamodels.feed.FeedEventData;
+import com.tripdazzle.server.datamodels.location.PlaceLocationData;
 import com.tripdazzle.server.fakedb.feed.FakeAddFavoriteEvent;
 import com.tripdazzle.server.fakedb.feed.FakeCreatedTripEvent;
 import com.tripdazzle.server.fakedb.feed.FakeFeedEvent;
@@ -53,24 +54,24 @@ public class FakeDatabase {
 
         // Trips
         ActivityData[] activities = {
-                new ActivityData(ActivityTypeData.HIKING, "Rose Canyon", "Hike Rose Canyon"),
-                new ActivityData(ActivityTypeData.ICE_CREAM, "Shake Shack", "Get Ice cream at Shake Shack"),
-                new ActivityData(ActivityTypeData.BEACH, "Mission Beach", "Go Swimming at Mission Beach"),
-                new ActivityData(ActivityTypeData.SWIMMING, "Mission Bay", "Swim Across Mission Bay"),
-                new ActivityData(ActivityTypeData.ICE_CREAM, "In n Out", "Get an In n Out Shake"),
-                new ActivityData(ActivityTypeData.BEACH, "Black's Beach", "Go surfing at Black's Beach")
+                new ActivityData(ActivityTypeData.HIKING, new PlaceLocationData("ChIJIeqEu0gB3IARRdcuT4Ya5gI"), "Hike Rose Canyon"),
+                new ActivityData(ActivityTypeData.ICE_CREAM, new PlaceLocationData("ChIJwT8jJCVV2YARJ40GRpZKVG8"), "Get Ice cream at Shake Shack"),
+                new ActivityData(ActivityTypeData.BEACH, new PlaceLocationData("ChIJ9dZdfnyq3oARI_cFYz7QSKM"), "Go Swimming at Mission Beach"),
+                new ActivityData(ActivityTypeData.SWIMMING, new PlaceLocationData("ChIJm4tNIXaq3oARZ_p_loyw1wc"), "Swim Across Mission Bay"),
+                new ActivityData(ActivityTypeData.ICE_CREAM, new PlaceLocationData("ChIJWzruHEsA3IARf3hTyv_2gT8"), "Get an In n Out Shake"),
+                new ActivityData(ActivityTypeData.BEACH, new PlaceLocationData("ChIJKw-CyI8G3IARj9ySO5sCoc4"), "Go surfing at Black's Beach")
         };
-        trips.put(301, new FakeTrip("SD Vacay", 301, "mscott", "San Diego, CA", "Fun Trip around the San Diego Bay.",
+        trips.put(301, new FakeTrip("SD Vacay", 301, "mscott", new PlaceLocationData("ChIJSx6SrQ9T2YARed8V_f0hOg0"), "Fun Trip around the San Diego Bay.",
                 401, new ActivityData[]{activities[0], activities[1], activities[2]},
                 (float) 3.7, new ArrayList<Integer>(Arrays.asList(501, 502, 503, 504, 505, 506, 507,
                 508, 509, 510, 511, 512, 513, 514, 515, 516, 517, 518, 519, 520))));
-        trips.put(302, new FakeTrip("La Jolla Trip", 302, "jhalpert", "La Jolla, CA", "Fun Trip in La Jolla.",
+        trips.put(302, new FakeTrip("La Jolla Trip", 302, "jhalpert", new PlaceLocationData("ChIJzQ7MT3bQ24ARlDAdXPQe5fw"), "Fun Trip in La Jolla.",
                 403, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 4.2, new ArrayList<Integer>(Arrays.asList(506, 507, 508, 509, 510))));
-        trips.put(303, new FakeTrip("Balboa Park", 303, "mscott", "Balboa Park, San Diego, CA", "A day at Balboa Park.",
+        trips.put(303, new FakeTrip("Balboa Park", 303, "mscott", new PlaceLocationData("ChIJA8tw-pZU2YARxPYVsDwL8-0"), "A day at Balboa Park.",
                 402, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 4.5, new ArrayList<Integer>(Arrays.asList(511, 512, 513, 514, 515))));
-        trips.put(304, new FakeTrip("Zoo Trip", 304, "mscott", "San Diego Zoo, San Diego, CA", "Things to do around the Zoo",
+        trips.put(304, new FakeTrip("Zoo Trip", 304, "mscott", new PlaceLocationData("ChIJyYB_SZVU2YARR-I1Jjf08F0"), "Things to do around the Zoo",
                 404, new ActivityData[]{activities[2], activities[3], activities[4]},
                 (float) 2.3, new ArrayList<Integer>(Arrays.asList(516, 517, 518, 519, 520))));
         nextTrip = 300 + trips.size() + 1;

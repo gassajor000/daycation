@@ -5,6 +5,7 @@ import android.graphics.drawable.Drawable;
 
 import com.tripdazzle.server.datamodels.ActivityData;
 import com.tripdazzle.server.datamodels.ActivityTypeData;
+import com.tripdazzle.server.datamodels.location.PlaceLocationData;
 
 public class Activity {
     private ActivityType type;
@@ -24,7 +25,7 @@ public class Activity {
     }
 
     public Activity(ActivityData activityData){
-        this.location = activityData.location;
+        this.location = ((PlaceLocationData) activityData.location).placeId;
         this.description = activityData.description;
         type = ActivityType.fromActivityTypeData(activityData.type);
     }
@@ -34,6 +35,6 @@ public class Activity {
     }
 
     public ActivityData toData(){
-        return new ActivityData(type.toData(), location, description);
+        return new ActivityData(type.toData(), new PlaceLocationData(location), description);
     }
 }

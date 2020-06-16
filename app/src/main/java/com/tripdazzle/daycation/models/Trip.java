@@ -2,6 +2,7 @@ package com.tripdazzle.daycation.models;
 
 import com.tripdazzle.server.datamodels.ActivityData;
 import com.tripdazzle.server.datamodels.TripData;
+import com.tripdazzle.server.datamodels.location.PlaceLocationData;
 
 import java.util.List;
 
@@ -33,7 +34,7 @@ public class Trip {
         this.id = data.id;
         this.creator = new Creator(data.creator);
         this.description = data.description;
-        this.location = data.location;
+        this.location = ((PlaceLocationData) data.location).placeId;
         this.mainImage = new BitmapImage(data.mainImage);
         this.activities = convertActivities(data.activities);
         this.reviewsAverage = data.reviewsAverage;
@@ -41,11 +42,11 @@ public class Trip {
     }
 
     public TripData toData(){
-        return new TripData(title, id, creator.toData(), description, location, mainImage.toData(), activitiesToData(), reviewsAverage, reviews);
+        return new TripData(title, id, creator.toData(), description, new PlaceLocationData(location), mainImage.toData(), activitiesToData(), reviewsAverage, reviews);
     }
 
     public TripData toDataNewImage(int mainImageId){
-        return new TripData(title, id, creator.toData(), description, location, mainImage.toData(mainImageId), activitiesToData(), reviewsAverage, reviews);
+        return new TripData(title, id, creator.toData(), description, new PlaceLocationData(location), mainImage.toData(mainImageId), activitiesToData(), reviewsAverage, reviews);
     }
 
     private static Activity[] convertActivities(ActivityData[] activityData){
