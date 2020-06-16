@@ -14,10 +14,12 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentActivitySelectorBinding;
 import com.tripdazzle.daycation.models.Activity;
 import com.tripdazzle.daycation.models.ActivityType;
+import com.tripdazzle.daycation.models.location.CustomLocation;
 
 public class ActivitySelectorFragment extends Fragment  implements AdapterView.OnItemSelectedListener {
 
@@ -53,7 +55,7 @@ public class ActivitySelectorFragment extends Fragment  implements AdapterView.O
     }
 
     public Activity toActivity(){
-        return new Activity(mViewModel.getType(), mViewModel.getLocation(), mViewModel.getDescription());
+        return new Activity(mViewModel.getType(), new CustomLocation(mViewModel.getLocation(), new LatLng(0,0)), mViewModel.getDescription());
     }
 
     @Override

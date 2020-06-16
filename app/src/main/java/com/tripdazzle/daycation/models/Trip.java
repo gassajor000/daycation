@@ -1,8 +1,9 @@
 package com.tripdazzle.daycation.models;
 
+import com.tripdazzle.daycation.models.location.Location;
+import com.tripdazzle.daycation.models.location.LocationBuilder;
 import com.tripdazzle.server.datamodels.ActivityData;
 import com.tripdazzle.server.datamodels.TripData;
-import com.tripdazzle.server.datamodels.location.PlaceLocationData;
 
 import java.util.List;
 
@@ -11,13 +12,13 @@ public class Trip {
     public final int id;
     public final Creator creator;
     public final String description;
-    public final String location;
+    public final Location location;
     public final BitmapImage mainImage;
     public final Activity[] activities;
     public final Float reviewsAverage;
     public final List<Integer> reviews;
 
-    public Trip(String title, int id, String description, String location, Activity[] activities, Float reviewsAverage, List<Integer> reviews, Creator creator, BitmapImage mainImage) {
+    public Trip(String title, int id, String description, Location location, Activity[] activities, Float reviewsAverage, List<Integer> reviews, Creator creator, BitmapImage mainImage) {
         this.title = title;
         this.id = id;
         this.location = location;
@@ -29,29 +30,29 @@ public class Trip {
         this.reviews = reviews;
     }
 
-    public Trip(TripData data) {
+    public Trip(TripData data, LocationBuilder locationBuilder) {
         this.title = data.title;
         this.id = data.id;
         this.creator = new Creator(data.creator);
         this.description = data.description;
-        this.location = ((PlaceLocationData) data.location).placeId;
+        this.location = locationBuilder.makeLocation(data.location);
         this.mainImage = new BitmapImage(data.mainImage);
-        this.activities = convertActivities(data.activities);
+        this.activities = convertActivities(data.activities, locationBuilder);
         this.reviewsAverage = data.reviewsAverage;
         this.reviews = data.reviews;
     }
 
     public TripData toData(){
-        return new TripData(title, id, creator.toData(), description, new PlaceLocationData(location), mainImage.toData(), activitiesToData(), reviewsAverage, reviews);
+        return new TripData(title, id, creator.toData(), description, location.toData(), mainImage.toData(), activitiesToData(), reviewsAverage, reviews);
     }
 
     public TripData toDataNewImage(int mainImageId){
-        return new TripData(title, id, creator.toData(), description, new PlaceLocationData(location), mainImage.toData(mainImageId), activitiesToData(), reviewsAverage, reviews);
+        return new TripData(title, id, creator.toData(), description, location.toData(), mainImage.toData(mainImageId), activitiesToData(), reviewsAverage, reviews);
     }
 
-    private static Activity[] convertActivities(ActivityData[] activityData){
-        return new Activity[]{ new Activity(activityData[0]),
-                new Activity(activityData[1]), new Activity(activityData[2]) };
+    private static Activity[] convertActivities(ActivityData[] activityData, LocationBuilder locationBuilder){
+        return new Activity[]{ new Activity(activityData[0], locationBuilder),
+                new Activity(activityData[1], locationBuilder), new Activity(activityData[2], locationBuilder) };
     }
 
     private ActivityData[] activitiesToData(){

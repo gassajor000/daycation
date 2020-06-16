@@ -4,7 +4,11 @@ import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Profile;
@@ -16,6 +20,7 @@ import com.tripdazzle.daycation.models.feed.AddFavoriteEvent;
 import com.tripdazzle.daycation.models.feed.CreatedTripEvent;
 import com.tripdazzle.daycation.models.feed.FeedEvent;
 import com.tripdazzle.daycation.models.feed.ReviewEvent;
+import com.tripdazzle.daycation.models.location.LocationBuilder;
 import com.tripdazzle.server.ProxyServer;
 import com.tripdazzle.server.ServerError;
 import com.tripdazzle.server.datamodels.BitmapData;
@@ -29,13 +34,18 @@ import com.tripdazzle.server.datamodels.feed.ReviewEventData;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DataModel {
     private ProxyServer server = new ProxyServer();
     private User currentUser;
     public PlacesClient placesClient;
+    public PlacesManager placesManager;
+    public LocationBuilder locationBuilder;
 
     public void initialize(Context context) {
         String localFilesDir = context.getFilesDir().getAbsolutePath();
@@ -70,6 +80,12 @@ public class DataModel {
         }
         Places.initialize(context, apiKey);
         placesClient = Places.createClient(context);
+        placesManager = new PlacesManager(Arrays.asList(
+                "ChIJIeqEu0gB3IARRdcuT4Ya5gI", "ChIJwT8jJCVV2YARJ40GRpZKVG8", "ChIJ9dZdfnyq3oARI_cFYz7QSKM",
+                "ChIJm4tNIXaq3oARZ_p_loyw1wc", "ChIJWzruHEsA3IARf3hTyv_2gT8", "ChIJKw-CyI8G3IARj9ySO5sCoc4",
+                "ChIJSx6SrQ9T2YARed8V_f0hOg0", "ChIJzQ7MT3bQ24ARlDAdXPQe5fw", "ChIJA8tw-pZU2YARxPYVsDwL8-0",
+                "ChIJyYB_SZVU2YARR-I1Jjf08F0"));
+        locationBuilder = new LocationBuilder(placesManager);
     }
 
     // Call when the user's data changes
@@ -116,9 +132,9 @@ public class DataModel {
                 if(event instanceof ReviewEventData){
                     feed.add(new ReviewEvent((ReviewEventData) event));
                 } else if(event instanceof AddFavoriteEventData){
-                    feed.add(new AddFavoriteEvent((AddFavoriteEventData) event));
+                    feed.add(new AddFavoriteEvent((AddFavoriteEventData) event, locationBuilder));
                 } else if(event instanceof CreatedTripEventData){
-                    feed.add(new CreatedTripEvent((CreatedTripEventData) event));
+                    feed.add(new CreatedTripEvent((CreatedTripEventData) event, locationBuilder));
                 }
             }
             return feed;
@@ -154,6 +170,30 @@ public class DataModel {
 
     public void createTrip(Trip trip, TaskContext context){
         new CreateTripTask(context).execute(trip);
+    }
+
+    /* Places manager */
+    public class PlacesManager {
+        private Map<String, Place> places = new HashMap<>();
+        List<Place.Field> standardFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
+        private OnSuccessListener<FetchPlaceResponse> addPlaceListener = new OnSuccessListener<FetchPlaceResponse>() {
+            @Override
+            public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
+                Place place = fetchPlaceResponse.getPlace();
+                places.put(place.getId(), place);
+            }
+        };
+
+        public PlacesManager(List<String> places) {
+            for(String placeId: places){
+                FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, standardFields);
+                placesClient.fetchPlace(request).addOnSuccessListener(addPlaceListener);
+            }
+        }
+
+        public Place getPlaceById(String id){
+            return places.get(id);
+        }
     }
 
     /*
@@ -228,7 +268,7 @@ public class DataModel {
                 List<TripData> tripsData = server.getTripsById(tripIds[0]);
                 List<Trip> trips = new ArrayList<>();
                 for (TripData t : tripsData) {
-                    trips.add(new Trip(t));
+                    trips.add(new Trip(t, locationBuilder));
                 }
                 return trips;
             }
@@ -470,7 +510,7 @@ public class DataModel {
                     List<Trip> favorites = new ArrayList<>();
 
                     for(TripData t: favoritesData){
-                        favorites.add(new Trip(t));
+                        favorites.add(new Trip(t, locationBuilder));
                     }
                     return favorites;
                 } catch (ServerError serverError) {
@@ -510,7 +550,7 @@ public class DataModel {
                     List<Trip> recommendedTrips = new ArrayList<>();
 
                     for(TripData t: recommendationsData){
-                        recommendedTrips.add(new Trip(t));
+                        recommendedTrips.add(new Trip(t, locationBuilder));
                     }
                     return recommendedTrips;
                 } catch (ServerError serverError) {
@@ -600,7 +640,7 @@ public class DataModel {
                     List<TripData> tripData = server.searchTrips(params[0]);
                     List<Trip> trips = new ArrayList<>();
                     for(TripData trip: tripData){
-                        trips.add(new Trip(trip));
+                        trips.add(new Trip(trip, locationBuilder));
                     }
                     return trips;
                 } catch (ServerError err){

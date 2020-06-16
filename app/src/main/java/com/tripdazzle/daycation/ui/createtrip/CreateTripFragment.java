@@ -22,6 +22,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.android.gms.maps.model.LatLng;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentCreateTripBinding;
@@ -29,6 +30,7 @@ import com.tripdazzle.daycation.models.Activity;
 import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Creator;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.models.location.CustomLocation;
 import com.tripdazzle.daycation.ui.activityselector.ActivitySelectorFragment;
 import com.tripdazzle.daycation.ui.activityselector.ActivitySelectorViewModel;
 
@@ -157,7 +159,7 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
     private Trip makeTrip(){
         Activity[] activities = { activitySelectors[0].toActivity(), activitySelectors[1].toActivity(), activitySelectors[2].toActivity() };
         Creator creator = mModel.getCurrentUser().toCreator();
-        return new Trip(mViewModel.getTitle(), -1, mViewModel.getDescription(), mViewModel.getLocation(), activities,
+        return new Trip(mViewModel.getTitle(), -1, mViewModel.getDescription(), new CustomLocation(mViewModel.getLocation(), new LatLng(0, 0)), activities,
                 0f, new ArrayList<Integer>(), creator, mViewModel.getMainImage().getValue());
     }
 
