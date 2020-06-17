@@ -3,6 +3,7 @@ package com.tripdazzle.daycation.models;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.tripdazzle.daycation.models.location.Location;
 import com.tripdazzle.daycation.models.location.LocationBuilder;
 import com.tripdazzle.server.datamodels.ActivityData;
@@ -37,5 +38,9 @@ public class Activity {
 
     public ActivityData toData(){
         return new ActivityData(type.toData(), location.toData(), description);
+    }
+
+    public MarkerOptions getMarker(){
+        return new MarkerOptions().position(location.getLatLang()).title(location.getName());
     }
 }
