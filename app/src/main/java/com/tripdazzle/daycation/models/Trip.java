@@ -1,5 +1,6 @@
 package com.tripdazzle.daycation.models;
 
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.tripdazzle.daycation.models.location.Location;
 import com.tripdazzle.daycation.models.location.LocationBuilder;
 import com.tripdazzle.server.datamodels.ActivityData;
@@ -17,6 +18,7 @@ public class Trip {
     public final Activity[] activities;
     public final Float reviewsAverage;
     public final List<Integer> reviews;
+    private MarkerOptions marker;
 
     public Trip(String title, int id, String description, Location location, Activity[] activities, Float reviewsAverage, List<Integer> reviews, Creator creator, BitmapImage mainImage) {
         this.title = title;
@@ -69,6 +71,14 @@ public class Trip {
 
     public Integer getNumReviews(){
         return reviews.size();
+    }
+
+    public MarkerOptions getMarker(){
+        if(marker == null){
+            // Store marker so we always return the same one
+            marker = new MarkerOptions().position(location.getLatLang()).title(title);
+        }
+        return marker;
     }
 }
 

@@ -13,14 +13,12 @@ import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.net.FetchPlaceRequest;
-import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentSearchBinding;
@@ -29,7 +27,6 @@ import com.tripdazzle.daycation.ui.triplist.HorizontalLongTripListFragment;
 import com.tripdazzle.daycation.ui.triplist.TripListFragment;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class SearchFragment extends Fragment implements OnMapReadyCallback {
@@ -39,6 +36,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback {
     private TripListViewModel mResultsListViewModel;
     private DataModel.OnSearchTripsListener onSearchResults;
     private MapView mapView;
+    private GoogleMap searchMap;
 
     public static SearchFragment newInstance() {
         return new SearchFragment();
@@ -61,7 +59,9 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback {
         resultsListFragment.setScrollListener(new TripListFragment.OnListScrollListener() {
             @Override
             public void onListScroll(int firstVisibleItemPosition) {
-                mViewModel.setSelectedTrip(mResultsListViewModel.getTrips().getValue().get(firstVisibleItemPosition));
+                Trip selectedTrip = mResultsListViewModel.getTrips().getValue().get(firstVisibleItemPosition);
+                mViewModel.setSelectedTrip(selectedTrip);
+                searchMap.animateCamera(CameraUpdateFactory.newLatLng(selectedTrip.getMarker().getPosition()));
             }
         });
         resultsListFragment.setSnapping(true);
@@ -73,6 +73,9 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback {
                 if (trips.size() > 0){
                     mViewModel.setSelectedTrip(trips.get(0));
                 }
+
+                clearMarkers();
+                addMarkers(trips);
             }
         };
 
@@ -144,16 +147,27 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback {
         mModel.searchTrips("stuff", onSearchResults);
     }
 
+    private void clearMarkers(){
+        if(searchMap != null){
+            searchMap.clear();
+            mViewModel.markers.clear();
+        }
+    }
+
+    private void addMarkers(List<Trip> trips){
+        LatLngBounds.Builder cameraBounds = LatLngBounds.builder();
+        for(Trip trip: trips){
+            MarkerOptions marker = trip.getMarker();
+            mViewModel.markers.add(marker);
+            searchMap.addMarker(marker);
+            cameraBounds.include(marker.getPosition());
+        }
+
+        searchMap.moveCamera(CameraUpdateFactory.newLatLngBounds(cameraBounds.build(), 150));
+    }
+
     @Override
     public void onMapReady(final GoogleMap googleMap) {
-//        googleMap.addMarker(new MarkerOptions().position(new LatLng(0,0)).title("Marker"));
-        FetchPlaceRequest request = FetchPlaceRequest.newInstance("ChIJm4tNIXaq3oARZ_p_loyw1wc", Arrays.asList(Place.Field.NAME, Place.Field.ID, Place.Field.LAT_LNG));
-        mModel.placesClient.fetchPlace(request).addOnSuccessListener(new OnSuccessListener<FetchPlaceResponse>() {
-            @Override
-            public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
-                Place place = fetchPlaceResponse.getPlace();
-                googleMap.addMarker(new MarkerOptions().position(place.getLatLng()));
-            }
-        });
+        searchMap = googleMap;
     }
 }
