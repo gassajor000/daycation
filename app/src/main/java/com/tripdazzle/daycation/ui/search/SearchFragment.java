@@ -18,6 +18,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
@@ -29,11 +30,12 @@ import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
 import java.util.List;
 
-public class SearchFragment extends Fragment implements OnMapReadyCallback {
+public class SearchFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private SearchViewModel mViewModel;
     private DataModel mModel;
     private TripListViewModel mResultsListViewModel;
+    private HorizontalLongTripListFragment mResultsListFragment;
     private DataModel.OnSearchTripsListener onSearchResults;
     private MapView mapView;
     private GoogleMap searchMap;
@@ -54,17 +56,21 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback {
 
         setupSearchView((SearchView) view.findViewById(R.id.searchSearchView));
 
-        HorizontalLongTripListFragment resultsListFragment = (HorizontalLongTripListFragment) getChildFragmentManager().findFragmentById(R.id.searchResultsList);
-        mResultsListViewModel = ViewModelProviders.of(resultsListFragment).get(TripListViewModel.class);
-        resultsListFragment.setScrollListener(new TripListFragment.OnListScrollListener() {
+        mResultsListFragment = (HorizontalLongTripListFragment) getChildFragmentManager().findFragmentById(R.id.searchResultsList);
+        mResultsListViewModel = ViewModelProviders.of(mResultsListFragment).get(TripListViewModel.class);
+        mResultsListFragment.setScrollListener(new TripListFragment.OnListScrollListener() {
             @Override
             public void onListScroll(int firstVisibleItemPosition) {
                 Trip selectedTrip = mResultsListViewModel.getTrips().getValue().get(firstVisibleItemPosition);
                 mViewModel.setSelectedTrip(selectedTrip);
-                searchMap.animateCamera(CameraUpdateFactory.newLatLng(selectedTrip.getMarker().getPosition()));
+
+                Marker marker = mViewModel.markers.get(firstVisibleItemPosition);
+                marker.showInfoWindow();
+                searchMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+
             }
         });
-        resultsListFragment.setSnapping(true);
+        mResultsListFragment.setSnapping(true);
 
         onSearchResults = new DataModel.OnSearchTripsListener() {
             @Override
@@ -156,11 +162,12 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback {
 
     private void addMarkers(List<Trip> trips){
         LatLngBounds.Builder cameraBounds = LatLngBounds.builder();
-        for(Trip trip: trips){
-            MarkerOptions marker = trip.getMarker();
+        for(int i=0; i < trips.size(); i++){
+            MarkerOptions markerOptions = trips.get(i).getMarker();
+            Marker marker = searchMap.addMarker(markerOptions);
             mViewModel.markers.add(marker);
-            searchMap.addMarker(marker);
-            cameraBounds.include(marker.getPosition());
+            marker.setTag(i);
+            cameraBounds.include(markerOptions.getPosition());
         }
 
         searchMap.moveCamera(CameraUpdateFactory.newLatLngBounds(cameraBounds.build(), 150));
@@ -169,5 +176,19 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback {
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         searchMap = googleMap;
+        googleMap.setOnMarkerClickListener(this);
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Integer selectedTripPosition = (Integer) marker.getTag();
+
+        // Set selected trip
+        mViewModel.setSelectedTrip(mResultsListViewModel.getTrips().getValue().get(selectedTripPosition));
+
+        // scroll list to selected trip
+        mResultsListFragment.scrollToPosition(selectedTripPosition);
+
+        return false;
     }
 }

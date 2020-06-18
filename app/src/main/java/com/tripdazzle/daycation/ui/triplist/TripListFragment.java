@@ -149,4 +149,8 @@ public abstract class TripListFragment extends Fragment {
     public void setScrollListener(OnListScrollListener listener){
         this.scrollListener = listener;
     }
+
+    public void scrollToPosition(int position){
+        mRecyclerView.smoothScrollToPosition(position);
+    }
 }
