@@ -65,8 +65,8 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
                 mViewModel.setSelectedTrip(selectedTrip);
 
                 Marker marker = mViewModel.markers.get(firstVisibleItemPosition);
-                marker.showInfoWindow();
                 searchMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
+                marker.showInfoWindow();
 
             }
         });
