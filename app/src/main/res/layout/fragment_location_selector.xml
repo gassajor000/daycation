@@ -18,9 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:drawableStart="@drawable/ic_place_gray_24dp"
-            android:drawablePadding="10dp"
+            android:drawablePadding="4dp"
             android:text='@{viewModel.selectorText, default="Add Place"}'
-            android:textColor="@android:color/hint_foreground_material_light"
+            android:textColor="?android:textColorHint"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"

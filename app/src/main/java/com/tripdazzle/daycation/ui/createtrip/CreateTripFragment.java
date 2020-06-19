@@ -113,6 +113,13 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
             return;
         }
 
+        for(int i=0; i<3; i++){
+            if(!activitySelectors[i].locationIsSelected()){
+                notifyUser("Please select a location for activity " + Integer.toString(i + 1));
+                return;
+            }
+        }
+
         // Send request to server
         mModel.createTrip(makeTrip(), this);
 
