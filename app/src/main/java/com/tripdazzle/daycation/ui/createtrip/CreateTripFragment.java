@@ -22,7 +22,6 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-import com.google.android.gms.maps.model.LatLng;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentCreateTripBinding;
@@ -30,9 +29,9 @@ import com.tripdazzle.daycation.models.Activity;
 import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Creator;
 import com.tripdazzle.daycation.models.Trip;
-import com.tripdazzle.daycation.models.location.CustomLocation;
 import com.tripdazzle.daycation.ui.activityselector.ActivitySelectorFragment;
 import com.tripdazzle.daycation.ui.activityselector.ActivitySelectorViewModel;
+import com.tripdazzle.daycation.ui.locationselector.LocationSelectorFragment;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -43,6 +42,9 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
     private ActivitySelectorFragment[] activitySelectors =  new ActivitySelectorFragment[3];
     private ActivitySelectorViewModel[] activityModels = new ActivitySelectorViewModel[3];
     private DataModel mModel;
+    private LocationSelectorFragment tripLocation;
+
+    private static final int PHOTO_PICK_REQUEST_CODE = 1;
 
     public static CreateTripFragment newInstance() {
         return new CreateTripFragment();
@@ -66,6 +68,8 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
                 selectImage();
             }
         });
+
+        tripLocation = (LocationSelectorFragment) getChildFragmentManager().findFragmentById(R.id.createTripLocation);
 
         // Activity Selectors
         activitySelectors[0] = (ActivitySelectorFragment) getChildFragmentManager().findFragmentById(R.id.createTripActivity0);
@@ -100,8 +104,12 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
 
     private void onCreateTrip(){
         if(mViewModel.getMainImage().getValue() == null){
-            Toast chooseImgMsg = Toast.makeText(getContext(), "Please select an image", Toast.LENGTH_SHORT);
-            chooseImgMsg.show();
+            notifyUser("Please select an image");
+            return;
+        }
+
+        if(!tripLocation.isSelected()){
+            notifyUser("Please select a location");
             return;
         }
 
@@ -113,16 +121,22 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
         navController.navigateUp();
     }
 
+    private void notifyUser(String message){
+        Toast chooseImgMsg = Toast.makeText(getContext(), message, Toast.LENGTH_SHORT);
+        chooseImgMsg.show();
+    }
+
     public void selectImage(){
         Intent photoPickerIntent = new Intent(Intent.ACTION_PICK);
         photoPickerIntent.setType("image/*");
-        startActivityForResult(photoPickerIntent, 1);
+        startActivityForResult(photoPickerIntent, PHOTO_PICK_REQUEST_CODE);
+
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == 1) {
+        if (requestCode == PHOTO_PICK_REQUEST_CODE) {
             if (resultCode == android.app.Activity.RESULT_OK) {
                 Uri selectedImage = data.getData();
 
@@ -134,8 +148,7 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
                     throw new RuntimeException("File not found " + selectedImage);
                 }
             }
-        }
-        else {
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
     }
@@ -159,7 +172,7 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
     private Trip makeTrip(){
         Activity[] activities = { activitySelectors[0].toActivity(), activitySelectors[1].toActivity(), activitySelectors[2].toActivity() };
         Creator creator = mModel.getCurrentUser().toCreator();
-        return new Trip(mViewModel.getTitle(), -1, mViewModel.getDescription(), new CustomLocation(mViewModel.getLocation(), new LatLng(0, 0)), activities,
+        return new Trip(mViewModel.getTitle(), -1, mViewModel.getDescription(), tripLocation.getLocation(), activities,
                 0f, new ArrayList<Integer>(), creator, mViewModel.getMainImage().getValue());
     }
 
