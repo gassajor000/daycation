@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -65,14 +66,7 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
             }
         });
 
-        root.findViewById(R.id.homeSearchBar).setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if(hasFocus){
-                    navigateToSearch();
-                }
-            }
-        });
+        setupSearchView((SearchView) root.findViewById(R.id.homeSearchBar));
 
         return root;
     }
@@ -88,15 +82,31 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
         }
     }
 
+    private void setupSearchView(SearchView searchView) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                navigateToSearch(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
     private void navigateToCreateTrip(){
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         NavDirections action = HomeFragmentDirections.actionNavHomeToCreateTrip();
         navController.navigate(action);
     }
 
-    private void navigateToSearch(){
+    private void navigateToSearch(String query){
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
-        NavDirections action = HomeFragmentDirections.actionNavHomeToSearch();
+        HomeFragmentDirections.ActionNavHomeToSearch action = HomeFragmentDirections.actionNavHomeToSearch();
+        action.setSearchQuery(query);
         navController.navigate(action);
     }
 

@@ -39,6 +39,8 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
     private DataModel.OnSearchTripsListener onSearchResults;
     private MapView mapView;
     private GoogleMap searchMap;
+    private String initialQuery;
+    private SearchView mSearchView;
 
     public static SearchFragment newInstance() {
         return new SearchFragment();
@@ -54,7 +56,8 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
         binding.setLifecycleOwner(this);
         View view = binding.getRoot();
 
-        setupSearchView((SearchView) view.findViewById(R.id.searchSearchView));
+        mSearchView = view.findViewById(R.id.searchSearchView);
+        setupSearchView(mSearchView);
 
         mResultsListFragment = (HorizontalLongTripListFragment) getChildFragmentManager().findFragmentById(R.id.searchResultsList);
         mResultsListViewModel = ViewModelProviders.of(mResultsListFragment).get(TripListViewModel.class);
@@ -119,6 +122,11 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        initialQuery = SearchFragmentArgs.fromBundle(getArguments()).getSearchQuery();
+        if(!initialQuery.equals("")){
+            mSearchView.setIconified(false);
+            mSearchView.setQuery(initialQuery, true);
+        }
     }
 
     @Override
@@ -136,21 +144,19 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-//                Log.i("Search fragment", "submit "+ query);
-                searchTrips();
+                searchTrips(query);
                 return false;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-//                Log.i("Search fragment", "change "+ newText);
                 return false;
             }
         });
     }
 
-    private void searchTrips(){
-        mModel.searchTrips("stuff", onSearchResults);
+    private void searchTrips(String query){
+        mModel.searchTrips(query, onSearchResults);
     }
 
     private void clearMarkers(){
