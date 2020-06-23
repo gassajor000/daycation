@@ -127,24 +127,8 @@ public class DataModel {
         new GetProfileByIdTask(callback).execute(userId);
     }
 
-    public List<FeedEvent> getNewsFeed(String userId){
-        try {
-            List<FeedEventData> feedData = server.getNewsFeed(userId);
-            List<FeedEvent> feed = new ArrayList<>();
-            for(FeedEventData event: feedData){
-                if(event instanceof ReviewEventData){
-                    feed.add(new ReviewEvent((ReviewEventData) event));
-                } else if(event instanceof AddFavoriteEventData){
-                    feed.add(new AddFavoriteEvent((AddFavoriteEventData) event, locationBuilder));
-                } else if(event instanceof CreatedTripEventData){
-                    feed.add(new CreatedTripEvent((CreatedTripEventData) event, locationBuilder));
-                }
-            }
-            return feed;
-        } catch (ServerError serverError) {
-            serverError.printStackTrace();
-            return null;
-        }
+    public void getNewsFeed(String userId, OnGetNewsFeedListener callback){
+        new GetNewsFeedTask(callback).execute(userId);
     }
 
     public void searchTrips(String query, OnSearchTripsListener callback) {
@@ -200,20 +184,24 @@ public class DataModel {
 
         /* Returns place matching id, fetching it from the places API if necessary. Blocking.*/
         public Place addAndGetPlaceById(String placeId){
-            if(!places.containsKey(placeId)){
+            Place place;
+            if(places.containsKey(placeId)){
+                place = places.get(placeId);
+            } else {
                 FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, standardFields);
-                Task task = placesClient.fetchPlace(request).addOnSuccessListener(addPlaceListener);
+                Task<FetchPlaceResponse> task = placesClient.fetchPlace(request).addOnSuccessListener(addPlaceListener);
                 try {
                     Tasks.await(task);
                 } catch (ExecutionException | InterruptedException e) {
                     e.printStackTrace();
                 }
+                place = task.getResult().getPlace();
             }
 
-            Place place = places.get(placeId);
             if(place == null){
-                throw new NullPointerException("Place was not fetched from Places API! Id " + placeId);
+                throw new NullPointerException("Null place! Id " + placeId);
             }
+
             return place;
         }
 
@@ -275,6 +263,10 @@ public class DataModel {
 
     public interface OnSearchTripsListener {
         void onSearchTripsResults(List<Trip> trips);
+    }
+
+    public interface OnGetNewsFeedListener {
+        void onGetNewsFeed(List<FeedEvent> feed);
     }
 
     // Tasks
@@ -684,6 +676,51 @@ public class DataModel {
             }
             else {
                 context.onSearchTripsResults(results);
+            }
+        }
+    }
+
+    private class GetNewsFeedTask extends AsyncTask<String, Void, List<FeedEvent>> {
+        /** Application Context*/
+        private OnGetNewsFeedListener context;
+
+        private GetNewsFeedTask(OnGetNewsFeedListener context) {
+            this.context = context;
+        }
+
+        @Override
+        protected List<FeedEvent> doInBackground(String ... params) {
+            if (params.length > 1){
+                return null;
+            } else {
+                try {
+                    List<FeedEventData> feedData = server.getNewsFeed(params[0]);
+                    List<FeedEvent> feed = new ArrayList<>();
+                    for(FeedEventData event: feedData){
+                        if(event instanceof ReviewEventData){
+                            feed.add(new ReviewEvent((ReviewEventData) event));
+                        } else if(event instanceof AddFavoriteEventData){
+                            feed.add(new AddFavoriteEvent((AddFavoriteEventData) event, locationBuilder));
+                        } else if(event instanceof CreatedTripEventData){
+                            feed.add(new CreatedTripEvent((CreatedTripEventData) event, locationBuilder));
+                        }
+                    }
+                    return feed;
+                } catch (ServerError serverError) {
+                    serverError.printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<FeedEvent> results) {
+            super.onPostExecute(results);
+            if(results == null){
+                //                context.onError("Error occurred");
+            }
+            else {
+                context.onGetNewsFeed(results);
             }
         }
     }

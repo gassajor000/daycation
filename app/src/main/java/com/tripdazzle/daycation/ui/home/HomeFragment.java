@@ -21,6 +21,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.models.feed.FeedEvent;
 import com.tripdazzle.daycation.ui.feed.FeedViewModel;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
@@ -55,7 +56,12 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
             }
         });
 
-        mNewsFeedViewModel.setEvents(mModel.getNewsFeed("mscott"));
+        mModel.getNewsFeed("mscott", new DataModel.OnGetNewsFeedListener() {
+            @Override
+            public void onGetNewsFeed(List<FeedEvent> feed) {
+                mNewsFeedViewModel.setEvents(feed);
+            }
+        });
 
 
         FloatingActionButton fab = root.findViewById(R.id.homeAddTripFab);
