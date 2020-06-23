@@ -5,6 +5,8 @@ import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
@@ -39,13 +41,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class DataModel {
     private ProxyServer server = new ProxyServer();
     private User currentUser;
     public PlacesClient placesClient;
     public PlacesManager placesManager;
-    public LocationBuilder locationBuilder;
+    public LocationBuilder locationBuilder;     // Makes blocking requests, only use in task context
 
     public void initialize(Context context) {
         String localFilesDir = context.getFilesDir().getAbsolutePath();
@@ -81,9 +84,9 @@ public class DataModel {
         Places.initialize(context, apiKey);
         placesClient = Places.createClient(context);
         placesManager = new PlacesManager(Arrays.asList(
-                "ChIJIeqEu0gB3IARRdcuT4Ya5gI", "ChIJwT8jJCVV2YARJ40GRpZKVG8", "ChIJ9dZdfnyq3oARI_cFYz7QSKM",
-                "ChIJm4tNIXaq3oARZ_p_loyw1wc", "ChIJWzruHEsA3IARf3hTyv_2gT8", "ChIJKw-CyI8G3IARj9ySO5sCoc4",
-                "ChIJSx6SrQ9T2YARed8V_f0hOg0", "ChIJzQ7MT3bQ24ARlDAdXPQe5fw", "ChIJA8tw-pZU2YARxPYVsDwL8-0",
+//                "ChIJIeqEu0gB3IARRdcuT4Ya5gI", "ChIJwT8jJCVV2YARJ40GRpZKVG8", "ChIJ9dZdfnyq3oARI_cFYz7QSKM",
+//                "ChIJm4tNIXaq3oARZ_p_loyw1wc", "ChIJWzruHEsA3IARf3hTyv_2gT8", "ChIJKw-CyI8G3IARj9ySO5sCoc4",
+//                "ChIJSx6SrQ9T2YARed8V_f0hOg0", "ChIJzQ7MT3bQ24ARlDAdXPQe5fw", "ChIJA8tw-pZU2YARxPYVsDwL8-0",
                 "ChIJyYB_SZVU2YARR-I1Jjf08F0"));
         locationBuilder = new LocationBuilder(placesManager);
     }
@@ -185,13 +188,36 @@ public class DataModel {
         };
 
         public PlacesManager(List<String> places) {
+            addPlacesAsync(places);
+        }
+
+        public void addPlacesAsync(List<String> places){
             for(String placeId: places){
                 FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, standardFields);
                 placesClient.fetchPlace(request).addOnSuccessListener(addPlaceListener);
             }
         }
 
-        public Place getPlaceById(String id){
+        /* Returns place matching id, fetching it from the places API if necessary. Blocking.*/
+        public Place addAndGetPlaceById(String placeId){
+            if(!places.containsKey(placeId)){
+                FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, standardFields);
+                Task task = placesClient.fetchPlace(request).addOnSuccessListener(addPlaceListener);
+                try {
+                    Tasks.await(task);
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            Place place = places.get(placeId);
+            if(place == null){
+                throw new NullPointerException("Place was not fetched from Places API! Id " + placeId);
+            }
+            return place;
+        }
+
+        public Place getPlaceById(String id){       // may be null
             return places.get(id);
         }
     }

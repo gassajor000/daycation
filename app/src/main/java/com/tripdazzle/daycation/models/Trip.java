@@ -32,12 +32,13 @@ public class Trip {
         this.reviews = reviews;
     }
 
+    /* Blocking*/
     public Trip(TripData data, LocationBuilder locationBuilder) {
         this.title = data.title;
         this.id = data.id;
         this.creator = new Creator(data.creator);
         this.description = data.description;
-        this.location = locationBuilder.makeLocation(data.location);
+        this.location = locationBuilder.makeLocationBlocking(data.location);
         this.mainImage = new BitmapImage(data.mainImage);
         this.activities = convertActivities(data.activities, locationBuilder);
         this.reviewsAverage = data.reviewsAverage;

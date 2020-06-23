@@ -26,8 +26,9 @@ public class Activity {
         this.type = ActivityType.fromActivityTypeData(type);
     }
 
+    /* Blocking*/
     public Activity(ActivityData activityData, LocationBuilder locationBuilder){
-        this.location = locationBuilder.makeLocation(activityData.location);
+        this.location = locationBuilder.makeLocationBlocking(activityData.location);
         this.description = activityData.description;
         type = ActivityType.fromActivityTypeData(activityData.type);
     }

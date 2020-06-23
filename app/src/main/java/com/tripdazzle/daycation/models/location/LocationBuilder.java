@@ -14,16 +14,13 @@ public class LocationBuilder {
         this.placesManager = placesManager;
     }
 
-    public Location makeLocation(LocationData locationData){
+    /* This is a blocking call and will block while Places are being loaded.*/
+    public Location makeLocationBlocking(LocationData locationData){
         if(locationData instanceof CustomLocationData){
             return new CustomLocation((CustomLocationData) locationData);
         } else if(locationData instanceof PlaceLocationData){
-            Place place =  placesManager.getPlaceById(((PlaceLocationData) locationData).placeId);
-            if (place != null){
-                return new PlaceLocation(place);
-            } else {
-                return new NullLocation();
-            }
+            Place place =  placesManager.addAndGetPlaceById(((PlaceLocationData) locationData).placeId);
+            return new PlaceLocation(place);
         } else {
             return new NullLocation();
         }
