@@ -2,6 +2,7 @@ package com.tripdazzle.server.fakedb;
 
 import com.tripdazzle.server.datamodels.ActivityData;
 import com.tripdazzle.server.datamodels.TripData;
+import com.tripdazzle.server.datamodels.location.LocationData;
 
 import java.util.List;
 
@@ -9,14 +10,14 @@ public class FakeTrip {
     public final String title;
     public final int id;
     public final String creatorId;
-    public final String location;
+    public final LocationData location;
     public final String description;
     public final int mainImageId;
     public final ActivityData[] activities;
     public final Float reviewsAverage;
     public final List<Integer> reviews;
 
-    public FakeTrip(String title, int id, String creatorId, String location, String description, int mainImageId, ActivityData[] activities, Float reviewsAverage, List<Integer> reviews) {
+    public FakeTrip(String title, int id, String creatorId, LocationData location, String description, int mainImageId, ActivityData[] activities, Float reviewsAverage, List<Integer> reviews) {
         this.title = title;
         this.id = id;
         this.creatorId = creatorId;

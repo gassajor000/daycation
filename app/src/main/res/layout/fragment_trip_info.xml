@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="73dp">
+            tools:layout_editor_absoluteY="-53dp">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
@@ -32,7 +32,7 @@
                     android:layout_height="150dp"
                     android:contentDescription="@string/desc_trip_main_image"
                     android:scaleType="fitXY"
-                    android:src="@drawable/ic_launcher_background"
+                    android:src='@{viewModel.trip.mainImage.getDrawable(context), default="@drawable/side_nav_bar"}'
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -49,21 +49,14 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/tripInfoMainImageView">
 
-                    <androidx.cardview.widget.CardView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                    <include
+                        layout="@layout/layout_profile_pic_rounded"
+                        android:id="@+id/tripInfoCreatorProfilePic"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
                         android:layout_weight="0"
-                        app:cardCornerRadius="@dimen/profile_pic_corner_round_large">
-
-                        <ImageView
-                            android:id="@+id/tripInfoCreatorProfilePic"
-                            android:layout_width="80dp"
-                            android:layout_height="80dp"
-                            android:layout_weight="0"
-                            android:adjustViewBounds="false"
-                            android:scaleType="centerInside"
-                            android:src="@drawable/ic_logo_beachball" />
-                    </androidx.cardview.widget.CardView>
+                        bind:profilePic="@{viewModel.trip.creator.profilePicture}"
+                        bind:cornerRadiusDP='@{40}' />
 
                     <androidx.constraintlayout.widget.ConstraintLayout
                         android:id="@+id/headerLayout"
@@ -166,10 +159,10 @@
                     android:id="@+id/tripInfoLocationBlurb"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="32dp"
                     android:layout_marginStart="8dp"
+                    android:layout_marginTop="32dp"
                     android:layout_marginEnd="8dp"
+                    android:orientation="horizontal"
                     app:layout_constraintTop_toBottomOf="@+id/tripInfoDescription">
 
                     <ImageView
@@ -183,9 +176,20 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="8dp"
-                        android:text='@{viewModel.trip.location, default="Trip Location"}'
+                        android:text='@{viewModel.trip.location.getName(), default="Trip Location"}'
                         android:textSize="18sp" />
                 </LinearLayout>
+
+                <com.google.android.gms.maps.MapView
+                    android:id="@+id/tripInfoActivitiesMap"
+                    android:layout_width="0dp"
+                    android:layout_height="180dp"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tripInfoLocationBlurb" />
 
                 <include
                     android:id="@+id/activity0"
@@ -193,11 +197,11 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
-                    android:layout_marginTop="32dp"
+                    android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tripInfoLocationBlurb"
+                    app:layout_constraintTop_toBottomOf="@+id/tripInfoActivitiesMap"
                     bind:activity="@{viewModel.trip.getActivity(0)}" />
 
                 <include

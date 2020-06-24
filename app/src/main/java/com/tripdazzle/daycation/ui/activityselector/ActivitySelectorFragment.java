@@ -18,11 +18,13 @@ import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentActivitySelectorBinding;
 import com.tripdazzle.daycation.models.Activity;
 import com.tripdazzle.daycation.models.ActivityType;
+import com.tripdazzle.daycation.ui.locationselector.LocationSelectorFragment;
 
 public class ActivitySelectorFragment extends Fragment  implements AdapterView.OnItemSelectedListener {
 
     private ActivitySelectorViewModel mViewModel;
     private Spinner mSpinner;
+    private LocationSelectorFragment activityLocation;
 
     public static ActivitySelectorFragment newInstance() {
         return new ActivitySelectorFragment();
@@ -44,6 +46,8 @@ public class ActivitySelectorFragment extends Fragment  implements AdapterView.O
         mSpinner.setAdapter(mAdapter);
         mSpinner.setOnItemSelectedListener(this);
 
+        activityLocation = (LocationSelectorFragment) getChildFragmentManager().findFragmentById(R.id.activitySelectorLocation);
+
         return view;
     }
 
@@ -53,7 +57,11 @@ public class ActivitySelectorFragment extends Fragment  implements AdapterView.O
     }
 
     public Activity toActivity(){
-        return new Activity(mViewModel.getType(), mViewModel.getLocation(), mViewModel.getDescription());
+        return new Activity(mViewModel.getType(), activityLocation.getLocation(), mViewModel.getDescription());
+    }
+
+    public boolean locationIsSelected(){
+        return activityLocation.isSelected();
     }
 
     @Override

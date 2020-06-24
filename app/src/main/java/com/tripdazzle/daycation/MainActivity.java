@@ -23,6 +23,7 @@ import com.tripdazzle.daycation.ui.favorites.FavoritesFragmentDirections;
 import com.tripdazzle.daycation.ui.feed.FeedFragment;
 import com.tripdazzle.daycation.ui.home.HomeFragmentDirections;
 import com.tripdazzle.daycation.ui.profile.ProfileFragmentDirections;
+import com.tripdazzle.daycation.ui.search.SearchFragmentDirections;
 import com.tripdazzle.daycation.ui.triplist.TripListFragment;
 
 public class MainActivity extends AppCompatActivity  implements TripListFragment.OnTripListFragmentInteractionListener, DataModel.DataManager, FeedFragment.OnFeedEventInteractionListener {
@@ -85,6 +86,10 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
             }
             case R.id.nav_home: {
                 action = HomeFragmentDirections.actionNavHomeToTripInfo(item.id);
+                break;
+            }
+            case R.id.nav_search: {
+                action = SearchFragmentDirections.actionNavSearchToNavTripInfo(item.id);
                 break;
             }
             default: {

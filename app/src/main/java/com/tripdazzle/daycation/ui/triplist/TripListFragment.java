@@ -6,14 +6,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.LayoutRes;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.LinearSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
 
 import java.util.List;
@@ -30,8 +32,10 @@ public abstract class TripListFragment extends Fragment {
     private int mColumnCount = 1;
     private TripListViewModel mViewModel;       // Data is loaded externally via the viewModel
     private TripListRecyclerViewAdapter mAdapter;
-    private RecyclerView recyclerView;
+    private RecyclerView mRecyclerView;
     private RecyclerView.LayoutManager mLayoutManager;
+    private OnListScrollListener scrollListener;
+    private LinearSnapHelper snapHelper;
 
     private OnTripListFragmentInteractionListener mListener = null;
 
@@ -47,30 +51,55 @@ public abstract class TripListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_vertical_trip_list, container, false);
+        View view = inflater.inflate(getFragmentLayout(), container, false);
         mViewModel = ViewModelProviders.of(this).get(TripListViewModel.class);
         mViewModel.getTrips().observe(this, tripListUpdateObserver);
+        snapHelper = new LinearSnapHelper();
 
         // Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
-            recyclerView = (RecyclerView) view;
+            mRecyclerView = (RecyclerView) view;
             if (mColumnCount <= 1) {
                 mLayoutManager = new LinearLayoutManager(context, getDirection(), false);
             } else {
                 mLayoutManager = new GridLayoutManager(context, mColumnCount);
             }
-            recyclerView.setLayoutManager(mLayoutManager);
+            mRecyclerView.setLayoutManager(mLayoutManager);
 
-            mAdapter = new TripListRecyclerViewAdapter(mViewModel, mListener, getDirection());
-            recyclerView.setAdapter(mAdapter);
+            mAdapter = new TripListRecyclerViewAdapter(mViewModel, mListener, getCardLayout());
+            mRecyclerView.setAdapter(mAdapter);
+
+            mRecyclerView.setOnScrollListener(new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                    super.onScrolled(recyclerView, dx, dy);
+                    if (scrollListener != null){
+                        scrollListener.onListScroll(((LinearLayoutManager) mLayoutManager).findFirstVisibleItemPosition());
+                    }
+                }
+            });
 
         }
         return view;
     }
 
+    public void setSnapping(Boolean snapping){
+        if(snapping){
+            snapHelper.attachToRecyclerView(mRecyclerView);
+        } else {
+            snapHelper.attachToRecyclerView(null);
+        }
+    }
+
     /* Implementing classes must implement depending on their direction*/
     abstract @RecyclerView.Orientation int getDirection();
+
+    /* Implementing classes must implement depending on the card layout they use*/
+    abstract @LayoutRes int getCardLayout();
+
+    /* Implementing classes must implement depending on the fragment layout*/
+    abstract @LayoutRes int getFragmentLayout();
 
     @Override
     public void onAttach(Context context) {
@@ -107,9 +136,21 @@ public abstract class TripListFragment extends Fragment {
     Observer<List<Trip>> tripListUpdateObserver = new Observer<List<Trip>>() {
         @Override
         public void onChanged(List<Trip> trips) {
-            if(recyclerView != null){
+            if(mRecyclerView != null){
                 mAdapter.notifyDataSetChanged();
             }
         }
     };
+
+    public interface OnListScrollListener{
+        void onListScroll(int firstVisibleItemPosition);
+    }
+
+    public void setScrollListener(OnListScrollListener listener){
+        this.scrollListener = listener;
+    }
+
+    public void scrollToPosition(int position){
+        mRecyclerView.smoothScrollToPosition(position);
+    }
 }

@@ -1,8 +1,20 @@
 package com.tripdazzle.daycation;
 
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPhotoResponse;
+import com.google.android.libraries.places.api.net.FetchPlaceRequest;
+import com.google.android.libraries.places.api.net.FetchPlaceResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
 import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Profile;
 import com.tripdazzle.daycation.models.ProfilePicture;
@@ -13,6 +25,7 @@ import com.tripdazzle.daycation.models.feed.AddFavoriteEvent;
 import com.tripdazzle.daycation.models.feed.CreatedTripEvent;
 import com.tripdazzle.daycation.models.feed.FeedEvent;
 import com.tripdazzle.daycation.models.feed.ReviewEvent;
+import com.tripdazzle.daycation.models.location.LocationBuilder;
 import com.tripdazzle.server.ProxyServer;
 import com.tripdazzle.server.ServerError;
 import com.tripdazzle.server.datamodels.BitmapData;
@@ -26,12 +39,19 @@ import com.tripdazzle.server.datamodels.feed.ReviewEventData;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class DataModel {
     private ProxyServer server = new ProxyServer();
     private User currentUser;
+    public PlacesClient placesClient;
+    public PlacesManager placesManager;
+    public LocationBuilder locationBuilder;     // Makes blocking requests, only use in task context
 
     public void initialize(Context context) {
         String localFilesDir = context.getFilesDir().getAbsolutePath();
@@ -55,6 +75,19 @@ public class DataModel {
         } catch (ServerError serverError) {
             serverError.printStackTrace();
         }
+
+        // Initialize places SDK
+        String apiKey = null;
+        try {
+            apiKey = context.getPackageManager().getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA).metaData.getString("com.google.android.geo.API_KEY");
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        Places.initialize(context, apiKey);
+        placesClient = Places.createClient(context);
+        placesManager = new PlacesManager();
+        locationBuilder = new LocationBuilder(placesManager);
     }
 
     // Call when the user's data changes
@@ -93,24 +126,12 @@ public class DataModel {
         new GetProfileByIdTask(callback).execute(userId);
     }
 
-    public List<FeedEvent> getNewsFeed(String userId){
-        try {
-            List<FeedEventData> feedData = server.getNewsFeed(userId);
-            List<FeedEvent> feed = new ArrayList<>();
-            for(FeedEventData event: feedData){
-                if(event instanceof ReviewEventData){
-                    feed.add(new ReviewEvent((ReviewEventData) event));
-                } else if(event instanceof AddFavoriteEventData){
-                    feed.add(new AddFavoriteEvent((AddFavoriteEventData) event));
-                } else if(event instanceof CreatedTripEventData){
-                    feed.add(new CreatedTripEvent((CreatedTripEventData) event));
-                }
-            }
-            return feed;
-        } catch (ServerError serverError) {
-            serverError.printStackTrace();
-            return null;
-        }
+    public void getNewsFeed(String userId, OnGetNewsFeedListener callback){
+        new GetNewsFeedTask(callback).execute(userId);
+    }
+
+    public void searchTrips(String query, OnSearchTripsListener callback) {
+        new SearchTripsTask(callback).execute(query);
     }
 
     public User getCurrentUser(){
@@ -135,6 +156,72 @@ public class DataModel {
 
     public void createTrip(Trip trip, TaskContext context){
         new CreateTripTask(context).execute(trip);
+    }
+
+    /* Places manager */
+    public class PlacesManager {
+        private Map<String, Place> places = new HashMap<>();
+        List<Place.Field> standardFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.PHOTO_METADATAS);
+
+        private OnSuccessListener<FetchPlaceResponse> addPlaceListener = new OnSuccessListener<FetchPlaceResponse>() {
+            @Override
+            public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
+                Place place = fetchPlaceResponse.getPlace();
+                places.put(place.getId(), place);
+            }
+        };
+
+        public PlacesManager() {}
+
+        public void addPlacesAsync(List<String> places){
+            for(String placeId: places){
+                FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, standardFields);
+                placesClient.fetchPlace(request).addOnSuccessListener(addPlaceListener);
+            }
+        }
+
+        /* Returns place matching id, fetching it from the places API if necessary. Blocking.*/
+        public Place addAndGetPlaceById(String placeId){
+            Place place;
+            if(places.containsKey(placeId)){
+                place = places.get(placeId);
+            } else {
+                FetchPlaceRequest request = FetchPlaceRequest.newInstance(placeId, standardFields);
+                Task<FetchPlaceResponse> task = placesClient.fetchPlace(request).addOnSuccessListener(addPlaceListener);
+                try {
+                    Tasks.await(task);
+                } catch (ExecutionException | InterruptedException e) {
+                    e.printStackTrace();
+                }
+                place = task.getResult().getPlace();
+            }
+
+            if(place == null){
+                throw new NullPointerException("Null place! Id " + placeId);
+            }
+
+            return place;
+        }
+
+        public Place getPlaceById(String id){       // may be null
+            return places.get(id);
+        }
+
+        public void getPhoto(Place place, final OnGetPhotosListener callback) {
+            if(place.getPhotoMetadatas() == null){
+                callback.onGetPhoto(null);      // TODO replace with a place holder image
+                return;
+            }
+            FetchPhotoRequest request = FetchPhotoRequest.builder(place.getPhotoMetadatas().get(0)).build();
+            placesClient.fetchPhoto(request).addOnSuccessListener(new OnSuccessListener<FetchPhotoResponse>() {
+                @Override
+                public void onSuccess(FetchPhotoResponse fetchPhotoResponse) {
+                    Bitmap photo = fetchPhotoResponse.getBitmap();
+                    callback.onGetPhoto(new BitmapImage(photo, -1));
+                }
+            });
+
+        }
     }
 
     /*
@@ -188,6 +275,18 @@ public class DataModel {
         void onRecommendedTrips(List<Trip> trips);
     }
 
+    public interface OnSearchTripsListener {
+        void onSearchTripsResults(List<Trip> trips);
+    }
+
+    public interface OnGetNewsFeedListener {
+        void onGetNewsFeed(List<FeedEvent> feed);
+    }
+
+    public interface OnGetPhotosListener {
+        void onGetPhoto(BitmapImage photo);
+    }
+
     // Tasks
     private class GetTripsByIdsTask extends AsyncTask<List<Integer>, Void, List<Trip>> {
         /** Application Context*/
@@ -205,7 +304,7 @@ public class DataModel {
                 List<TripData> tripsData = server.getTripsById(tripIds[0]);
                 List<Trip> trips = new ArrayList<>();
                 for (TripData t : tripsData) {
-                    trips.add(new Trip(t));
+                    trips.add(new Trip(t, locationBuilder));
                 }
                 return trips;
             }
@@ -447,7 +546,7 @@ public class DataModel {
                     List<Trip> favorites = new ArrayList<>();
 
                     for(TripData t: favoritesData){
-                        favorites.add(new Trip(t));
+                        favorites.add(new Trip(t, locationBuilder));
                     }
                     return favorites;
                 } catch (ServerError serverError) {
@@ -487,7 +586,7 @@ public class DataModel {
                     List<Trip> recommendedTrips = new ArrayList<>();
 
                     for(TripData t: recommendationsData){
-                        recommendedTrips.add(new Trip(t));
+                        recommendedTrips.add(new Trip(t, locationBuilder));
                     }
                     return recommendedTrips;
                 } catch (ServerError serverError) {
@@ -556,6 +655,90 @@ public class DataModel {
             }
             else {
                  context.onSuccess("Favorite Toggled");
+            }
+        }
+    }
+
+    private class SearchTripsTask extends AsyncTask<String, Void, List<Trip>> {
+        /** Application Context*/
+        private OnSearchTripsListener context;
+
+        private SearchTripsTask(OnSearchTripsListener context) {
+            this.context = context;
+        }
+
+        @Override
+        protected List<Trip> doInBackground(String ... params) {
+            if (params.length > 1){
+                return null;
+            } else {
+                try {
+                    List<TripData> tripData = server.searchTrips(params[0]);
+                    List<Trip> trips = new ArrayList<>();
+                    for(TripData trip: tripData){
+                        trips.add(new Trip(trip, locationBuilder));
+                    }
+                    return trips;
+                } catch (ServerError err){
+                    err.printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<Trip> results) {
+            super.onPostExecute(results);
+            if(results == null){
+                //                context.onError("Error occurred");
+            }
+            else {
+                context.onSearchTripsResults(results);
+            }
+        }
+    }
+
+    private class GetNewsFeedTask extends AsyncTask<String, Void, List<FeedEvent>> {
+        /** Application Context*/
+        private OnGetNewsFeedListener context;
+
+        private GetNewsFeedTask(OnGetNewsFeedListener context) {
+            this.context = context;
+        }
+
+        @Override
+        protected List<FeedEvent> doInBackground(String ... params) {
+            if (params.length > 1){
+                return null;
+            } else {
+                try {
+                    List<FeedEventData> feedData = server.getNewsFeed(params[0]);
+                    List<FeedEvent> feed = new ArrayList<>();
+                    for(FeedEventData event: feedData){
+                        if(event instanceof ReviewEventData){
+                            feed.add(new ReviewEvent((ReviewEventData) event));
+                        } else if(event instanceof AddFavoriteEventData){
+                            feed.add(new AddFavoriteEvent((AddFavoriteEventData) event, locationBuilder));
+                        } else if(event instanceof CreatedTripEventData){
+                            feed.add(new CreatedTripEvent((CreatedTripEventData) event, locationBuilder));
+                        }
+                    }
+                    return feed;
+                } catch (ServerError serverError) {
+                    serverError.printStackTrace();
+                    return null;
+                }
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<FeedEvent> results) {
+            super.onPostExecute(results);
+            if(results == null){
+                //                context.onError("Error occurred");
+            }
+            else {
+                context.onGetNewsFeed(results);
             }
         }
     }

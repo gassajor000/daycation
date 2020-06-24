@@ -33,20 +33,15 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.textfield.TextInputLayout
+            <fragment
+                android:id="@+id/createTripLocation"
+                android:name="com.tripdazzle.daycation.ui.locationselector.LocationSelectorFragment"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                tools:layout="@layout/fragment_location_selector">
 
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/createTripLocation"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:drawableLeft="@drawable/ic_place_gray_24dp"
-                    android:drawablePadding="4dp"
-                    android:hint="Location"
-                    android:text="@={viewModel.location}" />
-
-            </com.google.android.material.textfield.TextInputLayout>
+            </fragment>
 
             <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="match_parent"

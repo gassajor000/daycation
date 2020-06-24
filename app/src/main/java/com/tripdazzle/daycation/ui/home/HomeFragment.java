@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.models.feed.FeedEvent;
 import com.tripdazzle.daycation.ui.feed.FeedViewModel;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
@@ -54,7 +56,12 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
             }
         });
 
-        mNewsFeedViewModel.setEvents(mModel.getNewsFeed("mscott"));
+        mModel.getNewsFeed("mscott", new DataModel.OnGetNewsFeedListener() {
+            @Override
+            public void onGetNewsFeed(List<FeedEvent> feed) {
+                mNewsFeedViewModel.setEvents(feed);
+            }
+        });
 
 
         FloatingActionButton fab = root.findViewById(R.id.homeAddTripFab);
@@ -64,6 +71,8 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
                 navigateToCreateTrip();
             }
         });
+
+        setupSearchView((SearchView) root.findViewById(R.id.homeSearchBar));
 
         return root;
     }
@@ -79,9 +88,31 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
         }
     }
 
+    private void setupSearchView(SearchView searchView) {
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                navigateToSearch(query);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
     private void navigateToCreateTrip(){
         NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         NavDirections action = HomeFragmentDirections.actionNavHomeToCreateTrip();
+        navController.navigate(action);
+    }
+
+    private void navigateToSearch(String query){
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+        HomeFragmentDirections.ActionNavHomeToSearch action = HomeFragmentDirections.actionNavHomeToSearch();
+        action.setSearchQuery(query);
         navController.navigate(action);
     }
 

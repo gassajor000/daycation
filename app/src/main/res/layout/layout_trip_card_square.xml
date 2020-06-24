@@ -76,7 +76,7 @@
                                 android:layout_marginEnd="8dp"
                                 android:layout_marginBottom="8dp"
                                 android:lines="1"
-                                android:text='@{trip.location, default="Trip City"}'
+                                android:text='@{trip.location.getName(), default="Trip City"}'
                                 android:textAlignment="center" />
 
                             <LinearLayout

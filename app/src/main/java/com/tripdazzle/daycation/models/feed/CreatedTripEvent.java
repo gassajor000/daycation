@@ -3,6 +3,7 @@ package com.tripdazzle.daycation.models.feed;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.models.Creator;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.models.location.LocationBuilder;
 import com.tripdazzle.server.datamodels.feed.CreatedTripEventData;
 
 import java.util.Date;
@@ -17,8 +18,8 @@ public class CreatedTripEvent extends FeedEvent {
         this.trip = trip;
     }
 
-    public CreatedTripEvent(CreatedTripEventData data){
+    public CreatedTripEvent(CreatedTripEventData data, LocationBuilder locationBuilder){
         super(new Creator(data.creator), data.date, DESCRIPTION, ICON);
-        this.trip = new Trip(data.trip);
+        this.trip = new Trip(data.trip, locationBuilder);
     }
 }

@@ -16,17 +16,18 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-            <com.google.android.material.textfield.TextInputEditText
-                android:id="@+id/homeSearchBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:hint="search for trips"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                <SearchView
+                    android:id="@+id/homeSearchBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:queryHint="@string/search_hint"
+                    android:iconifiedByDefault="false"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/textView9"
@@ -41,7 +42,7 @@
 
             <fragment
                 android:id="@+id/homeRecommendedTrips"
-                android:name="com.tripdazzle.daycation.ui.triplist.HorizontalTripListFragment"
+                android:name="com.tripdazzle.daycation.ui.triplist.HorizontalSquareTripListFragment"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
@@ -49,7 +50,7 @@
                 app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView9"
-                tools:layout="@layout/fragment_horizontal_trip_list" />
+                tools:layout="@layout/fragment_horizontal_square_trip_list" />
 
             <TextView
                 android:id="@+id/homeFeedTitle"

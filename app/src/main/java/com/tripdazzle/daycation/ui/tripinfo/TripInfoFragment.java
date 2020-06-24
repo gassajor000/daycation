@@ -6,7 +6,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,22 +18,30 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
+import com.tripdazzle.daycation.models.Activity;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.tripinfo.TripInfoFragmentDirections.ActionNavTripInfoToProfile;
 
 import java.util.List;
 
-public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ReviewsSubscriber, ReviewsListAdapter.OnLoadMoreListener {
+public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ReviewsSubscriber, ReviewsListAdapter.OnLoadMoreListener, OnMapReadyCallback {
     private TripInfoViewModel mViewModel;
     private RecyclerView mRecyclerView;
     private ReviewsListAdapter mReviewsAdapter;
 
     private final int reviewsBatchSize = 5;     // Number of reviews to fetch at a time
     private DataModel mModel;
+    private MapView mapView;
 
     public static TripInfoFragment newInstance() {
         return new TripInfoFragment();
@@ -77,6 +84,10 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mReviewsAdapter = new ReviewsListAdapter(mViewModel.getReviews(), mRecyclerView, this);
         mRecyclerView.setAdapter(mReviewsAdapter);
 
+        // Init Map
+        mapView = view.findViewById(R.id.tripInfoActivitiesMap);
+        mapView.onCreate(savedInstanceState);
+
         return view;
     }
 
@@ -100,6 +111,30 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
             throw new RuntimeException(context.toString()
                     + " must implement DataModel.DataManager");
         }
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
     }
 
     /*load more reviews from the server*/
@@ -168,14 +203,8 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         Trip trip = trips.get(0);
         mViewModel.setTrip(trip, mModel.inCurrentUsersFavorites(trip.id));
 
-        // set main image
-        ImageView mainImageView = (ImageView) this.getView().findViewById(R.id.tripInfoMainImageView);
-        mainImageView.setImageBitmap(trip.mainImage.image);
-
-        // set creator image
-        ImageView creatorImageView = (ImageView) this.getView().findViewById(R.id.tripInfoCreatorProfilePic);
-        creatorImageView.setImageBitmap(trip.creator.profilePicture.image);
-
+        // setup the map
+        mapView.getMapAsync(this);
 
         // get reviews
         onLoadMore();
@@ -184,4 +213,25 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     @Override
     public void onGetFavoritesByUserId(List<Trip> favorites) { }
 
+    @Override
+    public void onMapReady(final GoogleMap googleMap) {
+        // Add activities to map
+        Activity[] activities = mViewModel.getTrip().getValue().activities;
+        LatLngBounds.Builder cameraBounds = LatLngBounds.builder();
+
+        for(int i=0; i < 3; i++){
+            MarkerOptions marker = activities[i].getMarker();
+            cameraBounds.include(marker.getPosition());
+            googleMap.addMarker(marker);
+        }
+
+        // Center camera
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngBounds(cameraBounds.build(), 100));
+    }
+
+
+    /* Adds markers to the map. Trip must be loaded and map must be ready*/
+    private void setupMap(){
+
+    }
 }
