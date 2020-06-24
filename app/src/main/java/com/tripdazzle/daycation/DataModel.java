@@ -2,6 +2,7 @@ package com.tripdazzle.daycation;
 
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -9,6 +10,8 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.net.FetchPhotoRequest;
+import com.google.android.libraries.places.api.net.FetchPhotoResponse;
 import com.google.android.libraries.places.api.net.FetchPlaceRequest;
 import com.google.android.libraries.places.api.net.FetchPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -83,11 +86,7 @@ public class DataModel {
         }
         Places.initialize(context, apiKey);
         placesClient = Places.createClient(context);
-        placesManager = new PlacesManager(Arrays.asList(
-//                "ChIJIeqEu0gB3IARRdcuT4Ya5gI", "ChIJwT8jJCVV2YARJ40GRpZKVG8", "ChIJ9dZdfnyq3oARI_cFYz7QSKM",
-//                "ChIJm4tNIXaq3oARZ_p_loyw1wc", "ChIJWzruHEsA3IARf3hTyv_2gT8", "ChIJKw-CyI8G3IARj9ySO5sCoc4",
-//                "ChIJSx6SrQ9T2YARed8V_f0hOg0", "ChIJzQ7MT3bQ24ARlDAdXPQe5fw", "ChIJA8tw-pZU2YARxPYVsDwL8-0",
-                "ChIJyYB_SZVU2YARR-I1Jjf08F0"));
+        placesManager = new PlacesManager();
         locationBuilder = new LocationBuilder(placesManager);
     }
 
@@ -162,7 +161,8 @@ public class DataModel {
     /* Places manager */
     public class PlacesManager {
         private Map<String, Place> places = new HashMap<>();
-        List<Place.Field> standardFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
+        List<Place.Field> standardFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.PHOTO_METADATAS);
+
         private OnSuccessListener<FetchPlaceResponse> addPlaceListener = new OnSuccessListener<FetchPlaceResponse>() {
             @Override
             public void onSuccess(FetchPlaceResponse fetchPlaceResponse) {
@@ -171,9 +171,7 @@ public class DataModel {
             }
         };
 
-        public PlacesManager(List<String> places) {
-            addPlacesAsync(places);
-        }
+        public PlacesManager() {}
 
         public void addPlacesAsync(List<String> places){
             for(String placeId: places){
@@ -207,6 +205,22 @@ public class DataModel {
 
         public Place getPlaceById(String id){       // may be null
             return places.get(id);
+        }
+
+        public void getPhoto(Place place, final OnGetPhotosListener callback) {
+            if(place.getPhotoMetadatas() == null){
+                callback.onGetPhoto(null);      // TODO replace with a place holder image
+                return;
+            }
+            FetchPhotoRequest request = FetchPhotoRequest.builder(place.getPhotoMetadatas().get(0)).build();
+            placesClient.fetchPhoto(request).addOnSuccessListener(new OnSuccessListener<FetchPhotoResponse>() {
+                @Override
+                public void onSuccess(FetchPhotoResponse fetchPhotoResponse) {
+                    Bitmap photo = fetchPhotoResponse.getBitmap();
+                    callback.onGetPhoto(new BitmapImage(photo, -1));
+                }
+            });
+
         }
     }
 
@@ -267,6 +281,10 @@ public class DataModel {
 
     public interface OnGetNewsFeedListener {
         void onGetNewsFeed(List<FeedEvent> feed);
+    }
+
+    public interface OnGetPhotosListener {
+        void onGetPhoto(BitmapImage photo);
     }
 
     // Tasks

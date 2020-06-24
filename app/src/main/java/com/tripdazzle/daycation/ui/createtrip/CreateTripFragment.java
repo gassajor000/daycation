@@ -18,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -29,9 +30,12 @@ import com.tripdazzle.daycation.models.Activity;
 import com.tripdazzle.daycation.models.BitmapImage;
 import com.tripdazzle.daycation.models.Creator;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.models.location.Location;
+import com.tripdazzle.daycation.models.location.PlaceLocation;
 import com.tripdazzle.daycation.ui.activityselector.ActivitySelectorFragment;
 import com.tripdazzle.daycation.ui.activityselector.ActivitySelectorViewModel;
 import com.tripdazzle.daycation.ui.locationselector.LocationSelectorFragment;
+import com.tripdazzle.daycation.ui.locationselector.LocationSelectorViewModel;
 
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -43,6 +47,13 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
     private ActivitySelectorViewModel[] activityModels = new ActivitySelectorViewModel[3];
     private DataModel mModel;
     private LocationSelectorFragment tripLocation;
+    private LocationSelectorViewModel tripLocationViewModel;
+    private DataModel.OnGetPhotosListener getPhotosCallback = new DataModel.OnGetPhotosListener() {
+        @Override
+        public void onGetPhoto(BitmapImage photo) {
+            mViewModel.setMainImage(photo);
+        }
+    };
 
     private static final int PHOTO_PICK_REQUEST_CODE = 1;
 
@@ -70,6 +81,15 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
         });
 
         tripLocation = (LocationSelectorFragment) getChildFragmentManager().findFragmentById(R.id.createTripLocation);
+        tripLocationViewModel = ViewModelProviders.of(tripLocation).get(LocationSelectorViewModel.class);
+        tripLocationViewModel.getLocation().observe(this, new Observer<Location>() {
+            @Override
+            public void onChanged(Location location) {
+                if (location instanceof PlaceLocation){
+                    mModel.placesManager.getPhoto(((PlaceLocation) location).place, getPhotosCallback);
+                }
+            }
+        });
 
         // Activity Selectors
         activitySelectors[0] = (ActivitySelectorFragment) getChildFragmentManager().findFragmentById(R.id.createTripActivity0);

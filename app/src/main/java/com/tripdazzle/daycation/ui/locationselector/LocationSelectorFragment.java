@@ -27,7 +27,7 @@ import java.util.List;
 public class LocationSelectorFragment extends Fragment {
 
     private LocationSelectorViewModel mViewModel;
-    private List<Place.Field> mFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG);
+    private List<Place.Field> mFields = Arrays.asList(Place.Field.ID, Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.PHOTO_METADATAS);
     private static final int AUTOCOMPLETE_REQUEST_CODE = 2;
 
     public static LocationSelectorFragment newInstance() {

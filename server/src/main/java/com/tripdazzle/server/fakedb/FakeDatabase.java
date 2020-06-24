@@ -183,14 +183,14 @@ public class FakeDatabase {
         return ret;
     }
 
-    public void createTrip(TripData trip) throws DatabaseError{
+    public void createTrip(TripData trip) throws DatabaseError, ServerError {
         if(trips.get(nextTrip) != null){
             throw new DatabaseError(String.format("Trip with id %s already exists!", nextTrip));
         }
         if (trip.mainImage.id == -1){
             // Handle adding image
-
-            trips.put(nextTrip, new FakeTrip(trip.title, nextTrip, trip.creator.userId, trip.location, trip.description, trip.mainImage.id, trip.activities, 0.0f, new ArrayList<Integer>()));
+            int imgId = addImage(trip.mainImage);
+            trips.put(nextTrip, new FakeTrip(trip.title, nextTrip, trip.creator.userId, trip.location, trip.description, imgId, trip.activities, 0.0f, new ArrayList<Integer>()));
         } else {
             trips.put(nextTrip, new FakeTrip(trip.title, nextTrip, trip.creator.userId, trip.location, trip.description, trip.mainImage.id, trip.activities, 0.0f, new ArrayList<Integer>()));
         }
