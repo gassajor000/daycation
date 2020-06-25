@@ -9,12 +9,14 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
+import com.tripdazzle.daycation.ToolbarManager;
 import com.tripdazzle.daycation.databinding.FragmentProfileBinding;
 import com.tripdazzle.daycation.models.Profile;
 import com.tripdazzle.daycation.models.Trip;
@@ -27,6 +29,7 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
     private ProfileViewModel mViewModel;
     private TripListViewModel mCreatedTripsModel;
     private DataModel mModel;
+    private ToolbarManager toolbarManager;
 
     public static ProfileFragment newInstance() {
         return new ProfileFragment();
@@ -43,6 +46,9 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
 
         mCreatedTripsModel = ViewModelProviders.of(getChildFragmentManager().findFragmentById(R.id.profileCreatedTripsList)).get(TripListViewModel.class);
 
+        Toolbar toolbar = view.findViewById(R.id.mainToolbar);
+        toolbarManager.initializeToolbar(toolbar);
+
         return view;
     }
 
@@ -56,11 +62,12 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof DataModel.DataManager) {
+        if (context instanceof DataModel.DataManager && context instanceof ToolbarManager) {
             mModel = ((DataModel.DataManager) context).getModel();
+            toolbarManager = (ToolbarManager) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement DataModel.DataManager");
+                    + " must implement DataModel.DataManager and ToolbarManager");
         }
     }
 
@@ -77,6 +84,8 @@ public class ProfileFragment extends Fragment implements DataModel.ProfilesSubsc
 
         ImageView profileImage = (ImageView) this.getView().findViewById(R.id.profileImage);
         profileImage.setImageBitmap(profile.profilePicture.image);
+
+        toolbarManager.setTitle(profile.firstName + " " + profile.lastName);
     }
 
     @Override

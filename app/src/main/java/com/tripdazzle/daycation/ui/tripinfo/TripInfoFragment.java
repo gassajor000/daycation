@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -26,6 +27,7 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
+import com.tripdazzle.daycation.ToolbarManager;
 import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
 import com.tripdazzle.daycation.models.Activity;
 import com.tripdazzle.daycation.models.Review;
@@ -42,6 +44,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     private final int reviewsBatchSize = 5;     // Number of reviews to fetch at a time
     private DataModel mModel;
     private MapView mapView;
+    private ToolbarManager toolbarManager;
 
     public static TripInfoFragment newInstance() {
         return new TripInfoFragment();
@@ -88,6 +91,9 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mapView = view.findViewById(R.id.tripInfoActivitiesMap);
         mapView.onCreate(savedInstanceState);
 
+        Toolbar toolbar = view.findViewById(R.id.mainToolbar);
+        toolbarManager.initializeToolbar(toolbar);
+
         return view;
     }
 
@@ -105,11 +111,12 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof DataModel.DataManager) {
+        if (context instanceof DataModel.DataManager && context instanceof ToolbarManager) {
             mModel = ((DataModel.DataManager) context).getModel();
+            toolbarManager = (ToolbarManager) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement DataModel.DataManager");
+                    + " must implement DataModel.DataManager and ToolbarManager");
         }
     }
 
@@ -202,6 +209,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
 
         Trip trip = trips.get(0);
         mViewModel.setTrip(trip, mModel.inCurrentUsersFavorites(trip.id));
+        toolbarManager.setTitle(trip.title);
 
         // setup the map
         mapView.getMapAsync(this);

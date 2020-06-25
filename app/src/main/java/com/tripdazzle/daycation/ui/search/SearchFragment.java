@@ -9,6 +9,7 @@ import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
@@ -22,6 +23,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
+import com.tripdazzle.daycation.ToolbarManager;
 import com.tripdazzle.daycation.databinding.FragmentSearchBinding;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.triplist.HorizontalLongTripListFragment;
@@ -41,6 +43,7 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
     private GoogleMap searchMap;
     private String initialQuery;
     private SearchView mSearchView;
+    private ToolbarManager toolbarManager;
 
     public static SearchFragment newInstance() {
         return new SearchFragment();
@@ -92,6 +95,9 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
         mapView.onCreate(savedInstanceState);
         mapView.getMapAsync(this);
 
+        Toolbar toolbar = view.findViewById(R.id.mainToolbar);
+        toolbarManager.initializeToolbar(toolbar);
+
         return view;
     }
 
@@ -132,11 +138,12 @@ public class SearchFragment extends Fragment implements OnMapReadyCallback, Goog
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof DataModel.DataManager) {
+        if (context instanceof DataModel.DataManager && context instanceof ToolbarManager) {
             mModel = ((DataModel.DataManager) context).getModel();
+            toolbarManager = (ToolbarManager) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement DataModel.DataManager");
+                    + " must implement DataModel.DataManager and ToolbarManager");
         }
     }
 

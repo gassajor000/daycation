@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -25,6 +26,7 @@ import androidx.navigation.Navigation;
 
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
+import com.tripdazzle.daycation.ToolbarManager;
 import com.tripdazzle.daycation.databinding.FragmentCreateTripBinding;
 import com.tripdazzle.daycation.models.Activity;
 import com.tripdazzle.daycation.models.BitmapImage;
@@ -56,6 +58,7 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
     };
 
     private static final int PHOTO_PICK_REQUEST_CODE = 1;
+    private ToolbarManager toolbarManager;
 
     public static CreateTripFragment newInstance() {
         return new CreateTripFragment();
@@ -103,6 +106,9 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
         activityModels[0].setActivityNumber(0);
         activityModels[1].setActivityNumber(1);
         activityModels[2].setActivityNumber(2);
+
+        Toolbar toolbar = view.findViewById(R.id.mainToolbar);
+        toolbarManager.initializeToolbar(toolbar);
 
         return view;
     }
@@ -188,11 +194,12 @@ public class CreateTripFragment extends Fragment implements DataModel.TaskContex
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof DataModel.DataManager) {
+        if (context instanceof DataModel.DataManager && context instanceof ToolbarManager) {
             mModel = ((DataModel.DataManager) context).getModel();
+            toolbarManager = (ToolbarManager) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement DataModel.DataManager");
+                    + " must implement DataModel.DataManager and ToolbarManager");
         }
     }
 

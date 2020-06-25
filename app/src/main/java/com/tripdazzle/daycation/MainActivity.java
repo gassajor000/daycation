@@ -1,7 +1,9 @@
 package com.tripdazzle.daycation;
 
 import android.os.Bundle;
+import android.util.Log;
 
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -54,6 +56,16 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
     public void initializeToolbar(Toolbar toolbar) {
         setSupportActionBar(toolbar);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
+    }
+
+    @Override
+    public void setTitle(String title) {
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar == null){
+            Log.w("Toolbar Manager", "Title not set, no actionbar found");
+        } else {
+            actionBar.setTitle(title);
+        }
     }
 
     @Override

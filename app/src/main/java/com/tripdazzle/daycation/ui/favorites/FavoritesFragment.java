@@ -8,11 +8,13 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
+import com.tripdazzle.daycation.ToolbarManager;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
 
@@ -22,6 +24,7 @@ public class FavoritesFragment extends Fragment  implements DataModel.TripsSubsc
 
     private TripListViewModel mFavoriteTripsModel;
     private DataModel mModel;
+    private ToolbarManager toolbarManager;
 
     public static FavoritesFragment newInstance() {
         return new FavoritesFragment();
@@ -35,6 +38,9 @@ public class FavoritesFragment extends Fragment  implements DataModel.TripsSubsc
         mFavoriteTripsModel = ViewModelProviders.of(getChildFragmentManager().findFragmentById(R.id.favoritesFavoriteTripsList)).get(TripListViewModel.class);
         mModel.getFavoritesByUserId(mModel.getCurrentUser().userId, this);
 
+        Toolbar toolbar = view.findViewById(R.id.mainToolbar);
+        toolbarManager.initializeToolbar(toolbar);
+
         return view;
     }
 
@@ -46,10 +52,12 @@ public class FavoritesFragment extends Fragment  implements DataModel.TripsSubsc
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof DataModel.DataManager) {
+        if (context instanceof DataModel.DataManager && context instanceof ToolbarManager) {
             mModel = ((DataModel.DataManager) context).getModel();
+            toolbarManager = (ToolbarManager) context;
         } else {
-            throw new RuntimeException(context.toString() + " must implement DataModel.DataManager");
+            throw new RuntimeException(context.toString()
+                    + " must implement DataModel.DataManager and ToolbarManager");
         }
     }
     @Override
