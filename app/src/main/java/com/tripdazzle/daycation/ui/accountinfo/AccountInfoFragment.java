@@ -8,12 +8,14 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
+import com.tripdazzle.daycation.ToolbarManager;
 import com.tripdazzle.daycation.databinding.FragmentAccountInfoBinding;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.triplist.TripListViewModel;
@@ -25,6 +27,8 @@ public class AccountInfoFragment extends Fragment implements DataModel.TripsSubs
     private AccountInfoViewModel mViewModel;
     private TripListViewModel mCreatedTripsModel;
     private DataModel mModel;
+    private ToolbarManager toolbarManager;
+
 
     public static AccountInfoFragment newInstance() {
         return new AccountInfoFragment();
@@ -41,6 +45,9 @@ public class AccountInfoFragment extends Fragment implements DataModel.TripsSubs
 
         mCreatedTripsModel = ViewModelProviders.of(getChildFragmentManager().findFragmentById(R.id.profileCreatedTripsList)).get(TripListViewModel.class);
 
+        Toolbar toolbar = view.findViewById(R.id.mainToolbar);
+        toolbarManager.initializeToolbar(toolbar);
+
         return view;
     }
 
@@ -54,11 +61,12 @@ public class AccountInfoFragment extends Fragment implements DataModel.TripsSubs
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof DataModel.DataManager) {
+        if (context instanceof DataModel.DataManager && context instanceof ToolbarManager) {
             mModel = ((DataModel.DataManager) context).getModel();
+            toolbarManager = (ToolbarManager) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement DataModel.DataManager");
+                    + " must implement DataModel.DataManager and ToolbarManager");
         }
     }
 

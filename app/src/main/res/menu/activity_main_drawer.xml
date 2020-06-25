@@ -11,7 +11,7 @@
         <item
             android:id="@+id/nav_accountInfo"
             android:icon="@drawable/ic_menu_profile"
-            android:title="@string/menu_profile" />
+            android:title="@string/menu_accountinfo" />
         <item
             android:id="@+id/nav_favorites"
             android:icon="@drawable/ic_menu_favorites"

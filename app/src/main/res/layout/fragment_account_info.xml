@@ -15,26 +15,29 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <include android:id="@+id/appBar"
+            layout="@layout/app_bar_main" />
+
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/profileHeader"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/appBar">
 
             <include
-                layout="@layout/layout_profile_pic_rounded"
                 android:id="@+id/profileProfilePicContainer"
+                layout="@layout/layout_profile_pic_rounded"
                 android:layout_width="80dp"
                 android:layout_height="80dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
                 android:layout_weight="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                bind:profilePic="@{viewModel.user.profilePicture}"
-                bind:cornerRadiusDP='@{40}' />
+                bind:cornerRadiusDP='@{40}'
+                bind:profilePic="@{viewModel.user.profilePicture}" />
 
             <TextView
                 android:id="@+id/profileName"
