@@ -4,6 +4,9 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -12,7 +15,6 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -49,6 +51,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     private ToolbarManager toolbarManager;
     private CollapsingToolbarLayout cTooolbar;
     private View profilePicView;
+    private MenuItem favoritesButton;
 
     public static TripInfoFragment newInstance() {
         return new TripInfoFragment();
@@ -64,24 +67,10 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         binding.setLifecycleOwner(this);
         View view = binding.getRoot();
 
-        view.findViewById(R.id.tripInfoToggleFavorite).setOnClickListener(new ToggleFavoriteListener());
         view.findViewById(R.id.tripInfoCreatorProfilePic).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 navigateToProfile();
-            }
-        });
-
-        mViewModel.getInFavorites().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean inFavorites) {
-                if(mViewModel.getTrip().getValue() != null){    // Make sure trip has been loaded
-                    Boolean alreadyInFavorites = mModel.inCurrentUsersFavorites(mViewModel.getTrip().getValue().id);
-                    if(inFavorites != alreadyInFavorites){
-                        toggleFavorite(inFavorites);
-                    }   // Don't do anything if trip is already added to/removed from favorites
-
-                }
             }
         });
 
@@ -126,11 +115,21 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
             }
         });
 
+         // Setup menu options
+        setHasOptionsMenu(true);
+
         return view;
     }
 
-    private void toggleFavorite(Boolean inFavorites){
-        mModel.toggleFavorite(mModel.getCurrentUser().userId, mViewModel.getTrip().getValue().id, inFavorites, this);
+    private void toggleFavorite(){
+        boolean addToFavorites = !mViewModel.getInFavorites().getValue();
+        Log.i("Toggle favorite", (addToFavorites ? "Add" : "Remove") + " Favorite");
+        mModel.toggleFavorite(mModel.getCurrentUser().userId, mViewModel.getTrip().getValue().id, addToFavorites, this);
+        mViewModel.getInFavorites().setValue(addToFavorites);
+    }
+
+    private void setFavoritesButtonIcon(boolean inFavorites){
+        favoritesButton.setIcon(inFavorites ? R.drawable.ic_star_yellow_24dp : R.drawable.ic_star_border_yellow_24dp);
     }
 
     @Override
@@ -150,6 +149,24 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
             throw new RuntimeException(context.toString()
                     + " must implement DataModel.DataManager and ToolbarManager");
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_tripinfo_fragment, menu);
+        favoritesButton = menu.findItem(R.id.option_toggle_favorite);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection;,
+        if (item.getItemId() == R.id.option_toggle_favorite) {
+            toggleFavorite();
+            setFavoritesButtonIcon(mViewModel.getInFavorites().getValue());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -221,12 +238,6 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         }
     }
 
-    private class ToggleFavoriteListener implements View.OnClickListener{
-        public void onClick(View view){
-            Log.i("TripInfoFragment", "Favorite " + mViewModel.getInFavorites().getValue());
-        }
-    };
-
     @Override
     public void onSuccess(String message) {}
 
@@ -242,6 +253,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         Trip trip = trips.get(0);
         mViewModel.setTrip(trip, mModel.inCurrentUsersFavorites(trip.id));
         cTooolbar.setTitle(trip.title);
+        setFavoritesButtonIcon(mViewModel.getInFavorites().getValue());
 
         // setup the map
         mapView.getMapAsync(this);

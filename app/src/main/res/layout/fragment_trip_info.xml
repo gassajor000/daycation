@@ -78,19 +78,6 @@
                         android:layout_height="match_parent"
                         android:layout_weight="0">
 
-                        <ToggleButton
-                            android:id="@+id/tripInfoToggleFavorite"
-                            android:layout_width="46dp"
-                            android:layout_height="46dp"
-                            android:background="@drawable/favorite_button"
-                            android:checked="@={viewModel.inFavorites}"
-                            android:shadowColor="#FFFFFF"
-                            android:text="Favorite"
-                            android:textOff=""
-                            android:textOn=""
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent" />
-
                         <TextView
                             android:id="@+id/textView3"
                             android:layout_width="wrap_content"
