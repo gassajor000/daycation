@@ -25,6 +25,8 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
 import com.tripdazzle.daycation.ToolbarManager;
@@ -45,6 +47,8 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     private DataModel mModel;
     private MapView mapView;
     private ToolbarManager toolbarManager;
+    private CollapsingToolbarLayout cTooolbar;
+    private View profilePicView;
 
     public static TripInfoFragment newInstance() {
         return new TripInfoFragment();
@@ -91,8 +95,36 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mapView = view.findViewById(R.id.tripInfoActivitiesMap);
         mapView.onCreate(savedInstanceState);
 
-        Toolbar toolbar = view.findViewById(R.id.mainToolbar);
+        // Setup Collapsing Toolbar
+        cTooolbar = view.findViewById(R.id.tripInfoCollapsingToolbar);
+        Toolbar toolbar = view.findViewById(R.id.tripInfoToolbar);
         toolbarManager.initializeToolbar(toolbar);
+
+        profilePicView = view.findViewById(R.id.tripInfoCreatorProfilePic);
+        AppBarLayout mAppBarLayout = view.findViewById(R.id.tripInfoAppBar);
+        mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            private State state;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (verticalOffset == 0) {  // Expanded all the way
+                    if (state != State.EXPANDED) {
+                        // Show profile pic
+                        profilePicView.setVisibility(View.VISIBLE);
+                    }
+                    state = State.EXPANDED;
+                } else if (Math.abs(verticalOffset) == appBarLayout.getTotalScrollRange()) {
+                    if (state != State.COLLAPSED) {
+                        // Hide profile pic
+                        profilePicView.setVisibility(View.INVISIBLE);
+                    }
+                    state = State.COLLAPSED;
+                } else {
+                    // do nothing
+                    state = State.IDLE;
+                }
+            }
+        });
 
         return view;
     }
@@ -209,7 +241,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
 
         Trip trip = trips.get(0);
         mViewModel.setTrip(trip, mModel.inCurrentUsersFavorites(trip.id));
-        toolbarManager.setTitle(trip.title);
+        cTooolbar.setTitle(trip.title);
 
         // setup the map
         mapView.getMapAsync(this);
@@ -242,4 +274,12 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     private void setupMap(){
 
     }
+
+    private enum State {
+        EXPANDED,
+        COLLAPSED,
+        COLLAPSING,
+        IDLE
+    }
+
 }
