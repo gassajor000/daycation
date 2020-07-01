@@ -14,6 +14,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.navigation.NavigationView;
+import com.tripdazzle.daycation.databinding.NavHeaderMainBinding;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.models.feed.AddFavoriteEvent;
 import com.tripdazzle.daycation.models.feed.CreatedTripEvent;
@@ -50,6 +51,9 @@ public class MainActivity extends AppCompatActivity  implements TripListFragment
         NavigationUI.setupWithNavController(navigationView, navController);
 
         mModel.initialize(this);
+
+        NavHeaderMainBinding navHeaderBinding = NavHeaderMainBinding.bind(navigationView.getHeaderView(0));
+        navHeaderBinding.setUser(mModel.getCurrentUser());
     }
 
     @Override
