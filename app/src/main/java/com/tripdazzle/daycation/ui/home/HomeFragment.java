@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
@@ -20,6 +21,7 @@ import androidx.navigation.Navigation;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
+import com.tripdazzle.daycation.ToolbarManager;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.models.feed.FeedEvent;
 import com.tripdazzle.daycation.ui.feed.FeedViewModel;
@@ -33,6 +35,7 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
     private DataModel mModel;
     private TripListViewModel mRecommendedTripsModel;
     private FeedViewModel mNewsFeedViewModel;
+    private ToolbarManager toolbarManager;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -74,17 +77,21 @@ public class HomeFragment extends Fragment  implements DataModel.TripsSubscriber
 
         setupSearchView((SearchView) root.findViewById(R.id.homeSearchBar));
 
+        Toolbar toolbar = root.findViewById(R.id.mainToolbar);
+        toolbarManager.initializeToolbar(toolbar);
+
         return root;
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof DataModel.DataManager) {
+        if (context instanceof DataModel.DataManager && context instanceof ToolbarManager) {
             mModel = ((DataModel.DataManager) context).getModel();
+            toolbarManager = (ToolbarManager) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement DataModel.DataManager");
+                    + " must implement DataModel.DataManager and ToolbarManager");
         }
     }
 

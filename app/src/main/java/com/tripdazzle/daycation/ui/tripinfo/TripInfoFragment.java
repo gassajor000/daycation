@@ -4,14 +4,17 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.Toolbar;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -24,8 +27,11 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.appbar.AppBarLayout;
+import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
+import com.tripdazzle.daycation.ToolbarManager;
 import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
 import com.tripdazzle.daycation.models.Activity;
 import com.tripdazzle.daycation.models.Review;
@@ -42,6 +48,10 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     private final int reviewsBatchSize = 5;     // Number of reviews to fetch at a time
     private DataModel mModel;
     private MapView mapView;
+    private ToolbarManager toolbarManager;
+    private CollapsingToolbarLayout cTooolbar;
+    private View profilePicView;
+    private MenuItem favoritesButton;
 
     public static TripInfoFragment newInstance() {
         return new TripInfoFragment();
@@ -57,24 +67,10 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         binding.setLifecycleOwner(this);
         View view = binding.getRoot();
 
-        view.findViewById(R.id.tripInfoToggleFavorite).setOnClickListener(new ToggleFavoriteListener());
         view.findViewById(R.id.tripInfoCreatorProfilePic).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 navigateToProfile();
-            }
-        });
-
-        mViewModel.getInFavorites().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(Boolean inFavorites) {
-                if(mViewModel.getTrip().getValue() != null){    // Make sure trip has been loaded
-                    Boolean alreadyInFavorites = mModel.inCurrentUsersFavorites(mViewModel.getTrip().getValue().id);
-                    if(inFavorites != alreadyInFavorites){
-                        toggleFavorite(inFavorites);
-                    }   // Don't do anything if trip is already added to/removed from favorites
-
-                }
             }
         });
 
@@ -88,11 +84,52 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mapView = view.findViewById(R.id.tripInfoActivitiesMap);
         mapView.onCreate(savedInstanceState);
 
+        // Setup Collapsing Toolbar
+        cTooolbar = view.findViewById(R.id.tripInfoCollapsingToolbar);
+        Toolbar toolbar = view.findViewById(R.id.tripInfoToolbar);
+        toolbarManager.initializeToolbar(toolbar);
+
+        profilePicView = view.findViewById(R.id.tripInfoCreatorProfilePic);
+        AppBarLayout mAppBarLayout = view.findViewById(R.id.tripInfoAppBar);
+        mAppBarLayout.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            private State state;
+
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (verticalOffset == 0) {  // Expanded all the way
+                    if (state != State.EXPANDED) {
+                        // Show profile pic
+                        profilePicView.setVisibility(View.VISIBLE);
+                    }
+                    state = State.EXPANDED;
+                } else if (Math.abs(verticalOffset) == appBarLayout.getTotalScrollRange()) {
+                    if (state != State.COLLAPSED) {
+                        // Hide profile pic
+                        profilePicView.setVisibility(View.INVISIBLE);
+                    }
+                    state = State.COLLAPSED;
+                } else {
+                    // do nothing
+                    state = State.IDLE;
+                }
+            }
+        });
+
+         // Setup menu options
+        setHasOptionsMenu(true);
+
         return view;
     }
 
-    private void toggleFavorite(Boolean inFavorites){
-        mModel.toggleFavorite(mModel.getCurrentUser().userId, mViewModel.getTrip().getValue().id, inFavorites, this);
+    private void toggleFavorite(){
+        boolean addToFavorites = !mViewModel.getInFavorites().getValue();
+        Log.i("Toggle favorite", (addToFavorites ? "Add" : "Remove") + " Favorite");
+        mModel.toggleFavorite(mModel.getCurrentUser().userId, mViewModel.getTrip().getValue().id, addToFavorites, this);
+        mViewModel.getInFavorites().setValue(addToFavorites);
+    }
+
+    private void setFavoritesButtonIcon(boolean inFavorites){
+        favoritesButton.setIcon(inFavorites ? R.drawable.ic_star_yellow_24dp : R.drawable.ic_star_border_yellow_24dp);
     }
 
     @Override
@@ -105,12 +142,31 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof DataModel.DataManager) {
+        if (context instanceof DataModel.DataManager && context instanceof ToolbarManager) {
             mModel = ((DataModel.DataManager) context).getModel();
+            toolbarManager = (ToolbarManager) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement DataModel.DataManager");
+                    + " must implement DataModel.DataManager and ToolbarManager");
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_tripinfo_fragment, menu);
+        favoritesButton = menu.findItem(R.id.option_toggle_favorite);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection;,
+        if (item.getItemId() == R.id.option_toggle_favorite) {
+            toggleFavorite();
+            setFavoritesButtonIcon(mViewModel.getInFavorites().getValue());
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -182,12 +238,6 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         }
     }
 
-    private class ToggleFavoriteListener implements View.OnClickListener{
-        public void onClick(View view){
-            Log.i("TripInfoFragment", "Favorite " + mViewModel.getInFavorites().getValue());
-        }
-    };
-
     @Override
     public void onSuccess(String message) {}
 
@@ -202,6 +252,8 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
 
         Trip trip = trips.get(0);
         mViewModel.setTrip(trip, mModel.inCurrentUsersFavorites(trip.id));
+        cTooolbar.setTitle(trip.title);
+        setFavoritesButtonIcon(mViewModel.getInFavorites().getValue());
 
         // setup the map
         mapView.getMapAsync(this);
@@ -234,4 +286,12 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     private void setupMap(){
 
     }
+
+    private enum State {
+        EXPANDED,
+        COLLAPSED,
+        COLLAPSING,
+        IDLE
+    }
+
 }

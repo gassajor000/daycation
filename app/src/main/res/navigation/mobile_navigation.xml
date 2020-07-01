@@ -25,8 +25,8 @@
     <fragment
         android:id="@+id/nav_tripInfo"
         android:name="com.tripdazzle.daycation.ui.tripinfo.TripInfoFragment"
-        android:label="fragment_trip_info"
-        tools:layout="@layout/fragment_trip_info" >
+        android:label="@string/menu_trip_info"
+        tools:layout="@layout/fragment_trip_info">
         <argument
             android:name="tripId"
             app:argType="integer" />
@@ -37,7 +37,7 @@
     <fragment
         android:id="@+id/nav_profile"
         android:name="com.tripdazzle.daycation.ui.profile.ProfileFragment"
-        android:label="fragment_profile"
+        android:label="Creator Profile"
         tools:layout="@layout/fragment_profile">
         <argument
             android:name="profileId"
@@ -47,9 +47,10 @@
             android:id="@+id/actionNavProfileToTripInfo"
             app:destination="@id/nav_tripInfo" />
     </fragment>
-    <fragment android:id="@+id/nav_favorites"
+    <fragment
+        android:id="@+id/nav_favorites"
         android:name="com.tripdazzle.daycation.ui.favorites.FavoritesFragment"
-        android:label="fragment_favorites"
+        android:label="@string/menu_favorites"
         tools:layout="@layout/fragment_favorites">
         <action
             android:id="@+id/action_nav_favorites_to_tripInfo"
@@ -66,7 +67,7 @@
     <fragment
         android:id="@+id/nav_accountInfo"
         android:name="com.tripdazzle.daycation.ui.accountinfo.AccountInfoFragment"
-        android:label="fragment_account_info">
+        android:label="@string/menu_accountinfo">
         <action
             android:id="@+id/action_nav_accountInfo_to_tripInfo"
             app:destination="@id/nav_tripInfo" />
@@ -74,7 +75,7 @@
     <fragment
         android:id="@+id/nav_createTrip"
         android:name="com.tripdazzle.daycation.ui.createtrip.CreateTripFragment"
-        android:label="fragment_create_trip"
+        android:label="Create a Trip"
         tools:layout="@layout/fragment_create_trip" />
     <fragment
         android:id="@+id/nav_search"

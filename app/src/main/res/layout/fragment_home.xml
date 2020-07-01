@@ -8,76 +8,88 @@
         xmlns:tools="http://schemas.android.com/tools"
         tools:context=".ui.home.HomeFragment">
 
-        <ScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:orientation="vertical">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <include android:id="@+id/appBar"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                layout="@layout/app_bar_main" />
 
-                <SearchView
-                    android:id="@+id/homeSearchBar"
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <SearchView
+                        android:id="@+id/homeSearchBar"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:queryHint="@string/search_hint"
+                        android:iconifiedByDefault="false"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:queryHint="@string/search_hint"
-                    android:iconifiedByDefault="false"
+                    android:text="Recommendations"
+                    android:textSize="@dimen/text_h1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/homeSearchBar" />
+
+                <fragment
+                    android:id="@+id/homeRecommendedTrips"
+                    android:name="com.tripdazzle.daycation.ui.triplist.HorizontalSquareTripListFragment"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintHorizontal_bias="0.0"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/textView9"
+                    tools:layout="@layout/fragment_horizontal_square_trip_list" />
+
+                <TextView
+                    android:id="@+id/homeFeedTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:text="News Feed"
+                    android:textSize="@dimen/text_h1"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/homeRecommendedTrips" />
+
+                <fragment
+                    android:id="@+id/homeNewsFeed"
+                    android:name="com.tripdazzle.daycation.ui.feed.FeedFragment"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toBottomOf="@id/homeFeedTitle"
+                    tools:layout="@layout/fragment_feed" />
 
-            <TextView
-                android:id="@+id/textView9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="Recommendations"
-                android:textSize="@dimen/text_h1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/homeSearchBar" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <fragment
-                android:id="@+id/homeRecommendedTrips"
-                android:name="com.tripdazzle.daycation.ui.triplist.HorizontalSquareTripListFragment"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView9"
-                tools:layout="@layout/fragment_horizontal_square_trip_list" />
+            </ScrollView>
+        </LinearLayout>
 
-            <TextView
-                android:id="@+id/homeFeedTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:text="News Feed"
-                android:textSize="@dimen/text_h1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/homeRecommendedTrips" />
-
-            <fragment
-                android:id="@+id/homeNewsFeed"
-                android:name="com.tripdazzle.daycation.ui.feed.FeedFragment"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_marginTop="8dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/homeFeedTitle"
-                tools:layout="@layout/fragment_feed" />
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/homeAddTripFab"
