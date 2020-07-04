@@ -1,5 +1,6 @@
 package com.tripdazzle.daycation.ui.tripinfo;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -165,6 +166,11 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
             toggleFavorite();
             setFavoritesButtonIcon(mViewModel.getInFavorites().getValue());
             return true;
+        } else if (item.getItemId() == R.id.option_add_review){
+            Dialog reviewDialog = new Dialog(getContext());
+            reviewDialog.setContentView(R.layout.fragment_add_review);
+            reviewDialog.setCancelable(true);
+            reviewDialog.show();
         }
         return super.onOptionsItemSelected(item);
     }
