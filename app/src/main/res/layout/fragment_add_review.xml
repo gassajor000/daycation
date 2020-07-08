@@ -41,13 +41,14 @@
 
         <RatingBar
             android:id="@+id/ratingBar2"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:rating="@={viewModel.rating, default=3.0}"
             android:numStars="5"
+            android:rating="@={viewModel.rating, default=3.0}"
             android:stepSize="1" />
 
         <EditText

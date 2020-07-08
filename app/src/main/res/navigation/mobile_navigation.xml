@@ -33,6 +33,9 @@
         <action
             android:id="@+id/action_nav_tripInfo_to_profile"
             app:destination="@id/nav_profile" />
+        <action
+            android:id="@+id/action_nav_tripInfo_to_addReview"
+            app:destination="@id/nav_addReview" />
     </fragment>
     <fragment
         android:id="@+id/nav_profile"
@@ -89,5 +92,15 @@
             android:name="searchQuery"
             app:argType="string"
             android:defaultValue='""' />
+    </fragment>
+    <fragment
+        android:id="@+id/nav_addReview"
+        android:name="com.tripdazzle.daycation.ui.addreview.AddReviewFragment">
+        <argument
+            android:name="tripId"
+            app:argType="integer" />
+        <argument
+            android:name="tripName"
+            app:argType="string" />
     </fragment>
 </navigation>

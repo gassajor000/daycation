@@ -1,6 +1,5 @@
 package com.tripdazzle.daycation.ui.tripinfo;
 
-import android.app.Dialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
@@ -53,6 +52,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     private CollapsingToolbarLayout cTooolbar;
     private View profilePicView;
     private MenuItem favoritesButton;
+    private NavController navController;
 
     public static TripInfoFragment newInstance() {
         return new TripInfoFragment();
@@ -150,6 +150,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
             throw new RuntimeException(context.toString()
                     + " must implement DataModel.DataManager and ToolbarManager");
         }
+        navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
     }
 
     @Override
@@ -167,10 +168,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
             setFavoritesButtonIcon(mViewModel.getInFavorites().getValue());
             return true;
         } else if (item.getItemId() == R.id.option_add_review){
-            Dialog reviewDialog = new Dialog(getContext());
-            reviewDialog.setContentView(R.layout.fragment_add_review);
-            reviewDialog.setCancelable(true);
-            reviewDialog.show();
+            navigateToAddReview();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -222,9 +220,14 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     }
 
     private void navigateToProfile(){
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         ActionNavTripInfoToProfile action = TripInfoFragmentDirections.actionNavTripInfoToProfile();
         action.setProfileId(mViewModel.getTrip().getValue().creator.userId);
+        navController.navigate(action);
+    }
+
+    private void navigateToAddReview(){
+        Trip trip = mViewModel.getTrip().getValue();
+        TripInfoFragmentDirections.ActionNavTripInfoToAddReview action = TripInfoFragmentDirections.actionNavTripInfoToAddReview(trip.id, trip.title);
         navController.navigate(action);
     }
 

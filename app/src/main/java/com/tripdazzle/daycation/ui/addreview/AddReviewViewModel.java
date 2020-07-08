@@ -8,6 +8,7 @@ import com.tripdazzle.daycation.models.Reviewer;
 public class AddReviewViewModel extends ViewModel {
     private MutableLiveData<Reviewer> reviewer = new MutableLiveData<>();
     private MutableLiveData<String> tripName = new MutableLiveData<>();
+    private MutableLiveData<Integer> tripId = new MutableLiveData<>();
     private float rating = 0.0f;
     private String comment = "";
 
