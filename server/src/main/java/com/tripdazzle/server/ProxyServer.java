@@ -78,6 +78,13 @@ public class ProxyServer {
         db.createTrip(trip);
     }
 
+    /** create a new review
+     * @param review Data for the new review
+     */
+    public void createReview(ReviewData review) throws ServerError{
+        db.createReview(review);
+    }
+
     /** toggle whether or not a trip is in the user's favorites
      * @param userId username of the user to toggle favorite
      * @param tripId trip to toggle favorite

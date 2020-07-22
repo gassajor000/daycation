@@ -5,12 +5,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.databinding.DataBindingUtil;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.tripdazzle.daycation.DataModel;
 import com.tripdazzle.daycation.R;
@@ -20,12 +23,13 @@ import com.tripdazzle.daycation.models.Review;
 
 import java.util.Date;
 
-public class AddReviewFragment extends Fragment {
+public class AddReviewFragment extends Fragment implements DataModel.TaskContext {
 
     private AddReviewViewModel mViewModel;
     private int tripId;
     private DataModel mModel;
     private ToolbarManager toolbarManager;
+    private NavController navController;
 
     public static AddReviewFragment newInstance() {
         return new AddReviewFragment();
@@ -64,13 +68,14 @@ public class AddReviewFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement DataModel.DataManager and ToolbarManager");
         }
+        navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+
     }
 
     public void submit(){
         // create review and return to requesting fragment
         Review review = makeReview();
-        // TODO call addReview on model
-        // TODO return somehow?
+        mModel.createReview(review, this);
     }
 
     private Review makeReview(){
@@ -78,5 +83,18 @@ public class AddReviewFragment extends Fragment {
             return null;
         }
         return new Review(-1, mViewModel.getReviewer().getValue(), mViewModel.getRating(), new Date(), mViewModel.getComment(), tripId);
+    }
+
+    @Override
+    public void onSuccess(String message) {
+        // Navigate up
+        navController.navigateUp();
+    }
+
+    @Override
+    public void onError(String message) {
+        // Show toast
+        Toast chooseImgMsg = Toast.makeText(getContext(), message, Toast.LENGTH_SHORT);
+        chooseImgMsg.show();
     }
 }

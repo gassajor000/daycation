@@ -199,6 +199,12 @@ public class FakeDatabase {
         nextTrip++;
     }
 
+    public void createReview(ReviewData review){
+        reviews.put(nextReview, new FakeReview(nextReview, review.reviewer.userId, review.reviewRating, review.reviewDate, review.reviewComment, review.tripId));
+        users.get(review.reviewer.userId).reviews.add(nextReview);
+        nextReview++;
+    }
+
     public ProfileData getProfileById(String userId) { return users.get(userId).toProfile(imageFactory); }
 
     public List<ReviewData> getReviewsById(List<Integer> reviewIds){

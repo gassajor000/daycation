@@ -30,4 +30,8 @@ public class Review {
         this.reviewComment = data.reviewComment;
         this.tripId = data.tripId;
     }
+
+    public ReviewData toData(){
+        return new ReviewData(id, reviewer.toData(), reviewRating, reviewDate, reviewComment, tripId);
+    }
 }
