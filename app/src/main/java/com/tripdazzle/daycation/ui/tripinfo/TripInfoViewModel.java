@@ -46,15 +46,19 @@ public class TripInfoViewModel extends ViewModel{
     public void setLoadingReviews(Boolean isLoading){
         if(isLoading){
             // Add a null element for progress bar
-            reviews.add(null);
-        } else {
+//            reviews.add(null);
+        } else if(reviews.size() > 0){
             // Remove null element
-            reviews.remove(reviews.size() - 1);
+//            reviews.remove(reviews.size() - 1);
         }
     }
 
     public void addReviews(List<Review> newReviews) {
         reviews.addAll(newReviews);
+    }
+
+    public void clearReviews(){
+        reviews.clear();
     }
 
     public Integer numReviewsLoaded(){

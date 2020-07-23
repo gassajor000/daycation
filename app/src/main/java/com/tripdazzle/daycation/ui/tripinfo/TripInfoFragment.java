@@ -38,6 +38,7 @@ import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
 import com.tripdazzle.daycation.ui.tripinfo.TripInfoFragmentDirections.ActionNavTripInfoToProfile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ReviewsSubscriber, ReviewsListAdapter.OnLoadMoreListener, OnMapReadyCallback {
@@ -78,7 +79,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mRecyclerView = (RecyclerView) view.findViewById(R.id.tripIonfoReviewsList);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mReviewsAdapter = new ReviewsListAdapter(mViewModel.getReviews(), mRecyclerView, this);
+        mReviewsAdapter = new ReviewsListAdapter(new ArrayList<Review>(), mRecyclerView, this);
         mRecyclerView.setAdapter(mReviewsAdapter);
 
         // Init Map
@@ -203,12 +204,12 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         int numLoaded =  mViewModel.numReviewsLoaded();
 
         mViewModel.setLoadingReviews(true);
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                mReviewsAdapter.notifyItemInserted(mViewModel.numReviewsLoaded() - 1);
-            }
-        });
+//        mRecyclerView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                mReviewsAdapter.notifyItemInserted(mViewModel.numReviewsLoaded() - 1);
+//            }
+//        });
         mReviewsAdapter.setLoading(true);
 
         Trip trip = mViewModel.getTrip().getValue();
@@ -235,7 +236,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     public void onGetReviewsByIds(List<Review> reviews) {
         mViewModel.setLoadingReviews(false);
         Integer origSize = mViewModel.numReviewsLoaded();
-        mReviewsAdapter.notifyItemRemoved(origSize);
+//        mReviewsAdapter.notifyItemRemoved(origSize);
 
         mViewModel.addReviews(reviews);
         mReviewsAdapter.notifyItemRangeInserted(origSize + 1, reviews.size());
@@ -243,7 +244,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mReviewsAdapter.setLoading(false);
 
         if(reviews.size() < reviewsBatchSize){      // Set all loaded so no new loads are triggered
-            mReviewsAdapter.setAllReviewsLoaded();
+            mReviewsAdapter.setAllReviewsLoaded(true);
         }
     }
 
@@ -268,6 +269,11 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mapView.getMapAsync(this);
 
         // get reviews
+        if( mViewModel.getReviews().size() != 0){
+            mViewModel.clearReviews();
+        }
+        mReviewsAdapter = new ReviewsListAdapter(mViewModel.getReviews(), mRecyclerView, this);
+        mRecyclerView.setAdapter(mReviewsAdapter);
         onLoadMore();
     }
 

@@ -71,8 +71,8 @@ public class ReviewsListAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void setAllReviewsLoaded(){
-        allReviewsLoaded = true;
+    public void setAllReviewsLoaded(boolean loaded){
+        allReviewsLoaded = loaded;
     }
 
     public void setLoading(Boolean loading){
@@ -85,8 +85,7 @@ public class ReviewsListAdapter extends RecyclerView.Adapter {
     }
 
     @Override
-    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent,
-                                                      int viewType) {
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         RecyclerView.ViewHolder vh;
         if (viewType == VIEW_ITEM) {
             ViewDataBinding b = DataBindingUtil.inflate(LayoutInflater.from(parent.getContext()),
