@@ -64,7 +64,6 @@ public class AddReviewFragment extends Fragment implements DataModel.TaskContext
         AddReviewFragmentArgs args = AddReviewFragmentArgs.fromBundle(getArguments());
         tripId = args.getTripId();
         mViewModel.setTripName(args.getTripName());
-        toolbar.setTitle(mViewModel.getTripName().getValue());
 
         mViewModel.setReviewer(mModel.getCurrentUser().toReviewer());
     }
