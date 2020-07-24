@@ -231,8 +231,9 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/activity2" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/tripIonfoReviewsList"
+                <fragment
+                    android:id="@+id/tripInfoReviewsList"
+                    android:name="com.tripdazzle.daycation.ui.reviewslist.ReviewsListFragment"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
@@ -240,8 +241,9 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
+                    tools:layout="@layout/fragment_reviews_list"
                     app:layout_constraintTop_toBottomOf="@+id/textView4"
-                    tools:listitem="@layout/layout_trip_card_long" />
+                    />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

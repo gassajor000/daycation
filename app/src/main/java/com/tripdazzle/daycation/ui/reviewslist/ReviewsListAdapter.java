@@ -1,4 +1,4 @@
-package com.tripdazzle.daycation.ui.tripinfo;
+package com.tripdazzle.daycation.ui.reviewslist;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,19 +25,16 @@ public class ReviewsListAdapter extends RecyclerView.Adapter {
 
     // The minimum amount of items to have below your current scroll position
 // before loading more.
-    private int visibleThreshold = 5;
-    private int lastVisibleItem, totalItemCount;
-    private boolean loading;
-    private boolean allReviewsLoaded = false;
-    private OnLoadMoreListener onLoadMoreListener;
+    private OnBottomScrollListener onLoadMoreListener;
+    private final int visibleThreshold = 5;
 
     // Call back after asynchronous load completes
-    public interface OnLoadMoreListener {
-        void onLoadMore();
+    public interface OnBottomScrollListener {
+        void onBottomScroll();
     }
 
 
-    public ReviewsListAdapter(List<Review> reviews, RecyclerView recyclerView, OnLoadMoreListener callback) {
+    public ReviewsListAdapter(List<Review> reviews, RecyclerView recyclerView, OnBottomScrollListener callback) {
         reviewList = reviews;
         this.onLoadMoreListener = callback;
 
@@ -54,29 +51,15 @@ public class ReviewsListAdapter extends RecyclerView.Adapter {
                                                int dx, int dy) {
                             super.onScrolled(recyclerView, dx, dy);
 
-                            totalItemCount = linearLayoutManager.getItemCount();
-                            lastVisibleItem = linearLayoutManager
-                                    .findLastVisibleItemPosition();
-                            if (!loading && !allReviewsLoaded
-                                    && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                                // End has been reached
-                                // Do something
-                                if (onLoadMoreListener != null) {
-                                    onLoadMoreListener.onLoadMore();
-                                }
-                                loading = true;
+                            int totalItemCount = linearLayoutManager.getItemCount();
+                            int lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+
+                            if (totalItemCount <= (lastVisibleItem + visibleThreshold) && onLoadMoreListener != null) {
+                                onLoadMoreListener.onBottomScroll();
                             }
                         }
                     });
         }
-    }
-
-    public void setAllReviewsLoaded(boolean loaded){
-        allReviewsLoaded = loaded;
-    }
-
-    public void setLoading(Boolean loading){
-        this.loading = loading;
     }
 
     @Override
@@ -119,12 +102,6 @@ public class ReviewsListAdapter extends RecyclerView.Adapter {
         return reviewList.size();
     }
 
-    public void setOnLoadMoreListener(OnLoadMoreListener onLoadMoreListener) {
-        this.onLoadMoreListener = onLoadMoreListener;
-    }
-
-
-    //
     public static class ReviewViewHolder extends RecyclerView.ViewHolder {
         public final ViewDataBinding binding;
         private DateFormat dateFormat =  DateFormat.getDateInstance();
