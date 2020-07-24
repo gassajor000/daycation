@@ -18,8 +18,6 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -36,14 +34,15 @@ import com.tripdazzle.daycation.databinding.FragmentTripInfoBinding;
 import com.tripdazzle.daycation.models.Activity;
 import com.tripdazzle.daycation.models.Review;
 import com.tripdazzle.daycation.models.Trip;
+import com.tripdazzle.daycation.ui.reviewslist.ReviewsListFragment;
+import com.tripdazzle.daycation.ui.reviewslist.ReviewsListViewModel;
 import com.tripdazzle.daycation.ui.tripinfo.TripInfoFragmentDirections.ActionNavTripInfoToProfile;
 
 import java.util.List;
 
-public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ReviewsSubscriber, ReviewsListAdapter.OnLoadMoreListener, OnMapReadyCallback {
+public class TripInfoFragment extends Fragment implements DataModel.TripsSubscriber, DataModel.ReviewsSubscriber, ReviewsListFragment.OnLoadMoreListener, OnMapReadyCallback {
     private TripInfoViewModel mViewModel;
-    private RecyclerView mRecyclerView;
-    private ReviewsListAdapter mReviewsAdapter;
+    private ReviewsListViewModel mReviewsListModel;
 
     private final int reviewsBatchSize = 5;     // Number of reviews to fetch at a time
     private DataModel mModel;
@@ -52,6 +51,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     private CollapsingToolbarLayout cTooolbar;
     private View profilePicView;
     private MenuItem favoritesButton;
+    private NavController navController;
 
     public static TripInfoFragment newInstance() {
         return new TripInfoFragment();
@@ -73,12 +73,6 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
                 navigateToProfile();
             }
         });
-
-        mRecyclerView = (RecyclerView) view.findViewById(R.id.tripIonfoReviewsList);
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
-        mReviewsAdapter = new ReviewsListAdapter(mViewModel.getReviews(), mRecyclerView, this);
-        mRecyclerView.setAdapter(mReviewsAdapter);
 
         // Init Map
         mapView = view.findViewById(R.id.tripInfoActivitiesMap);
@@ -118,6 +112,11 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
          // Setup menu options
         setHasOptionsMenu(true);
 
+        // Setup reviews list
+        ReviewsListFragment reviewsList = (ReviewsListFragment) getChildFragmentManager().findFragmentById(R.id.tripInfoReviewsList);
+        reviewsList.setLoadMoreCallback(this);
+        mReviewsListModel = ViewModelProviders.of(reviewsList).get(ReviewsListViewModel.class);
+
         return view;
     }
 
@@ -149,6 +148,7 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
             throw new RuntimeException(context.toString()
                     + " must implement DataModel.DataManager and ToolbarManager");
         }
+        navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
     }
 
     @Override
@@ -165,6 +165,8 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
             toggleFavorite();
             setFavoritesButtonIcon(mViewModel.getInFavorites().getValue());
             return true;
+        } else if (item.getItemId() == R.id.option_add_review){
+            navigateToAddReview();
         }
         return super.onOptionsItemSelected(item);
     }
@@ -196,17 +198,15 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     /*load more reviews from the server*/
     @Override
     public void onLoadMore() {
-        int numLoaded =  mViewModel.numReviewsLoaded();
+        int numLoaded =  mReviewsListModel.numReviewsLoaded();
 
-        mViewModel.setLoadingReviews(true);
-        mRecyclerView.post(new Runnable() {
-            @Override
-            public void run() {
-                mReviewsAdapter.notifyItemInserted(mViewModel.numReviewsLoaded() - 1);
-            }
-        });
-        mReviewsAdapter.setLoading(true);
-
+        mReviewsListModel.setLoadingReviews(true);
+//        mRecyclerView.post(new Runnable() {
+//            @Override
+//            public void run() {
+//                mReviewsAdapter.notifyItemInserted(mViewModel.numReviewsLoaded() - 1);
+//            }
+//        });
         Trip trip = mViewModel.getTrip().getValue();
         if(trip.reviews.size() > numLoaded + reviewsBatchSize){   // Load 10 more
             mModel.getReviewsByIds(trip.reviews.subList(numLoaded, numLoaded + reviewsBatchSize), this);
@@ -216,26 +216,20 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
     }
 
     private void navigateToProfile(){
-        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
         ActionNavTripInfoToProfile action = TripInfoFragmentDirections.actionNavTripInfoToProfile();
         action.setProfileId(mViewModel.getTrip().getValue().creator.userId);
         navController.navigate(action);
     }
 
+    private void navigateToAddReview(){
+        Trip trip = mViewModel.getTrip().getValue();
+        TripInfoFragmentDirections.ActionNavTripInfoToAddReview action = TripInfoFragmentDirections.actionNavTripInfoToAddReview(trip.id, trip.title);
+        navController.navigate(action);
+    }
+
     @Override
     public void onGetReviewsByIds(List<Review> reviews) {
-        mViewModel.setLoadingReviews(false);
-        Integer origSize = mViewModel.numReviewsLoaded();
-        mReviewsAdapter.notifyItemRemoved(origSize);
-
-        mViewModel.addReviews(reviews);
-        mReviewsAdapter.notifyItemRangeInserted(origSize + 1, reviews.size());
-
-        mReviewsAdapter.setLoading(false);
-
-        if(reviews.size() < reviewsBatchSize){      // Set all loaded so no new loads are triggered
-            mReviewsAdapter.setAllReviewsLoaded();
-        }
+        mReviewsListModel.addReviews(reviews);
     }
 
     @Override
@@ -259,6 +253,10 @@ public class TripInfoFragment extends Fragment implements DataModel.TripsSubscri
         mapView.getMapAsync(this);
 
         // get reviews
+        mReviewsListModel.setTotalNumReviews(trip.reviews.size());
+        if( mReviewsListModel.getReviews().size() != 0){
+            mReviewsListModel.clearReviews();
+        }
         onLoadMore();
     }
 

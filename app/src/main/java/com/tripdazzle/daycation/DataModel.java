@@ -158,6 +158,10 @@ public class DataModel {
         new CreateTripTask(context).execute(trip);
     }
 
+    public void createReview(Review review, TaskContext context){
+        new CreateReviewTask(context).execute(review);
+    }
+
     /* Places manager */
     public class PlacesManager {
         private Map<String, Place> places = new HashMap<>();
@@ -362,6 +366,40 @@ public class DataModel {
             else {
                 // onSuccess()?
                 context.onSuccess("Trip successfully created");
+            }
+        }
+    }
+
+    private class CreateReviewTask extends AsyncTask<Review, Void, Boolean> {
+        /** Application Context*/
+        private TaskContext context;
+
+        private CreateReviewTask(TaskContext context) {
+            this.context = context;
+        }
+
+        @Override
+        protected Boolean doInBackground(Review ... reviews) {
+            if (reviews.length > 1){
+                return false;
+            }
+            try {
+                server.createReview(reviews[0].toData());
+            } catch (ServerError serverError) {
+                serverError.printStackTrace();
+                return false;
+            }
+            return true;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if(result == false){
+                context.onError("Review could not be created");
+            }
+            else {
+                context.onSuccess("Review successfully created");
             }
         }
     }

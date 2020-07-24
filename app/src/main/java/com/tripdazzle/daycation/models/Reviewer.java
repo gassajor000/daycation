@@ -26,4 +26,8 @@ public class Reviewer {
         firstName = data.firstName;
         lastName = data.lastName;
     }
+
+    public ReviewerData toData(){
+        return new ReviewerData(userId, profilePicture.toData(), firstName, lastName);
+    }
 }

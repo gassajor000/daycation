@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     xmlns:bind="http://schemas.android.com/apk/res-auto">
 
     <data>
@@ -12,13 +13,14 @@
     <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/frameLayout"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true">
 
         <com.google.android.material.appbar.AppBarLayout
-            android:theme="@style/AppTheme.AppBarOverlay"
             android:id="@+id/tripInfoAppBar"
             android:layout_width="match_parent"
-            android:layout_height="150dp">
+            android:layout_height="150dp"
+            android:theme="@style/AppTheme.AppBarOverlay">
 
             <com.google.android.material.appbar.CollapsingToolbarLayout
                 android:id="@+id/tripInfoCollapsingToolbar"
@@ -52,169 +54,124 @@
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="fill_vertical"
             app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
-                <LinearLayout
-                    android:id="@+id/tripInfoHeader"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/headerLayout"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:orientation="horizontal"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+                    android:layout_weight="0">
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:id="@+id/headerLayout"
-                        style="@android:style/Widget.Holo.Button.Borderless"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:layout_weight="0">
+                    <TextView
+                        android:id="@+id/textView3"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="Reviews"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/textViewNumRatings" />
 
-                        <TextView
-                            android:id="@+id/textView3"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:text="Reviews"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toEndOf="@+id/textViewNumRatings" />
+                    <TextView
+                        android:id="@+id/textViewNumRatings"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginBottom="8dp"
+                        android:text='@{viewModel.trip.getNumReviews().toString(), default="1000"}'
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent" />
 
-                        <TextView
-                            android:id="@+id/textViewNumRatings"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginBottom="8dp"
-                            android:text='@{viewModel.trip.getNumReviews().toString(), default="1000"}'
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintStart_toStartOf="parent" />
-
-                        <RatingBar
-                            android:id="@+id/ratingBar"
-                            style="@android:style/Widget.DeviceDefault.Light.RatingBar.Small"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="8dp"
-                            android:indeterminateTint="#FFFFFF"
-                            android:isIndicator="true"
-                            android:numStars="5"
-                            android:progressTint="@color/colorDefaultAndroidText"
-                            android:rating="@{viewModel.trip.reviewsAverage, default=3.5}"
-                            android:secondaryProgressTint="@color/colorDefaultAndroidText"
-                            app:layout_constraintBottom_toBottomOf="@+id/textView3"
-                            app:layout_constraintStart_toEndOf="@+id/textView3"
-                            app:layout_constraintTop_toTopOf="@+id/textView3" />
+                    <RatingBar
+                        android:id="@+id/ratingBar"
+                        style="@android:style/Widget.DeviceDefault.Light.RatingBar.Small"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:indeterminateTint="#FFFFFF"
+                        android:isIndicator="true"
+                        android:numStars="5"
+                        android:progressTint="@color/colorDefaultAndroidText"
+                        android:rating="@{viewModel.trip.reviewsAverage, default=3.5}"
+                        android:secondaryProgressTint="@color/colorDefaultAndroidText"
+                        app:layout_constraintBottom_toBottomOf="@+id/textView3"
+                        app:layout_constraintStart_toEndOf="@+id/textView3"
+                        app:layout_constraintTop_toTopOf="@+id/textView3" />
 
 
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-
-                </LinearLayout>
+                </androidx.constraintlayout.widget.ConstraintLayout>
 
                 <View
                     android:id="@+id/divider"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="8dp"
                     android:background="?android:attr/listDivider"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tripInfoHeader" />
+                    android:layout_weight="0" />
 
                 <TextView
                     android:id="@+id/tripInfoDescription"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="8dp"
                     android:text="@{viewModel.trip.description, default=@string/text_lorem_ipsum}"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tripInfoHeader" />
+                    android:layout_weight="0"/>
 
-
-                <LinearLayout
-                    android:id="@+id/tripInfoLocationBlurb"
-                    android:layout_width="match_parent"
+                <TextView
+                    android:id="@+id/tripInfoLocation"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:drawableStart="@drawable/ic_pin_drop"
+                    android:drawablePadding="10dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="32dp"
-                    android:layout_marginEnd="8dp"
-                    android:orientation="horizontal"
-                    app:layout_constraintTop_toBottomOf="@+id/tripInfoDescription">
-
-                    <ImageView
-                        android:id="@+id/imageView3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
-                        bind:srcCompat="@drawable/ic_pin_drop" />
-
-                    <TextView
-                        android:id="@+id/tripInfoLocation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:text='@{viewModel.trip.location.getName(), default="Trip Location"}'
-                        android:textSize="18sp" />
-                </LinearLayout>
+                    android:text='@{viewModel.trip.location.getName(), default="Trip Location"}'
+                    android:textSize="18sp" />
 
                 <com.google.android.gms.maps.MapView
                     android:id="@+id/tripInfoActivitiesMap"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="180dp"
                     android:layout_marginStart="8dp"
                     android:layout_marginEnd="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintHorizontal_bias="1.0"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tripInfoLocationBlurb" />
+                    app:layout_constraintEnd_toEndOf="parent" />
 
                 <include
                     android:id="@+id/activity0"
                     layout="@layout/layout_activity_card"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tripInfoActivitiesMap"
                     bind:activity="@{viewModel.trip.getActivity(0)}" />
 
                 <include
                     android:id="@+id/activity1"
                     layout="@layout/layout_activity_card"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/activity0"
                     bind:activity="@{viewModel.trip.getActivity(1)}" />
 
                 <include
                     android:id="@+id/activity2"
                     layout="@layout/layout_activity_card"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/activity1"
                     bind:activity="@{viewModel.trip.getActivity(2)}" />
 
                 <TextView
@@ -224,20 +181,20 @@
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:text="Reviews"
-                    android:textSize="18sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/activity2" />
+                    android:textSize="18sp" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/tripIonfoReviewsList"
+                <fragment
+                    android:id="@+id/tripInfoReviewsList"
+                    android:name="com.tripdazzle.daycation.ui.reviewslist.ReviewsListFragment"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/textView4" />
+                    android:layout_marginBottom="8dp"
+                    android:layout_weight="1"
+                    tools:layout="@layout/fragment_reviews_list"
+                    />
 
-            </androidx.constraintlayout.widget.ConstraintLayout>
+            </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
         <include
@@ -245,9 +202,9 @@
             layout="@layout/layout_profile_pic_rounded"
             android:layout_width="60dp"
             android:layout_height="60dp"
+            android:layout_margin="8dp"
             app:layout_anchor="@id/tripInfoAppBar"
             app:layout_anchorGravity="bottom|start|left"
-            android:layout_margin="8dp"
             bind:cornerRadiusDP='@{30}'
             bind:profilePic="@{viewModel.trip.creator.profilePicture}" />
 

@@ -199,6 +199,14 @@ public class FakeDatabase {
         nextTrip++;
     }
 
+    public void createReview(ReviewData review){
+        reviews.put(nextReview, new FakeReview(nextReview, review.reviewer.userId, review.reviewRating, review.reviewDate, review.reviewComment, review.tripId));
+        users.get(review.reviewer.userId).reviews.add(nextReview);
+        trips.get(review.tripId).reviews.add(nextReview);
+        recomputeReviewAverage(review.tripId);
+        nextReview++;
+    }
+
     public ProfileData getProfileById(String userId) { return users.get(userId).toProfile(imageFactory); }
 
     public List<ReviewData> getReviewsById(List<Integer> reviewIds){
@@ -303,5 +311,16 @@ public class FakeDatabase {
         public ReviewData getReview(Integer reviewId){
             return reviews.get(reviewId).toReviewData(userFactory);
         }
+    }
+
+    private void recomputeReviewAverage(int tripId){
+        FakeTrip trip = trips.get(tripId);
+        final List<FakeReview> tripReviews = new ArrayList<>();
+        float reviewsSum = 0.0f;
+
+        for(int id: trip.reviews){
+            reviewsSum += reviews.get(id).reviewRating;
+        }
+        trip.reviewsAverage = reviewsSum / trip.reviews.size();
     }
 }

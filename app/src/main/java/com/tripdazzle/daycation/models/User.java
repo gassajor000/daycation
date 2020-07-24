@@ -52,4 +52,8 @@ public class User {
     public Creator toCreator(){
         return new Creator(userId, profilePicture, firstName, lastName);
     }
+
+    public Reviewer toReviewer(){
+        return new Reviewer(userId, profilePicture, firstName, lastName);
+    }
 }

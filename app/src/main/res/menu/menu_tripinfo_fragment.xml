@@ -8,4 +8,9 @@
         android:checkable="true"
         android:title="Toggle Favorite"
         app:showAsAction="always" />
+    <item
+        android:id="@+id/option_add_review"
+        android:title="Add Review"
+        app:showAsAction="never"
+        />
 </menu>
